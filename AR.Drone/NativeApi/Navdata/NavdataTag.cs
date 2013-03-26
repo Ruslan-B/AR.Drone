@@ -1,0 +1,36 @@
+namespace AR.Drone.NativeApi.Navdata
+{
+    public enum NavdataTag : ushort
+    {
+        DEMO,
+        TIME,
+        RAW_MEASURES,
+        PHYS_MEASURES,
+        GYROS_OFFSETS,
+        EULER_ANGLES,
+        REFERENCES,
+        TRIMS,
+        RC_REFERENCES,
+        PWM,
+        ALTITUDE,
+        VISION_RAW,
+        VISION_OF,
+        VISION,
+        VISION_PERF,
+        TRACKERS_SEND,
+        VISION_DETECT,
+        WATCHDOG,
+        ADC_DATA_FRAME,
+        VIDEO_STREAM,
+        GAMES,
+        PRESSURE_RAW,
+        MAGNETO,
+        WIND,
+        KALMAN_PRESSURE,
+        HDVIDEO_STREAM,
+        WIFI,
+        ZIMMU_3000,
+        NUMS,
+        CheckSum = 0xffff,
+    }
+}
