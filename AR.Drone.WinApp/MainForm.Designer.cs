@@ -37,7 +37,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.btnEmergency = new System.Windows.Forms.Button();
             this.tmrStateUpdate = new System.Windows.Forms.Timer(this.components);
-            this.lState = new System.Windows.Forms.Label();
             this.btnSwitchCam = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
@@ -48,6 +47,7 @@
             this.btnTurnLeft = new System.Windows.Forms.Button();
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnHover = new System.Windows.Forms.Button();
+            this.tvInfo = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,7 +57,7 @@
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "Start";
+            this.btnStart.Text = "Activate";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
@@ -67,7 +67,7 @@
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 1;
-            this.btnStop.Text = "Stop";
+            this.btnStop.Text = "Deactivate";
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
@@ -82,7 +82,7 @@
             // 
             // btnFlatTrim
             // 
-            this.btnFlatTrim.Location = new System.Drawing.Point(174, 12);
+            this.btnFlatTrim.Location = new System.Drawing.Point(12, 407);
             this.btnFlatTrim.Name = "btnFlatTrim";
             this.btnFlatTrim.Size = new System.Drawing.Size(75, 23);
             this.btnFlatTrim.TabIndex = 3;
@@ -92,7 +92,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(12, 407);
+            this.button2.Location = new System.Drawing.Point(174, 407);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 4;
@@ -102,7 +102,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(93, 407);
+            this.button3.Location = new System.Drawing.Point(256, 407);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 5;
@@ -122,16 +122,8 @@
             // 
             // tmrStateUpdate
             // 
+            this.tmrStateUpdate.Interval = 500;
             this.tmrStateUpdate.Tick += new System.EventHandler(this.tmrStateUpdate_Tick);
-            // 
-            // lState
-            // 
-            this.lState.AutoSize = true;
-            this.lState.Location = new System.Drawing.Point(659, 41);
-            this.lState.Name = "lState";
-            this.lState.Size = new System.Drawing.Size(35, 13);
-            this.lState.TabIndex = 7;
-            this.lState.Text = "label1";
             // 
             // btnSwitchCam
             // 
@@ -201,7 +193,7 @@
             // 
             // btnTurnLeft
             // 
-            this.btnTurnLeft.Location = new System.Drawing.Point(255, 501);
+            this.btnTurnLeft.Location = new System.Drawing.Point(257, 442);
             this.btnTurnLeft.Name = "btnTurnLeft";
             this.btnTurnLeft.Size = new System.Drawing.Size(75, 23);
             this.btnTurnLeft.TabIndex = 15;
@@ -211,7 +203,7 @@
             // 
             // btnTurnRight
             // 
-            this.btnTurnRight.Location = new System.Drawing.Point(420, 500);
+            this.btnTurnRight.Location = new System.Drawing.Point(419, 442);
             this.btnTurnRight.Name = "btnTurnRight";
             this.btnTurnRight.Size = new System.Drawing.Size(75, 23);
             this.btnTurnRight.TabIndex = 16;
@@ -221,7 +213,7 @@
             // 
             // btnHover
             // 
-            this.btnHover.Location = new System.Drawing.Point(338, 500);
+            this.btnHover.Location = new System.Drawing.Point(338, 407);
             this.btnHover.Name = "btnHover";
             this.btnHover.Size = new System.Drawing.Size(75, 23);
             this.btnHover.TabIndex = 17;
@@ -229,11 +221,22 @@
             this.btnHover.UseVisualStyleBackColor = true;
             this.btnHover.Click += new System.EventHandler(this.btnHover_Click);
             // 
+            // tvNavdata
+            // 
+            this.tvInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tvInfo.Location = new System.Drawing.Point(661, 41);
+            this.tvInfo.Name = "tvInfo";
+            this.tvInfo.Size = new System.Drawing.Size(291, 480);
+            this.tvInfo.TabIndex = 18;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 533);
+            this.ClientSize = new System.Drawing.Size(964, 533);
+            this.Controls.Add(this.tvInfo);
             this.Controls.Add(this.btnHover);
             this.Controls.Add(this.btnTurnRight);
             this.Controls.Add(this.btnTurnLeft);
@@ -244,7 +247,6 @@
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.btnSwitchCam);
-            this.Controls.Add(this.lState);
             this.Controls.Add(this.btnEmergency);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -256,7 +258,6 @@
             this.Text = "AR.Drone Control";
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -270,7 +271,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnEmergency;
         private System.Windows.Forms.Timer tmrStateUpdate;
-        private System.Windows.Forms.Label lState;
         private System.Windows.Forms.Button btnSwitchCam;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
@@ -281,6 +281,7 @@
         private System.Windows.Forms.Button btnTurnLeft;
         private System.Windows.Forms.Button btnTurnRight;
         private System.Windows.Forms.Button btnHover;
+        private System.Windows.Forms.TreeView tvInfo;
     }
 }
 

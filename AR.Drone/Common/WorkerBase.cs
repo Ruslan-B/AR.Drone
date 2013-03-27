@@ -24,7 +24,7 @@ namespace AR.Drone.Common
 
                 _cancellationTokenSource = new CancellationTokenSource();
                 CancellationToken token = _cancellationTokenSource.Token;
-                _task = new Task(() => RunLoop(token), token);
+                _task = new Task(() => RunLoop(token), token, TaskCreationOptions.LongRunning);
                 _task.Start();
             }
         }
@@ -44,6 +44,7 @@ namespace AR.Drone.Common
         {
             try
             {
+                Thread.CurrentThread.Name = GetType().Name;
                 Loop(token);
             }
             catch (OperationCanceledException)

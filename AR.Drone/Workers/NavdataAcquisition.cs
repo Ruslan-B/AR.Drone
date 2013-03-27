@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using AR.Drone.Helpers;
-using AR.Drone.Api.Navdata;
 using AR.Drone.Common;
+using AR.Drone.NativeApi;
 
 namespace AR.Drone.Workers
 {
@@ -16,10 +15,10 @@ namespace AR.Drone.Workers
         public const int NavdataTimeout = 2000;
         
         private readonly DroneConfig _config;
-        private readonly Action<NavdataInfo> _navdataAcquired;
+        private readonly Action<RawNavdata> _navdataAcquired;
         private readonly UdpClient _udpClient;
 
-        public NavdataAcquisition(DroneConfig config, Action<NavdataInfo> navdataAcquired)
+        public NavdataAcquisition(DroneConfig config, Action<RawNavdata> navdataAcquired)
         {
             _config = config;
             _navdataAcquired = navdataAcquired;
@@ -41,12 +40,11 @@ namespace AR.Drone.Workers
                 if (_udpClient.Available > 0)
                 {
                     byte[] data = _udpClient.Receive(ref droneEp);
-                    //using (var fs = new FileStream(@"d:\navdata.raw", FileMode.Create))
-                    //    fs.Write(data, 0, data.Length);
-                    NavdataInfo navdataInfo;
-                    if (NavdataHelper.TryParse(data, out navdataInfo))
+
+                    RawNavdata rawNavdata;
+                    if (NavdataParser.TryParse(data, out rawNavdata))
                     {
-                        _navdataAcquired(navdataInfo);
+                        _navdataAcquired(rawNavdata);
 
                         swNavdataTimeout.Restart();
                     }

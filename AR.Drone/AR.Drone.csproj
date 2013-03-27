@@ -48,47 +48,68 @@
     <Compile Include="Api\Commands\RefCommand.cs" />
     <Compile Include="Api\Commands\RefMode.cs" />
     <Compile Include="Api\Commands\VideoChannel.cs" />
-    <Compile Include="Api\Navdata\NavdataInfo.cs" />
     <Compile Include="Helpers\VideoHelper.cs" />
-    <Compile Include="NativeApi\ARDroneState.cs" />
-    <Compile Include="NativeApi\Math\Matrix33.cs" />
-    <Compile Include="NativeApi\Math\Vector2.cs" />
-    <Compile Include="NativeApi\Math\Vector3.cs" />
-    <Compile Include="NativeApi\Navdata\Navdata.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataAltitude.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataCheckSum.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataDemo.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataEulerAngles.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataOption.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataPwm.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataRcReferences.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataReferences.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataTag.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataTime.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataTrims.cs" />
-    <Compile Include="NativeApi\Navdata\NavdataWifi.cs" />
-    <Compile Include="NativeApi\Video\VideoEncapsulation.cs" />
-    <Compile Include="NativeApi\Video\VideoEncapsulationCodec.cs" />
-    <Compile Include="NativeApi\Video\VideoEncapsulationControl.cs" />
-    <Compile Include="NativeApi\Video\VideoEncapsulationFrameType.cs" />
-    <Compile Include="Helpers\NavdataHelper.cs" />
+    <Compile Include="NativeApi\def_ardrone_state_mask_t.cs" />
+    <Compile Include="NativeApi\Math\matrix33_t.cs" />
+    <Compile Include="NativeApi\RawNavdata.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_adc_data_frame_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_games_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_gyros_offsets_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_hdvideo_stream_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_kalman_pressure_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_magneto_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_phys_measures_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_pressure_raw_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_altitude_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_cks_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_euler_angles_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_pwm_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_rc_references_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_references_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_trackers_send_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_trims_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_video_stream_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_detect_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_of_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_perf_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_raw_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_watchdog_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_wifi_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_demo_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_option_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_raw_measures_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_tag_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_time_t.cs" />
+    <Compile Include="NativeApi\Math\vector21_t.cs" />
+    <Compile Include="NativeApi\Math\vector31_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_wind_speed_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_zimmu_3000_t.cs" />
+    <Compile Include="NativeApi\Navdata\screen_point_t.cs" />
+    <Compile Include="NativeApi\Navdata\velocities_t.cs" />
+    <Compile Include="NativeApi\Video\parrot_video_encapsulation_t.cs" />
+    <Compile Include="NativeApi\Video\parrot_video_encapsulation_frametypes_t.cs" />
+    <Compile Include="NativeApi\NavdataParser.cs" />
     <Compile Include="Api\Video\FrameType.cs" />
     <Compile Include="Api\Video\VideoFrame.cs" />
     <Compile Include="Api\Video\VideoFramePixelFormat.cs" />
     <Compile Include="Api\Video\VideoPacket.cs" />
     <Compile Include="DroneConfig.cs" />
     <Compile Include="Api\IATCommand.cs" />
+    <Compile Include="RequestedState.cs" />
+    <Compile Include="Workers\Watchdog.cs" />
     <Compile Include="Workers\CommandQueue.cs" />
     <Compile Include="Helpers\ConcurrentQueueHelper.cs" />
     <Compile Include="DroneController.cs" />
-    <Compile Include="DroneControllerState.cs" />
+    <Compile Include="DroneState.cs" />
     <Compile Include="Common\DisposableBase.cs" />
     <Compile Include="Workers\NavdataAcquisition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workers\VideoAcquisition.cs" />
     <Compile Include="Workers\VideoDecoder.cs" />
     <Compile Include="Exceptions\VideoDecoderException.cs" />
-    <Compile Include="Workers\WirelessWorker.cs" />
+    <Compile Include="Workers\NetworkWorker.cs" />
     <Compile Include="Common\WorkerBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -97,7 +118,9 @@
       <Name>FFmpeg.AutoGen</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Api\Navdata\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

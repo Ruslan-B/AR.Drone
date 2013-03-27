@@ -7,6 +7,7 @@ namespace AR.Drone.Api.Video
     public class VideoFrame
     {
         public DateTime Timestamp;
+        public uint FrameNumber;
         public int Height;
         public int Width;
         public int Depth;

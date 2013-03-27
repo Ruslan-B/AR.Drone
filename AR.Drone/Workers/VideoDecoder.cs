@@ -12,6 +12,7 @@ namespace AR.Drone.Workers
 {
     public class VideoDecoder : WorkerBase
     {
+        private readonly Action<VideoFrame> _onFrameDecoded;
         private readonly ConcurrentQueue<VideoPacket> _packetQueue;
 
         static VideoDecoder()
@@ -20,8 +21,9 @@ namespace AR.Drone.Workers
             Native.avcodec_register_all();
         }
 
-        public VideoDecoder()
+        public VideoDecoder(Action<VideoFrame> onFrameDecoded)
         {
+            _onFrameDecoded = onFrameDecoded;
             _packetQueue = new ConcurrentQueue<VideoPacket>();
             Width = 640;
             Height = 360;
@@ -32,8 +34,6 @@ namespace AR.Drone.Workers
         public int Height { get; set; }
         public VideoFramePixelFormat OutputPixelFormat { get; set; }
 
-        public event Action<VideoDecoder, VideoFrame> FrameDecoded;
-
         public void EnqueuePacket(VideoPacket packet)
         {
             _packetQueue.Enqueue(packet);
@@ -41,12 +41,12 @@ namespace AR.Drone.Workers
 
         protected override unsafe void Loop(CancellationToken token)
         {
+            // flush packet queue
+            ConcurrentQueueHelper.Clear(_packetQueue);
             // fixing staring state, all structures will be creating using this values
             VideoFramePixelFormat outputPixelFormat = OutputPixelFormat;
             int width = Width;
             int height = Height;
-            // flush packet queue
-            ConcurrentQueueHelper.Clear(_packetQueue);
             // create output picture 
             Native.AVPixelFormat convertToPixelFormat = VideoHelper.Convert(outputPixelFormat);
             int outputDataSize = Native.avpicture_get_size(convertToPixelFormat, width, height);
@@ -83,13 +83,14 @@ namespace AR.Drone.Workers
                             var frame = new VideoFrame
                                 {
                                     Timestamp = packet.Timestamp,
+                                    FrameNumber = packet.FrameNumber,
                                     Width = width,
                                     Height = height,
                                     Depth = depth,
                                     PixelFormat = outputPixelFormat,
                                     Data = outputData
                                 };
-                            OnFrameDecoded(frame);
+                            _onFrameDecoded(frame);
                         }
                     }
                     Thread.Sleep(10);
@@ -152,12 +153,6 @@ namespace AR.Drone.Workers
             var pDstData = (byte**) (&(*pDstFrame).data[0]);
 
             Native.sws_scale(pContext, pSrcData, pSrcFrame->linesize, 0, pSrcFrame->height, pDstData, pDstFrame->linesize);
-        }
-
-        private void OnFrameDecoded(VideoFrame frame)
-        {
-            if (FrameDecoded != null)
-                FrameDecoded(this, frame);
         }
     }
 }

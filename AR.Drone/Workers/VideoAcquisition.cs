@@ -4,7 +4,7 @@ using System.Threading;
 using AR.Drone.Helpers;
 using AR.Drone.Api.Video;
 using AR.Drone.Common;
-using AR.Drone.NativeApi.Video;
+using AR.Drone.NativeApi;
 
 namespace AR.Drone.Workers
 {
@@ -42,7 +42,7 @@ namespace AR.Drone.Workers
                         if (packet == null)
                         {
                             // lookup for a frame start
-                            int maxSearchIndex = offset - sizeof (VideoEncapsulation);
+                            int maxSearchIndex = offset - sizeof (parrot_video_encapsulation_t);
                             for (int i = 0; i < maxSearchIndex; i++)
                             {
                                 if (buffer[i] == 'P' &&
@@ -50,13 +50,14 @@ namespace AR.Drone.Workers
                                     buffer[i + 2] == 'V' &&
                                     buffer[i + 3] == 'E')
                                 {
-                                    VideoEncapsulation pve = *(VideoEncapsulation*) (pBuffer + i);
+                                    parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*) (pBuffer + i);
                                     packet = new VideoPacket
                                         {
                                             Timestamp = DateTime.UtcNow,
+                                            FrameNumber = pve.frame_number,
                                             Width = pve.display_width,
                                             Height = pve.display_height,
-                                            FrameType = VideoHelper.Convert(pve.frame_type),
+                                            FrameType = VideoHelper.Convert((parrot_video_encapsulation_frametypes_t)pve.frame_type),
                                             Data = new byte[pve.payload_size]
                                         };
                                     frameStart = i + pve.header_size;

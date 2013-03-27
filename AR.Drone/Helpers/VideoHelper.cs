@@ -1,6 +1,6 @@
 using System;
 using AR.Drone.Api.Video;
-using AR.Drone.NativeApi.Video;
+using AR.Drone.NativeApi;
 using FFmpeg.AutoGen;
 
 namespace AR.Drone.Helpers
@@ -20,17 +20,17 @@ namespace AR.Drone.Helpers
             }
         }
 
-        public static FrameType Convert(VideoEncapsulationFrameType frameType)
+        public static FrameType Convert(parrot_video_encapsulation_frametypes_t frameType)
         {
             switch (frameType)
             {
-                case VideoEncapsulationFrameType.IDR:
-                case VideoEncapsulationFrameType.I:
+                case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_IDR_FRAME:
+                case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_I_FRAME:
                     return FrameType.I;
-                case VideoEncapsulationFrameType.P:
+                case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_P_FRAME:
                     return FrameType.I;
-                case VideoEncapsulationFrameType.Unknnown:
-                case VideoEncapsulationFrameType.Headers:
+                case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_UNKNNOWN:
+                case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_HEADERS:
                     return FrameType.Unknnown;
                 default:
                     throw new ArgumentOutOfRangeException("frameType");
