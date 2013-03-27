@@ -24,18 +24,4 @@ namespace AR.Drone.NativeApi
         public matrix33_t drone_camera_rot; // Deprecated! Don't use!
         public vector31_t drone_camera_trans; // Deprecated! Don't use!
     }
-
-    public enum CTRL_STATES
-    {
-        CTRL_DEFAULT,
-        CTRL_INIT,
-        CTRL_LANDED,
-        CTRL_FLYING,
-        CTRL_HOVERING,
-        CTRL_TEST,
-        CTRL_TRANS_TAKEOFF,
-        CTRL_TRANS_GOTOFIX,
-        CTRL_TRANS_LANDING,
-        CTRL_STATES
-    }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using AR.Drone.Api.Commands;
 using AR.Drone.Api.Video;
 using AR.Drone.NativeApi;
@@ -68,6 +69,12 @@ namespace AR.Drone
         public void Emergency()
         {
             _requestedState = RequestedState.Emergency;
+        }
+
+        public void ResetEmergency()
+        {
+          _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+          _commandQueue.Enqueue(new RefCommand(RefMode.Land));
         }
 
         public void Land()
@@ -150,19 +157,21 @@ namespace AR.Drone
                 SendConfiguration();
             }
 
-            def_ardrone_state_mask_t rawSate = rawNavdata.ardrone_state;
-            if (rawSate.HasFlag(def_ardrone_state_mask_t.ARDRONE_FLY_MASK))
+            // major states
+            def_ardrone_state_mask_t ardrone_state = rawNavdata.ardrone_state;
+
+            if (ardrone_state.HasFlag(def_ardrone_state_mask_t.ARDRONE_FLY_MASK))
             {
                 _droneState |= DroneState.Flying;
                 _droneState &= ~DroneState.Landed;
             }
             else
             {
-                _droneState |= DroneState.Landed;
                 _droneState &= ~DroneState.Flying;
+                _droneState |= DroneState.Landed;
             }
 
-            if (rawSate.HasFlag(def_ardrone_state_mask_t.ARDRONE_VBAT_LOW))
+            if (ardrone_state.HasFlag(def_ardrone_state_mask_t.ARDRONE_VBAT_LOW))
             {
                 _droneState |= DroneState.BatteryLow;
             }
@@ -171,7 +180,7 @@ namespace AR.Drone
                 _droneState &= ~DroneState.BatteryLow;
             }
 
-            if (rawSate.HasFlag(def_ardrone_state_mask_t.ARDRONE_EMERGENCY_MASK))
+            if (ardrone_state.HasFlag(def_ardrone_state_mask_t.ARDRONE_EMERGENCY_MASK))
             {
                 _droneState |= DroneState.Emergency;
             }
@@ -180,7 +189,45 @@ namespace AR.Drone
                 _droneState &= ~DroneState.Emergency;
             }
 
-            // todo hovering and progress support
+            // process control state
+            var ctrl_state = (CTRL_STATES) rawNavdata.demo.ctrl_state;
+
+            if (ctrl_state.HasFlag(CTRL_STATES.CTRL_TRANS_TAKEOFF))
+            {
+                _droneState |= DroneState.Takeoff;
+            }
+            else
+            {
+                _droneState &= ~DroneState.Takeoff;
+            }
+
+            if (ctrl_state.HasFlag(CTRL_STATES.CTRL_TRANS_LANDING))
+            {
+                _droneState |= DroneState.Landing;
+            }
+            else
+            {
+                _droneState &= ~DroneState.Landing;
+            }
+
+            if (ctrl_state.HasFlag(CTRL_STATES.CTRL_HOVERING) &&
+                ctrl_state.HasFlag(CTRL_STATES.CTRL_TRANS_GOTOFIX) == false)
+            {
+                _droneState |= DroneState.Hovering;
+            }
+            else
+            {
+                _droneState &= ~DroneState.Hovering;
+            }
+
+            if (ctrl_state.HasFlag(CTRL_STATES.CTRL_TRANS_GOTOFIX))
+            {
+                _droneState |= DroneState.Progress;
+            }
+            else
+            {
+                _droneState &= ~DroneState.Progress;
+            }
         }
 
 
@@ -225,9 +272,10 @@ namespace AR.Drone
                     }
                     break;
                 case RequestedState.Hovering:
-                    if (_droneState.HasFlag(DroneState.Flying)) // && !DroneState.Hovering
+                    if (_droneState.HasFlag(DroneState.Flying))
                     {
                         _commandQueue.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
+                        _requestedState = RequestedState.None;
                     }
                     else
                     {
@@ -235,9 +283,10 @@ namespace AR.Drone
                     }
                     break;
                 case RequestedState.Progressing:
-                    if (_droneState.HasFlag(DroneState.Flying)) //
+                    if (_droneState.HasFlag(DroneState.Flying))
                     {
                         _commandQueue.Enqueue(_progressiveCommand);
+                        _requestedState = RequestedState.None;
                     }
                     else
                     {
@@ -246,32 +295,6 @@ namespace AR.Drone
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
-
-            // process controller state
-            if (_droneState.HasFlag(DroneState.Emergency)) // emergency requested
-            {
-                // send emergency till drone not in emergency state
-                if (_droneState.HasFlag(DroneState.Flying))
-                {
-                    _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
-                }
-            }
-            else if (_droneState.HasFlag(DroneState.Landing)) // landing requested
-            {
-                // land till flying
-                if (_droneState.HasFlag(DroneState.Flying))
-                    _commandQueue.Enqueue(new RefCommand(RefMode.Land));
-                else
-                    _droneState &= ~DroneState.Landing;
-            }
-            else if (_droneState.HasFlag(DroneState.Takeoff)) // takeoff requested
-            {
-                // takeoff till landed
-                if (_droneState.HasFlag(DroneState.Landed))
-                    _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
-                else
-                    _droneState &= ~DroneState.Takeoff;
             }
         }
     }

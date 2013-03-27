@@ -15,8 +15,6 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
-            //_videoDecoder = new VideoDecoder();
-
             _droneController = new DroneController();
             _droneController.FrameDecoded += OnVideoDecoderOnFrameDecoded;
             tmrStateUpdate.Enabled = true;
@@ -130,12 +128,27 @@ namespace AR.Drone.WinApp
 
         private void btnTurnLeft_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(yaw: 0.1f);
+            _droneController.Progress(yaw: 0.2f);
         }
 
         private void btnTurnRight_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(yaw: -0.1f);
+            _droneController.Progress(yaw: -0.2f);
+        }
+
+        private void btnLeft_Click(object sender, EventArgs e)
+        {
+            _droneController.Progress(ProgressiveMode.CombinedYaw, roll: 0.01f);
+        }
+
+        private void btnRight_Click(object sender, EventArgs e)
+        {
+            _droneController.Progress(ProgressiveMode.CombinedYaw, roll: -0.01f);
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            _droneController.ResetEmergency();
         }
     }
 }

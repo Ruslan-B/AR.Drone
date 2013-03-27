@@ -48,6 +48,7 @@
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnHover = new System.Windows.Forms.Button();
             this.tvInfo = new System.Windows.Forms.TreeView();
+            this.btnReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -163,6 +164,7 @@
             this.btnLeft.TabIndex = 11;
             this.btnLeft.Text = "Left";
             this.btnLeft.UseVisualStyleBackColor = true;
+            this.btnLeft.Click += new System.EventHandler(this.btnLeft_Click);
             // 
             // btnBack
             // 
@@ -181,6 +183,7 @@
             this.btnRight.TabIndex = 13;
             this.btnRight.Text = "Right";
             this.btnRight.UseVisualStyleBackColor = true;
+            this.btnRight.Click += new System.EventHandler(this.btnRight_Click);
             // 
             // btnForward
             // 
@@ -221,7 +224,7 @@
             this.btnHover.UseVisualStyleBackColor = true;
             this.btnHover.Click += new System.EventHandler(this.btnHover_Click);
             // 
-            // tvNavdata
+            // tvInfo
             // 
             this.tvInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
@@ -231,11 +234,22 @@
             this.tvInfo.Size = new System.Drawing.Size(291, 480);
             this.tvInfo.TabIndex = 18;
             // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(488, 11);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(75, 23);
+            this.btnReset.TabIndex = 19;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 533);
+            this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tvInfo);
             this.Controls.Add(this.btnHover);
             this.Controls.Add(this.btnTurnRight);
@@ -282,6 +296,7 @@
         private System.Windows.Forms.Button btnTurnRight;
         private System.Windows.Forms.Button btnHover;
         private System.Windows.Forms.TreeView tvInfo;
+        private System.Windows.Forms.Button btnReset;
     }
 }
 

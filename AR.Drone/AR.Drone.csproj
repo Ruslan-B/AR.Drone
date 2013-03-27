@@ -51,6 +51,7 @@
     <Compile Include="Helpers\VideoHelper.cs" />
     <Compile Include="NativeApi\def_ardrone_state_mask_t.cs" />
     <Compile Include="NativeApi\Math\matrix33_t.cs" />
+    <Compile Include="NativeApi\Navdata\CTRL_STATES.cs" />
     <Compile Include="NativeApi\RawNavdata.cs" />
     <Compile Include="NativeApi\Navdata\navdata_adc_data_frame_t.cs" />
     <Compile Include="NativeApi\Navdata\navdata_games_t.cs" />
