@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using AR.Drone.Api.Video;
+using AR.Drone.Video;
 
 namespace AR.Drone.WinApp
 {
@@ -25,7 +25,10 @@ namespace AR.Drone.WinApp
             fixed (void* pData = &frame.Data[0, 0, 0])
             {
                 PixelFormat pixelFormat = ConvertPixelFormat(frame.PixelFormat);
-                var bitmap = new Bitmap(frame.Width, frame.Height, frame.Width*frame.Depth, pixelFormat, new IntPtr(pData));
+                int height = frame.Data.GetLength(0);
+                int width = frame.Data.GetLength(1);
+                int depth = frame.Data.GetLength(2);
+                var bitmap = new Bitmap(width, height, width*depth, pixelFormat, new IntPtr(pData));
                 if (pixelFormat == PixelFormat.Format8bppIndexed)
                 {
                     ColorPalette palette = bitmap.Palette;

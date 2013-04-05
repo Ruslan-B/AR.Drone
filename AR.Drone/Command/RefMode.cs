@@ -1,4 +1,4 @@
-namespace AR.Drone.Api.Commands
+namespace AR.Drone.Command
 {
     public enum RefMode
     {

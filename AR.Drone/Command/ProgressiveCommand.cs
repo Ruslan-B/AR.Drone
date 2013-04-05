@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace AR.Drone.Api.Commands
+namespace AR.Drone.Command
 {
-    public class ProgressiveCommand : IATCommand
+    public class ProgressiveCommand : ATCommand
     {
         private readonly float _gaz;
         private readonly ProgressiveMode _mode;
@@ -20,7 +20,7 @@ namespace AR.Drone.Api.Commands
             _gaz = gaz;
         }
 
-        public string ToAt(int sequenceNumber)
+        protected override string ToAt(int sequenceNumber)
         {
             return string.Format("AT*PCMD={0},{1},{2},{3},{4},{5}\r", sequenceNumber, (int) _mode, Normalize(_roll), Normalize(_pitch), Normalize(_gaz), Normalize(_yaw));
         }

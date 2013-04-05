@@ -1,9 +1,10 @@
 using System.Runtime.InteropServices;
+using AR.Drone.NativeApi;
 
-namespace AR.Drone.NativeApi
+namespace AR.Drone.Navigation
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct RawNavdata
+    public struct NavigationData
     {
         public def_ardrone_state_mask_t ardrone_state;
         public navdata_demo_t demo;

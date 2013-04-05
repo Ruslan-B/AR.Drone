@@ -1,6 +1,6 @@
-namespace AR.Drone.Api.Commands
+namespace AR.Drone.Command
 {
-    public class ControlCommand : IATCommand
+    public class ControlCommand : ATCommand
     {
         private readonly ControlMode _controlMode;
 
@@ -9,7 +9,7 @@ namespace AR.Drone.Api.Commands
             _controlMode = controlMode;
         }
 
-        public string ToAt(int sequenceNumber)
+        protected override string ToAt(int sequenceNumber)
         {
             return string.Format("AT*CTRL={0},{1},0\r", sequenceNumber, (int) _controlMode);
         }

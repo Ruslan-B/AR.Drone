@@ -4,35 +4,34 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using AR.Drone.Api;
-using AR.Drone.Api.Commands;
-using AR.Drone.Helpers;
+using AR.Drone.Command;
 using AR.Drone.Common;
+using AR.Drone.Helpers;
 
 namespace AR.Drone.Workers
 {
-    public class CommandQueue : WorkerBase
+    public class CommandQueueWorker : WorkerBase
     {
         public const int CommandPort = 5556;
         public const int KeepAliveTimeout = 50;
 
-        private readonly ConcurrentQueue<IATCommand> _queue;
         private readonly DroneConfig _config;
+        private readonly ConcurrentQueue<ATCommand> _queue;
         private readonly UdpClient _udpClient;
 
-        public CommandQueue(DroneConfig config)
+        public CommandQueueWorker(DroneConfig config)
         {
             _config = config;
-            _queue = new ConcurrentQueue<IATCommand>();
+            _queue = new ConcurrentQueue<ATCommand>();
             _udpClient = new UdpClient(CommandPort);
         }
 
         public void Flush()
         {
-            ConcurrentQueueHelper.Clear(_queue);
+            ConcurrentQueueHelper.Flush(_queue);
         }
 
-        public void Enqueue(IATCommand command)
+        public void Enqueue(ATCommand command)
         {
             _queue.Enqueue(command);
         }
@@ -50,12 +49,13 @@ namespace AR.Drone.Workers
             Stopwatch swKeepAlive = Stopwatch.StartNew();
             while (token.IsCancellationRequested == false)
             {
-                IATCommand command;
+                ATCommand command;
                 if (_queue.TryDequeue(out command))
                 {
-                    string at = command.ToAt(sequenceNumber);
-                    Trace.WriteIf((command is COMWDGCommand) == false, at);
-                    byte[] payload = Encoding.ASCII.GetBytes(at);
+                    byte[] payload = command.CreatePayload(sequenceNumber);
+
+                    Trace.WriteIf((command is COMWDGCommand) == false, Encoding.ASCII.GetString(payload));
+
                     _udpClient.Send(payload, payload.Length);
                     sequenceNumber++;
                     swKeepAlive.Restart();

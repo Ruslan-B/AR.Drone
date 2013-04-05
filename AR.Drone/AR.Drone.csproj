@@ -39,20 +39,22 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Commands\COMWDGCommand.cs" />
-    <Compile Include="Api\Commands\ConfigCommand.cs" />
-    <Compile Include="Api\Commands\ControlCommand.cs" />
-    <Compile Include="Api\Commands\ControlMode.cs" />
-    <Compile Include="Api\Commands\FlatTrimCommand.cs" />
-    <Compile Include="Api\Commands\ProgressiveCommand.cs" />
-    <Compile Include="Api\Commands\RefCommand.cs" />
-    <Compile Include="Api\Commands\RefMode.cs" />
-    <Compile Include="Api\Commands\VideoChannel.cs" />
-    <Compile Include="Helpers\VideoHelper.cs" />
+    <Compile Include="Command\COMWDGCommand.cs" />
+    <Compile Include="Command\ConfigCommand.cs" />
+    <Compile Include="Command\ControlCommand.cs" />
+    <Compile Include="Command\ControlMode.cs" />
+    <Compile Include="Command\FlatTrimCommand.cs" />
+    <Compile Include="Command\ProgressiveCommand.cs" />
+    <Compile Include="Command\RefCommand.cs" />
+    <Compile Include="Command\RefMode.cs" />
+    <Compile Include="Command\VideoChannel.cs" />
+    <Compile Include="Navigation\NavigationPacket.cs" />
+    <Compile Include="Video\VideoHelper.cs" />
     <Compile Include="NativeApi\def_ardrone_state_mask_t.cs" />
     <Compile Include="NativeApi\Math\matrix33_t.cs" />
     <Compile Include="NativeApi\Navdata\CTRL_STATES.cs" />
-    <Compile Include="NativeApi\RawNavdata.cs" />
+    <Compile Include="NativeApi\Navdata\FLYING_STATES.cs" />
+    <Compile Include="Navigation\NavigationData.cs" />
     <Compile Include="NativeApi\Navdata\navdata_adc_data_frame_t.cs" />
     <Compile Include="NativeApi\Navdata\navdata_games_t.cs" />
     <Compile Include="NativeApi\Navdata\navdata_gyros_offsets_t.cs" />
@@ -91,25 +93,30 @@
     <Compile Include="NativeApi\Navdata\velocities_t.cs" />
     <Compile Include="NativeApi\Video\parrot_video_encapsulation_t.cs" />
     <Compile Include="NativeApi\Video\parrot_video_encapsulation_frametypes_t.cs" />
-    <Compile Include="NativeApi\NavdataParser.cs" />
-    <Compile Include="Api\Video\FrameType.cs" />
-    <Compile Include="Api\Video\VideoFrame.cs" />
-    <Compile Include="Api\Video\VideoFramePixelFormat.cs" />
-    <Compile Include="Api\Video\VideoPacket.cs" />
+    <Compile Include="Navigation\NavdataParser.cs" />
+    <Compile Include="Video\Exceptions\VideoConverterException.cs" />
+    <Compile Include="Video\FrameType.cs" />
+    <Compile Include="Video\VideoFrame.cs" />
+    <Compile Include="Video\VideoFramePixelFormat.cs" />
+    <Compile Include="Video\VideoPacket.cs" />
     <Compile Include="DroneConfig.cs" />
-    <Compile Include="Api\IATCommand.cs" />
+    <Compile Include="ATCommand.cs" />
     <Compile Include="RequestedState.cs" />
+    <Compile Include="Video\VideoConverter.cs" />
+    <Compile Include="Video\VideoDecoder.cs" />
+    <Compile Include="Workers\RecoderWorker.cs" />
+    <Compile Include="Workers\RecorderPacketType.cs" />
+    <Compile Include="Workers\VideoDecoderWorker.cs" />
     <Compile Include="Workers\Watchdog.cs" />
-    <Compile Include="Workers\CommandQueue.cs" />
+    <Compile Include="Workers\CommandQueueWorker.cs" />
     <Compile Include="Helpers\ConcurrentQueueHelper.cs" />
     <Compile Include="DroneController.cs" />
     <Compile Include="DroneState.cs" />
     <Compile Include="Common\DisposableBase.cs" />
-    <Compile Include="Workers\NavdataAcquisition.cs" />
+    <Compile Include="Workers\NavdataAcquisitionWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Workers\VideoAcquisition.cs" />
-    <Compile Include="Workers\VideoDecoder.cs" />
-    <Compile Include="Exceptions\VideoDecoderException.cs" />
+    <Compile Include="Workers\VideoAcquisitionWorker.cs" />
+    <Compile Include="Video\Exceptions\VideoDecoderException.cs" />
     <Compile Include="Workers\NetworkWorker.cs" />
     <Compile Include="Common\WorkerBase.cs" />
   </ItemGroup>
@@ -119,9 +126,7 @@
       <Name>FFmpeg.AutoGen</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Api\Navdata\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

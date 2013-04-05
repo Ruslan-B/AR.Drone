@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AR.Drone.Exceptions
+namespace AR.Drone.Video.Exceptions
 {
     public class VideoDecoderException : Exception
     {

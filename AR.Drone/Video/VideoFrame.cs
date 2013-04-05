@@ -1,16 +1,12 @@
-using System;
 using System.Runtime.InteropServices;
 
-namespace AR.Drone.Api.Video
+namespace AR.Drone.Video
 {
     [StructLayout(LayoutKind.Sequential)]
-    public class VideoFrame
+    public struct VideoFrame
     {
-        public DateTime Timestamp;
+        public long Timestamp;
         public uint FrameNumber;
-        public int Height;
-        public int Width;
-        public int Depth;
         public VideoFramePixelFormat PixelFormat;
         public byte[,,] Data;
     }

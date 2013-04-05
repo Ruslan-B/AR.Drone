@@ -49,6 +49,7 @@
             this.btnHover = new System.Windows.Forms.Button();
             this.tvInfo = new System.Windows.Forms.TreeView();
             this.btnReset = new System.Windows.Forms.Button();
+            this.tmrVideoUpdate = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -174,6 +175,7 @@
             this.btnBack.TabIndex = 12;
             this.btnBack.Text = "Back";
             this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // btnRight
             // 
@@ -193,6 +195,7 @@
             this.btnForward.TabIndex = 14;
             this.btnForward.Text = "Forward";
             this.btnForward.UseVisualStyleBackColor = true;
+            this.btnForward.Click += new System.EventHandler(this.btnForward_Click);
             // 
             // btnTurnLeft
             // 
@@ -243,6 +246,11 @@
             this.btnReset.Text = "Reset";
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // tmrVideoUpdate
+            // 
+            this.tmrVideoUpdate.Interval = 20;
+            this.tmrVideoUpdate.Tick += new System.EventHandler(this.tmrVideoUpdate_Tick);
             // 
             // MainForm
             // 
@@ -297,6 +305,7 @@
         private System.Windows.Forms.Button btnHover;
         private System.Windows.Forms.TreeView tvInfo;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Timer tmrVideoUpdate;
     }
 }
 

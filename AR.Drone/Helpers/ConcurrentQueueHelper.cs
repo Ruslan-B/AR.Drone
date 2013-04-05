@@ -4,7 +4,7 @@ namespace AR.Drone.Helpers
 {
     public class ConcurrentQueueHelper
     {
-        public static void Clear<T>(ConcurrentQueue<T> queue)
+        public static void Flush<T>(ConcurrentQueue<T> queue)
         {
             T item;
             while (queue.TryDequeue(out item))

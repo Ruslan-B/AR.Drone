@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
-using AR.Drone.Api.Commands;
-using AR.Drone.Api.Video;
-using AR.Drone.NativeApi;
+using AR.Drone.Command;
+using AR.Drone.Navigation;
+using AR.Drone.Video;
 
 namespace AR.Drone.WinApp
 {
     public partial class MainForm : Form
     {
         private readonly DroneController _droneController;
+        private uint _currentFrameNumber;
+        private VideoFrame _videoFrame;
 
         public MainForm()
         {
@@ -18,19 +21,12 @@ namespace AR.Drone.WinApp
             _droneController = new DroneController();
             _droneController.FrameDecoded += OnVideoDecoderOnFrameDecoded;
             tmrStateUpdate.Enabled = true;
+            tmrVideoUpdate.Enabled = true;
         }
 
         private void OnVideoDecoderOnFrameDecoded(DroneController controller, VideoFrame frame)
         {
-            this.ExecuteOnUIThread(() =>
-                {
-                    if (pbVideo.Image != null)
-                    {
-                        pbVideo.Image.Dispose();
-                        pbVideo.Image = null;
-                    }
-                    pbVideo.Image = ARDroneVideoHelper.CreateImageFromFrame(frame);
-                });
+            _videoFrame = frame;
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -43,6 +39,16 @@ namespace AR.Drone.WinApp
             _droneController.Active = false;
         }
 
+        private void tmrVideoUpdate_Tick(object sender, EventArgs e)
+        {
+            if (_videoFrame.FrameNumber == _currentFrameNumber) return;
+            _currentFrameNumber = _videoFrame.FrameNumber;
+            Image oldImage = pbVideo.Image;
+            Bitmap newImage = ARDroneVideoHelper.CreateImageFromFrame(_videoFrame);
+            pbVideo.Image = newImage;
+            if (oldImage != null) oldImage.Dispose();
+        }
+
         private void tmrStateUpdate_Tick(object sender, EventArgs e)
         {
             tvInfo.BeginUpdate();
@@ -53,9 +59,9 @@ namespace AR.Drone.WinApp
             TreeNode stateNode = tvInfo.Nodes.GetOrCreate("State");
             stateNode.Text = string.Format("State: {0}", _droneController.DroneState);
 
-            TreeNode rawNavdataNode = tvInfo.Nodes.GetOrCreate("RawNavdata");
-            RawNavdata rawNavdata = _droneController.RawNavdata;
-            DumpBranch(rawNavdataNode, rawNavdata);
+            TreeNode navdataNode = tvInfo.Nodes.GetOrCreate("NavigationData");
+            NavigationData navigationData = _droneController.NavigationData;
+            DumpBranch(navdataNode, navigationData);
 
             tvInfo.EndUpdate();
         }
@@ -105,11 +111,15 @@ namespace AR.Drone.WinApp
             _droneController.Emergency();
         }
 
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            _droneController.ResetEmergency();
+        }
+
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
             _droneController.SwitchVideoChanell(VideoChannel.Next);
         }
-
 
         private void btnHover_Click(object sender, EventArgs e)
         {
@@ -118,37 +128,42 @@ namespace AR.Drone.WinApp
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(gaz: 0.1f);
+            _droneController.Progress(gaz: 0.2f);
         }
 
         private void btnDown_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(gaz: -0.1f);
+            _droneController.Progress(gaz: -0.2f);
         }
 
         private void btnTurnLeft_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(yaw: 0.2f);
+            _droneController.Progress(yaw: 0.5f);
         }
 
         private void btnTurnRight_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(yaw: -0.2f);
+            _droneController.Progress(yaw: -0.5f);
         }
 
         private void btnLeft_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(ProgressiveMode.CombinedYaw, roll: 0.01f);
+            _droneController.Progress(roll: 0.2f);
         }
 
         private void btnRight_Click(object sender, EventArgs e)
         {
-            _droneController.Progress(ProgressiveMode.CombinedYaw, roll: -0.01f);
+            _droneController.Progress(roll: -0.2f);
         }
 
-        private void btnReset_Click(object sender, EventArgs e)
+        private void btnForward_Click(object sender, EventArgs e)
         {
-            _droneController.ResetEmergency();
+            _droneController.Progress(pitch: 0.2f);
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            _droneController.Progress(pitch: -0.2f);
         }
     }
 }

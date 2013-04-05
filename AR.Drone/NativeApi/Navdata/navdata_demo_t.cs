@@ -7,7 +7,7 @@ namespace AR.Drone.NativeApi
     {
         public ushort tag;
         public ushort size;
-        public uint ctrl_state; // todo: flying state (landed, flying, hovering, etc.) defined in CTRL_STATES enum.
+        public uint ctrl_state; // flying state (landed, flying, hovering, etc.) defined in CTRL_STATES and FLYING_STATES enum.
         public uint vbat_flying_percentage; // battery voltage filtered (mV)
         public float theta; // UAV's pitch in milli-degrees
         public float phi; // UAV's roll in milli-degrees

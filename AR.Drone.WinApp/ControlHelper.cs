@@ -8,11 +8,7 @@ namespace AR.Drone.WinApp
     {
         public static void ExecuteOnUIThread(this Control control, Action action)
         {
-            Task.Factory.StartNew(() =>
-                {
-                    var wrapper = new Action(() => { if (control.IsHandleCreated && control.IsDisposed == false) action(); });
-                    if (control.IsDisposed == false) control.Invoke(wrapper);
-                });
+            Task.Factory.StartNew(() => { if (control.IsHandleCreated && control.IsDisposed == false) control.Invoke(action); });
         }
     }
 }

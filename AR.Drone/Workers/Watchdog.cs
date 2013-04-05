@@ -5,20 +5,26 @@ namespace AR.Drone.Workers
 {
     public class Watchdog : WorkerBase
     {
-        private readonly CommandQueue _commandQueue;
-        private readonly NavdataAcquisition _navdataAcquisition;
-        private readonly VideoAcquisition _videoAcquisition;
-        private readonly VideoDecoder _videoDecoder;
+        private readonly CommandQueueWorker _commandQueueWorker;
+        private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
+        private readonly RecoderWorker _recorderWorker;
+        private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
+        private readonly VideoDecoderWorker _videoDecoderWorker;
 
-        public Watchdog(NetworkWorker networkWorker, NavdataAcquisition navdataAcquisition, CommandQueue commandQueue, VideoAcquisition videoAcquisition,
-                        VideoDecoder videoDecoder)
+        public Watchdog(NetworkWorker networkWorker,
+                        NavdataAcquisitionWorker navdataAcquisitionWorker,
+                        CommandQueueWorker commandQueueWorker,
+                        VideoAcquisitionWorker videoAcquisitionWorker,
+                        VideoDecoderWorker videoDecoderWorker,
+                        RecoderWorker recorderWorker)
         {
             _networkWorker = networkWorker;
-            _navdataAcquisition = navdataAcquisition;
-            _commandQueue = commandQueue;
-            _videoAcquisition = videoAcquisition;
-            _videoDecoder = videoDecoder;
+            _navdataAcquisitionWorker = navdataAcquisitionWorker;
+            _commandQueueWorker = commandQueueWorker;
+            _videoAcquisitionWorker = videoAcquisitionWorker;
+            _videoDecoderWorker = videoDecoderWorker;
+            _recorderWorker = recorderWorker;
         }
 
         protected override void Loop(CancellationToken token)
@@ -33,34 +39,39 @@ namespace AR.Drone.Workers
                 }
                 else if (_networkWorker.IsConnected)
                 {
-                    if (_navdataAcquisition.IsAlive == false || _commandQueue.IsAlive == false)
+                    if (_navdataAcquisitionWorker.IsAlive == false || _commandQueueWorker.IsAlive == false)
                     {
-                        if (_commandQueue.IsAlive) _commandQueue.Stop();
-                        if (_navdataAcquisition.IsAlive) _navdataAcquisition.Stop();
+                        if (_commandQueueWorker.IsAlive) _commandQueueWorker.Stop();
+                        if (_navdataAcquisitionWorker.IsAlive) _navdataAcquisitionWorker.Stop();
 
-                        _commandQueue.Start();
-                        _navdataAcquisition.Start();
+                        _commandQueueWorker.Start();
+                        _navdataAcquisitionWorker.Start();
                     }
-                    if (_videoAcquisition.IsAlive == false || _videoDecoder.IsAlive == false)
+                    if (_videoAcquisitionWorker.IsAlive == false || _videoDecoderWorker.IsAlive == false)
                     {
-                        if (_videoAcquisition.IsAlive) _videoAcquisition.Stop();
-                        if (_videoDecoder.IsAlive) _videoDecoder.Stop();
+                        if (_videoAcquisitionWorker.IsAlive) _videoAcquisitionWorker.Stop();
+                        if (_videoDecoderWorker.IsAlive) _videoDecoderWorker.Stop();
 
-                        _videoAcquisition.Start();
-                        _videoDecoder.Start();
+                        _videoAcquisitionWorker.Start();
+                        _videoDecoderWorker.Start();
+                    }
+                    if (_recorderWorker.IsAlive == false)
+                    {
+                        _recorderWorker.Start();
                     }
                 }
                 else
                 {
-                    // todo think - shall we stop rest of workers 
+                    // todo if network is not connected - think - shall we stop working workers 
                 }
                 Thread.Sleep(100);
             }
             _networkWorker.Stop();
-            _navdataAcquisition.Stop();
-            _commandQueue.Stop();
-            _videoAcquisition.Stop();
-            _videoDecoder.Stop();
+            _navdataAcquisitionWorker.Stop();
+            _commandQueueWorker.Stop();
+            _videoAcquisitionWorker.Stop();
+            _videoDecoderWorker.Stop();
+            _recorderWorker.Stop();
         }
     }
 }

@@ -1,6 +1,6 @@
-namespace AR.Drone.Api.Commands
+namespace AR.Drone.Command
 {
-    public class RefCommand : IATCommand
+    public class RefCommand : ATCommand
     {
         private readonly RefMode _refMode;
 
@@ -9,7 +9,7 @@ namespace AR.Drone.Api.Commands
             _refMode = refMode;
         }
 
-        public string ToAt(int sequenceNumber)
+        protected override string ToAt(int sequenceNumber)
         {
             return string.Format("AT*REF={0},{1}\r", sequenceNumber, (int) _refMode);
         }

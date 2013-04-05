@@ -1,14 +1,16 @@
 using System;
+using AR.Drone.NativeApi;
 
-namespace AR.Drone.NativeApi
+namespace AR.Drone.Navigation
 {
     public class NavdataParser
     {
         private const int NavdataHeader = 0x55667788;
 
-        public static unsafe bool TryParse(byte[] data, out RawNavdata rawNavdata)
+        public unsafe bool TryParse(NavigationPacket packet, out NavigationData navigationData)
         {
-            rawNavdata = new RawNavdata();
+            byte[] data = packet.Data;
+            navigationData = new NavigationData();
 
             if (data.Length < sizeof (navdata_t))
                 return false;
@@ -18,17 +20,17 @@ namespace AR.Drone.NativeApi
                 navdata_t navdata_t = *(navdata_t*) pData;
                 if (navdata_t.header == NavdataHeader)
                 {
-                    rawNavdata.ardrone_state = (def_ardrone_state_mask_t) navdata_t.ardrone_state;
+                    navigationData.ardrone_state = (def_ardrone_state_mask_t) navdata_t.ardrone_state;
 
                     int offset = sizeof (navdata_t);
                     while (offset < data.Length)
                     {
                         var option = (navdata_option_t*) (pData + offset);
-                        ProcessOption(option, ref rawNavdata);
+                        ProcessOption(option, ref navigationData);
                         offset += option->size;
                     }
                     uint dataCheckSum = CalculateChecksum(data);
-                    if (rawNavdata.cks.cks == dataCheckSum)
+                    if (navigationData.cks.cks == dataCheckSum)
                     {
                         return true;
                     }
@@ -37,99 +39,99 @@ namespace AR.Drone.NativeApi
             return false;
         }
 
-        private static unsafe void ProcessOption(navdata_option_t* option, ref RawNavdata rawNavdata)
+        private static unsafe void ProcessOption(navdata_option_t* option, ref NavigationData navigationData)
         {
             var tag = (navdata_tag_t) option->tag;
             switch (tag)
             {
                 case navdata_tag_t.NAVDATA_DEMO_TAG:
-                    rawNavdata.demo = *(navdata_demo_t*) option;
+                    navigationData.demo = *(navdata_demo_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_TIME_TAG:
-                    rawNavdata.time = *(navdata_time_t*) option;
+                    navigationData.time = *(navdata_time_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_RAW_MEASURES_TAG:
-                    rawNavdata.raw_measures = *(navdata_raw_measures_t*) option;
+                    navigationData.raw_measures = *(navdata_raw_measures_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_PHYS_MEASURES_TAG:
-                    rawNavdata.phys_measures = *(navdata_phys_measures_t*) option;
+                    navigationData.phys_measures = *(navdata_phys_measures_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_GYROS_OFFSETS_TAG:
-                    rawNavdata.gyros_offsets = *(navdata_gyros_offsets_t*) option;
+                    navigationData.gyros_offsets = *(navdata_gyros_offsets_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_EULER_ANGLES_TAG:
-                    rawNavdata.euler_angles = *(navdata_euler_angles_t*) option;
+                    navigationData.euler_angles = *(navdata_euler_angles_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_REFERENCES_TAG:
-                    rawNavdata.references = *(navdata_references_t*) option;
+                    navigationData.references = *(navdata_references_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_TRIMS_TAG:
-                    rawNavdata.trims = *(navdata_trims_t*) option;
+                    navigationData.trims = *(navdata_trims_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_RC_REFERENCES_TAG:
-                    rawNavdata.rc_references = *(navdata_rc_references_t*) option;
+                    navigationData.rc_references = *(navdata_rc_references_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_PWM_TAG:
-                    rawNavdata.pwm = *(navdata_pwm_t*) option;
+                    navigationData.pwm = *(navdata_pwm_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_ALTITUDE_TAG:
-                    rawNavdata.altitude = *(navdata_altitude_t*) option;
+                    navigationData.altitude = *(navdata_altitude_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VISION_RAW_TAG:
-                    rawNavdata.vision_raw = *(navdata_vision_raw_t*) option;
+                    navigationData.vision_raw = *(navdata_vision_raw_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VISION_OF_TAG:
-                    rawNavdata.vision_of_tag = *(navdata_vision_of_t*) option;
+                    navigationData.vision_of_tag = *(navdata_vision_of_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VISION_TAG:
-                    rawNavdata.vision = *(navdata_vision_t*) option;
+                    navigationData.vision = *(navdata_vision_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VISION_PERF_TAG:
-                    rawNavdata.vision_perf = *(navdata_vision_perf_t*) option;
+                    navigationData.vision_perf = *(navdata_vision_perf_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_TRACKERS_SEND_TAG:
-                    rawNavdata.trackers_send = *(navdata_trackers_send_t*) option;
+                    navigationData.trackers_send = *(navdata_trackers_send_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VISION_DETECT_TAG:
-                    rawNavdata.vision_detect = *(navdata_vision_detect_t*) option;
+                    navigationData.vision_detect = *(navdata_vision_detect_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_WATCHDOG_TAG:
-                    rawNavdata.watchdog = *(navdata_watchdog_t*) option;
+                    navigationData.watchdog = *(navdata_watchdog_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_ADC_DATA_FRAME_TAG:
-                    rawNavdata.adc_data_frame = *(navdata_adc_data_frame_t*) option;
+                    navigationData.adc_data_frame = *(navdata_adc_data_frame_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_VIDEO_STREAM_TAG:
-                    rawNavdata.video_stream = *(navdata_video_stream_t*) option;
+                    navigationData.video_stream = *(navdata_video_stream_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_GAMES_TAG:
-                    rawNavdata.games = *(navdata_games_t*) option;
+                    navigationData.games = *(navdata_games_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_PRESSURE_RAW_TAG:
-                    rawNavdata.pressure_raw = *(navdata_pressure_raw_t*) option;
+                    navigationData.pressure_raw = *(navdata_pressure_raw_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_MAGNETO_TAG:
-                    rawNavdata.magneto = *(navdata_magneto_t*) option;
+                    navigationData.magneto = *(navdata_magneto_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_WIND_TAG:
-                    rawNavdata.wind_speed = *(navdata_wind_speed_t*) option;
+                    navigationData.wind_speed = *(navdata_wind_speed_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_KALMAN_PRESSURE_TAG:
-                    rawNavdata.kalman_pressure = *(navdata_kalman_pressure_t*) option;
+                    navigationData.kalman_pressure = *(navdata_kalman_pressure_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_HDVIDEO_STREAM_TAG:
-                    rawNavdata.hdvideo_stream = *(navdata_hdvideo_stream_t*) option;
+                    navigationData.hdvideo_stream = *(navdata_hdvideo_stream_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_WIFI_TAG:
-                    rawNavdata.wifi = *(navdata_wifi_t*) option;
+                    navigationData.wifi = *(navdata_wifi_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_ZIMMU_3000_TAG:
-                    rawNavdata.zimmu_3000 = *(navdata_zimmu_3000_t*) option;
+                    navigationData.zimmu_3000 = *(navdata_zimmu_3000_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_NUM_TAGS:
                     break;
                 case navdata_tag_t.NAVDATA_CKS_TAG:
-                    rawNavdata.cks = *(navdata_cks_t*) option;
+                    navigationData.cks = *(navdata_cks_t*) option;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

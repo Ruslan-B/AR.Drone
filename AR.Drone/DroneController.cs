@@ -1,26 +1,28 @@
 ﻿using System;
-using System.Threading;
-using AR.Drone.Api.Commands;
-using AR.Drone.Api.Video;
+using AR.Drone.Command;
 using AR.Drone.NativeApi;
+using AR.Drone.Navigation;
+using AR.Drone.Video;
 using AR.Drone.Workers;
 
 namespace AR.Drone
 {
     public class DroneController
     {
-        private readonly CommandQueue _commandQueue;
+        private readonly CommandQueueWorker _commandQueueWorker;
         private readonly DroneConfig _config;
-        private readonly NavdataAcquisition _navdataAcquisition;
+        private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
+        private readonly NavdataParser _navdataParser;
         private readonly NetworkWorker _networkWorker;
-        private readonly VideoAcquisition _videoAcquisition;
-        private readonly VideoDecoder _videoDecoder;
+        private readonly RecoderWorker _recorderWorker;
+        private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
+        private readonly VideoDecoderWorker _videoDecoderWorker;
         private readonly Watchdog _watchdog;
-        private DroneState _droneState;
-        private ProgressiveCommand _progressiveCommand;
-        private RawNavdata _rawNavdata;
-        private RequestedState _requestedState;
 
+        private DroneState _droneState;
+        private NavigationData _navigationData;
+        private ProgressiveCommand _progressiveCommand;
+        private RequestedState _requestedState;
 
         public DroneController()
         {
@@ -28,11 +30,13 @@ namespace AR.Drone
             _droneState = DroneState.Unknown;
 
             _networkWorker = new NetworkWorker(Config, OnConnectionChanged);
-            _navdataAcquisition = new NavdataAcquisition(Config, OnNavdataAcquired);
-            _commandQueue = new CommandQueue(Config);
-            _videoAcquisition = new VideoAcquisition(Config, OnFrameAcquired);
-            _videoDecoder = new VideoDecoder(OnFrameDecoded);
-            _watchdog = new Watchdog(_networkWorker, _navdataAcquisition, _commandQueue, _videoAcquisition, _videoDecoder);
+            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(Config, OnNavdataAcquired);
+            _commandQueueWorker = new CommandQueueWorker(Config);
+            _videoAcquisitionWorker = new VideoAcquisitionWorker(Config, OnFrameAcquired);
+            _videoDecoderWorker = new VideoDecoderWorker(OnFrameDecoded);
+            _recorderWorker = new RecoderWorker();
+            _watchdog = new Watchdog(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker, _videoDecoderWorker, _recorderWorker);
+            _navdataParser = new NavdataParser();
         }
 
 
@@ -58,13 +62,15 @@ namespace AR.Drone
             get { return _droneState; }
         }
 
-        public RawNavdata RawNavdata
+        public NavigationData NavigationData
         {
-            get { return _rawNavdata; }
+            get { return _navigationData; }
         }
 
         public event Action<DroneController, VideoPacket> FrameAcquired;
         public event Action<DroneController, VideoFrame> FrameDecoded;
+        public event Action<DroneController, NavigationPacket> NavdataAcquired;
+        public event Action<DroneController, NavigationData> NavdataParsed;
 
         public void Emergency()
         {
@@ -73,8 +79,8 @@ namespace AR.Drone
 
         public void ResetEmergency()
         {
-          _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
-          _commandQueue.Enqueue(new RefCommand(RefMode.Land));
+          _commandQueueWorker.Enqueue(new RefCommand(RefMode.Emergency));
+          _commandQueueWorker.Enqueue(new RefCommand(RefMode.Land));
         }
 
         public void Land()
@@ -90,7 +96,7 @@ namespace AR.Drone
         public void FlatTrim()
         {
             if (_droneState.HasFlag(DroneState.Flying) == false)
-                _commandQueue.Enqueue(new FlatTrimCommand());
+                _commandQueueWorker.Enqueue(new FlatTrimCommand());
         }
 
 
@@ -107,22 +113,39 @@ namespace AR.Drone
 
         public void SwitchVideoChanell(VideoChannel channel)
         {
-            _commandQueue.Enqueue(new ConfigCommand("video:video_channel", channel));
+            _commandQueueWorker.Enqueue(new ConfigCommand("video:video_channel", channel));
         }
 
-        private void OnNavdataAcquired(RawNavdata rawNavdata)
+        private void OnNavdataAcquired(NavigationPacket packet)
         {
-            _rawNavdata = rawNavdata;
-            UpdateStateUsing(_rawNavdata);
+            if (NavdataAcquired != null)
+                NavdataAcquired(this, packet);
+
+            if (_recorderWorker.IsAlive)
+                _recorderWorker.EnqueuePacket(packet);
+
+            NavigationData navdata;
+            if (_navdataParser.TryParse(packet, out navdata))
+                OnNavdataParsed(navdata);
+        }
+
+        private void OnNavdataParsed(NavigationData navdata)
+        {
+            _navigationData = navdata;
+            UpdateStateUsing();
             ProcessRequestedState();
+
+            if (NavdataParsed != null)
+                NavdataParsed(this, navdata);
         }
 
         private void OnFrameAcquired(VideoPacket packet)
         {
-            if (_videoDecoder.IsAlive)
-            {
-                _videoDecoder.EnqueuePacket(packet);
-            }
+            if (_videoDecoderWorker.IsAlive)
+                _videoDecoderWorker.EnqueuePacket(packet);
+
+            if (_recorderWorker.IsAlive)
+                _recorderWorker.EnqueuePacket(packet);
 
             if (FrameAcquired != null)
                 FrameAcquired(this, packet);
@@ -144,21 +167,18 @@ namespace AR.Drone
 
         private void SendConfiguration()
         {
-            _commandQueue.Enqueue(new ConfigCommand("general:navdata_demo", false));
-            _commandQueue.Enqueue(new ConfigCommand("control:altitude_max", 2000));
-            _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
+            _commandQueueWorker.Enqueue(new ConfigCommand("general:navdata_demo", false));
+            _commandQueueWorker.Enqueue(new ConfigCommand("control:altitude_max", 2000));
+            _commandQueueWorker.Enqueue(new ControlCommand(ControlMode.NoControlMode));
         }
 
-        private void UpdateStateUsing(RawNavdata rawNavdata)
+        private void UpdateStateUsing()
         {
             if (_droneState == DroneState.Unknown)
-            {
-                // if state unknown send configuration
                 SendConfiguration();
-            }
-
+            
             // major states
-            def_ardrone_state_mask_t ardrone_state = rawNavdata.ardrone_state;
+            def_ardrone_state_mask_t ardrone_state = _navigationData.ardrone_state;
 
             if (ardrone_state.HasFlag(def_ardrone_state_mask_t.ARDRONE_FLY_MASK))
             {
@@ -190,7 +210,7 @@ namespace AR.Drone
             }
 
             // process control state
-            var ctrl_state = (CTRL_STATES) rawNavdata.demo.ctrl_state;
+            var ctrl_state = (CTRL_STATES)_navigationData.demo.ctrl_state;
 
             if (ctrl_state.HasFlag(CTRL_STATES.CTRL_TRANS_TAKEOFF))
             {
@@ -241,8 +261,8 @@ namespace AR.Drone
                 case RequestedState.Emergency:
                     if (_droneState.HasFlag(DroneState.Flying))
                     {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Land));
+                        _commandQueueWorker.Enqueue(new RefCommand(RefMode.Emergency));
+                        _commandQueueWorker.Enqueue(new RefCommand(RefMode.Land));
                     }
                     else
                     {
@@ -252,7 +272,7 @@ namespace AR.Drone
                 case RequestedState.Landed:
                     if (_droneState.HasFlag(DroneState.Flying))
                     {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Land));
+                        _commandQueueWorker.Enqueue(new RefCommand(RefMode.Land));
                     }
                     else
                     {
@@ -264,7 +284,7 @@ namespace AR.Drone
                         _droneState.HasFlag(DroneState.Emergency) == false &&
                         _droneState.HasFlag(DroneState.BatteryLow) == false)
                     {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
+                        _commandQueueWorker.Enqueue(new RefCommand(RefMode.Takeoff));
                     }
                     else
                     {
@@ -274,7 +294,7 @@ namespace AR.Drone
                 case RequestedState.Hovering:
                     if (_droneState.HasFlag(DroneState.Flying))
                     {
-                        _commandQueue.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
+                        _commandQueueWorker.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
                         _requestedState = RequestedState.None;
                     }
                     else
@@ -285,7 +305,7 @@ namespace AR.Drone
                 case RequestedState.Progressing:
                     if (_droneState.HasFlag(DroneState.Flying))
                     {
-                        _commandQueue.Enqueue(_progressiveCommand);
+                        _commandQueueWorker.Enqueue(_progressiveCommand);
                         _requestedState = RequestedState.None;
                     }
                     else

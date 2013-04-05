@@ -1,8 +1,8 @@
 using System;
 
-namespace AR.Drone.Api.Commands
+namespace AR.Drone.Command
 {
-    public class ConfigCommand : IATCommand
+    public class ConfigCommand : ATCommand
     {
         private readonly string _key;
         private readonly string _value;
@@ -29,7 +29,7 @@ namespace AR.Drone.Api.Commands
         }
 
 
-        public string ToAt(int sequenceNumber)
+        protected override string ToAt(int sequenceNumber)
         {
             return string.Format("AT*CONFIG={0},\"{1}\",\"{2}\"\r", sequenceNumber, _key, _value);
         }

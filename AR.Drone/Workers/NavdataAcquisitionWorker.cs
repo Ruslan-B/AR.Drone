@@ -4,21 +4,21 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using AR.Drone.Common;
-using AR.Drone.NativeApi;
+using AR.Drone.Navigation;
 
 namespace AR.Drone.Workers
 {
-    public class NavdataAcquisition : WorkerBase
+    public class NavdataAcquisitionWorker : WorkerBase
     {
         public const int NavdataPort = 5554;
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
-        
+
         private readonly DroneConfig _config;
-        private readonly Action<RawNavdata> _navdataAcquired;
+        private readonly Action<NavigationPacket> _navdataAcquired;
         private readonly UdpClient _udpClient;
 
-        public NavdataAcquisition(DroneConfig config, Action<RawNavdata> navdataAcquired)
+        public NavdataAcquisitionWorker(DroneConfig config, Action<NavigationPacket> navdataAcquired)
         {
             _config = config;
             _navdataAcquired = navdataAcquired;
@@ -40,14 +40,13 @@ namespace AR.Drone.Workers
                 if (_udpClient.Available > 0)
                 {
                     byte[] data = _udpClient.Receive(ref droneEp);
-
-                    RawNavdata rawNavdata;
-                    if (NavdataParser.TryParse(data, out rawNavdata))
-                    {
-                        _navdataAcquired(rawNavdata);
-
-                        swNavdataTimeout.Restart();
-                    }
+                    var packet = new NavigationPacket
+                        {
+                            Timestamp = DateTime.UtcNow.Ticks,
+                            Data = data
+                        };
+                    _navdataAcquired(packet);
+                    swNavdataTimeout.Restart();
                 }
 
                 if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
