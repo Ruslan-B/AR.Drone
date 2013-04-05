@@ -52,7 +52,7 @@ namespace AR.Drone.Workers
                         }
 
 
-                        Native.AVFrame decodedFrame;
+                        FFmpegNative.AVFrame decodedFrame;
                         if (videoDecoder.TryDecode(ref packet.Data, out decodedFrame))
                         {
                             byte[,,] decodedData = videoConverter.ConvertFrame(decodedFrame);
