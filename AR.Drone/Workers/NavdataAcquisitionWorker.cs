@@ -14,11 +14,11 @@ namespace AR.Drone.Workers
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
 
-        private readonly DroneConfig _config;
+        private readonly ARDroneConfig _config;
         private readonly Action<NavigationPacket> _navdataAcquired;
         private readonly UdpClient _udpClient;
 
-        public NavdataAcquisitionWorker(DroneConfig config, Action<NavigationPacket> navdataAcquired)
+        public NavdataAcquisitionWorker(ARDroneConfig config, Action<NavigationPacket> navdataAcquired)
         {
             _config = config;
             _navdataAcquired = navdataAcquired;

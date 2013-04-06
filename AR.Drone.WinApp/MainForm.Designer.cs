@@ -48,8 +48,8 @@
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnHover = new System.Windows.Forms.Button();
             this.tvInfo = new System.Windows.Forms.TreeView();
-            this.btnReset = new System.Windows.Forms.Button();
             this.tmrVideoUpdate = new System.Windows.Forms.Timer(this.components);
+            this.btnReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -237,20 +237,20 @@
             this.tvInfo.Size = new System.Drawing.Size(291, 480);
             this.tvInfo.TabIndex = 18;
             // 
-            // btnReset
-            // 
-            this.btnReset.Location = new System.Drawing.Point(488, 11);
-            this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(75, 23);
-            this.btnReset.TabIndex = 19;
-            this.btnReset.Text = "Reset";
-            this.btnReset.UseVisualStyleBackColor = true;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
-            // 
             // tmrVideoUpdate
             // 
             this.tmrVideoUpdate.Interval = 20;
             this.tmrVideoUpdate.Tick += new System.EventHandler(this.tmrVideoUpdate_Tick);
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(480, 12);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(83, 23);
+            this.btnReset.TabIndex = 19;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // MainForm
             // 
@@ -304,8 +304,8 @@
         private System.Windows.Forms.Button btnTurnRight;
         private System.Windows.Forms.Button btnHover;
         private System.Windows.Forms.TreeView tvInfo;
-        private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Timer tmrVideoUpdate;
+        private System.Windows.Forms.Button btnReset;
     }
 }
 

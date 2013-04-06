@@ -15,31 +15,21 @@ namespace AR.Drone.Workers
         public const int CommandPort = 5556;
         public const int KeepAliveTimeout = 50;
 
-        private readonly DroneConfig _config;
-        private readonly ConcurrentQueue<ATCommand> _queue;
+        private readonly ConcurrentQueue<ATCommand> _commandQueue;
+        private readonly ARDroneConfig _config;
         private readonly UdpClient _udpClient;
 
-        public CommandQueueWorker(DroneConfig config)
+        public CommandQueueWorker(ARDroneConfig config, ConcurrentQueue<ATCommand> commandQueue)
         {
             _config = config;
-            _queue = new ConcurrentQueue<ATCommand>();
+            _commandQueue = commandQueue;
             _udpClient = new UdpClient(CommandPort);
-        }
-
-        public void Flush()
-        {
-            ConcurrentQueueHelper.Flush(_queue);
-        }
-
-        public void Enqueue(ATCommand command)
-        {
-            _queue.Enqueue(command);
         }
 
         protected override void Loop(CancellationToken token)
         {
             int sequenceNumber = 1;
-            Flush();
+            ConcurrentQueueHelper.Flush(_commandQueue);
 
             _udpClient.Connect(_config.Hostname, CommandPort);
 
@@ -50,7 +40,7 @@ namespace AR.Drone.Workers
             while (token.IsCancellationRequested == false)
             {
                 ATCommand command;
-                if (_queue.TryDequeue(out command))
+                if (_commandQueue.TryDequeue(out command))
                 {
                     byte[] payload = command.CreatePayload(sequenceNumber);
 
@@ -62,7 +52,7 @@ namespace AR.Drone.Workers
                 }
                 else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
                 {
-                    _queue.Enqueue(new COMWDGCommand());
+                    _commandQueue.Enqueue(new COMWDGCommand());
                 }
                 Thread.Sleep(1);
             }

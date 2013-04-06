@@ -49,15 +49,15 @@ namespace AR.Drone.Video
             }
         }
 
-        public byte[,,] ConvertFrame(FFmpegNative.AVFrame srcFrame)
+        public byte[,,] ConvertFrame(FFmpegNative.AVFrame frame)
         {
             fixed (byte* pOutputData = &_outputData[0, 0, 0])
             {
-                byte** pSrcData = &(srcFrame).data_0;
+                byte** pSrcData = &(frame).data_0;
                 byte** pDstData = &(_pCurrentFrame)->data_0;
 
                 _pCurrentFrame->data_0 = pOutputData;
-                FFmpegNative.sws_scale(_pContext, pSrcData, srcFrame.linesize, 0, srcFrame.height, pDstData, _pCurrentFrame->linesize);
+                FFmpegNative.sws_scale(_pContext, pSrcData, frame.linesize, 0, frame.height, pDstData, _pCurrentFrame->linesize);
             }
             return _outputData;
         }

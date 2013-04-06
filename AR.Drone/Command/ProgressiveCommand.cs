@@ -22,25 +22,13 @@ namespace AR.Drone.Command
 
         protected override string ToAt(int sequenceNumber)
         {
-            return string.Format("AT*PCMD={0},{1},{2},{3},{4},{5}\r", sequenceNumber, (int) _mode, Normalize(_roll), Normalize(_pitch), Normalize(_gaz), Normalize(_yaw));
+            return string.Format("AT*PCMD={0},{1},{2},{3},{4},{5}\r", sequenceNumber, (int) _mode, ToInt(_roll), ToInt(_pitch), ToInt(_gaz), ToInt(_yaw));
         }
 
-        private int Normalize(float value)
+        private int ToInt(float value)
         {
-            int resultingValue;
-            unsafe
-            {
-                value = (Math.Abs(value) > 1) ? 1 : value;
-                resultingValue = *(int*) (&value);
-            }
-            return resultingValue;
+            int result = BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
+            return result;
         }
-    }
-
-    public enum ProgressiveMode
-    {
-        Progressive = 0,
-        CombinedYaw = 1,
-        AbsoluteControl = 2,
     }
 }

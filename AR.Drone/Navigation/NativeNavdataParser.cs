@@ -3,14 +3,14 @@ using AR.Drone.NativeApi;
 
 namespace AR.Drone.Navigation
 {
-    public class NavdataParser
+    public class NativeNavdataParser
     {
         private const int NavdataHeader = 0x55667788;
 
-        public unsafe bool TryParse(NavigationPacket packet, out NavigationData navigationData)
+        public static unsafe bool TryParse(ref NavigationPacket packet, out NativeNavdata navigationData)
         {
             byte[] data = packet.Data;
-            navigationData = new NavigationData();
+            navigationData = new NativeNavdata();
 
             if (data.Length < sizeof (navdata_t))
                 return false;
@@ -39,7 +39,7 @@ namespace AR.Drone.Navigation
             return false;
         }
 
-        private static unsafe void ProcessOption(navdata_option_t* option, ref NavigationData navigationData)
+        private static unsafe void ProcessOption(navdata_option_t* option, ref NativeNavdata navigationData)
         {
             var tag = (navdata_tag_t) option->tag;
             switch (tag)
@@ -126,9 +126,10 @@ namespace AR.Drone.Navigation
                     navigationData.wifi = *(navdata_wifi_t*) option;
                     break;
                 case navdata_tag_t.NAVDATA_ZIMMU_3000_TAG:
-                    navigationData.zimmu_3000 = *(navdata_zimmu_3000_t*) option;
+                    // do nothing
                     break;
                 case navdata_tag_t.NAVDATA_NUM_TAGS:
+                    // do nothing
                     break;
                 case navdata_tag_t.NAVDATA_CKS_TAG:
                     navigationData.cks = *(navdata_cks_t*) option;

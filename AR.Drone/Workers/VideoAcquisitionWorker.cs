@@ -13,12 +13,12 @@ namespace AR.Drone.Workers
         public const int FrameBufferSize = 0x100000;
         public const int NetworkStreamReadSize = 0x10000;
 
-        private readonly DroneConfig _config;
+        private readonly ARDroneConfig _config;
         private readonly Action<VideoPacket> _frameAcquired;
         private TcpClient _tcpClient;
         private NetworkStream _videoStream;
 
-        public VideoAcquisitionWorker(DroneConfig config, Action<VideoPacket> frameAcquired)
+        public VideoAcquisitionWorker(ARDroneConfig config, Action<VideoPacket> frameAcquired)
         {
             _config = config;
             _frameAcquired = frameAcquired;

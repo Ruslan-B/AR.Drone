@@ -7,11 +7,11 @@ namespace AR.Drone.Workers
 {
     public class NetworkWorker : WorkerBase
     {
-        private readonly DroneConfig _config;
+        private readonly ARDroneConfig _config;
         private readonly Action<bool> _connectionStateChanged;
         private bool _isConnected;
 
-        public NetworkWorker(DroneConfig config, Action<bool> connectionStateChanged)
+        public NetworkWorker(ARDroneConfig config, Action<bool> connectionStateChanged)
         {
             _config = config;
             _connectionStateChanged = connectionStateChanged;

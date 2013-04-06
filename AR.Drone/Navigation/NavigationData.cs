@@ -1,40 +1,39 @@
 using System.Runtime.InteropServices;
-using AR.Drone.NativeApi;
 
 namespace AR.Drone.Navigation
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct NavigationData
     {
-        public def_ardrone_state_mask_t ardrone_state;
-        public navdata_demo_t demo;
-        public navdata_time_t time;
-        public navdata_raw_measures_t raw_measures;
-        public navdata_phys_measures_t phys_measures;
-        public navdata_gyros_offsets_t gyros_offsets;
-        public navdata_euler_angles_t euler_angles;
-        public navdata_references_t references;
-        public navdata_trims_t trims;
-        public navdata_rc_references_t rc_references;
-        public navdata_pwm_t pwm;
-        public navdata_altitude_t altitude;
-        public navdata_vision_raw_t vision_raw;
-        public navdata_vision_of_t vision_of_tag;
-        public navdata_vision_t vision;
-        public navdata_vision_perf_t vision_perf;
-        public navdata_trackers_send_t trackers_send;
-        public navdata_vision_detect_t vision_detect;
-        public navdata_watchdog_t watchdog;
-        public navdata_adc_data_frame_t adc_data_frame;
-        public navdata_video_stream_t video_stream;
-        public navdata_games_t games;
-        public navdata_pressure_raw_t pressure_raw;
-        public navdata_magneto_t magneto;
-        public navdata_wind_speed_t wind_speed;
-        public navdata_kalman_pressure_t kalman_pressure;
-        public navdata_hdvideo_stream_t hdvideo_stream;
-        public navdata_wifi_t wifi;
-        public navdata_zimmu_3000_t zimmu_3000;
-        public navdata_cks_t cks;
+        public DroneState State;
+        public float Yaw; // psi
+        public float Pitch; // theta
+        public float Roll; // phi
+        public float Altitude;
+        public Vector3 Velocity;
+        public Battery Battery;
+        public Wifi Wifi;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Wifi
+    {
+        public float LinkQuality;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Battery
+    {
+        public bool Low;
+        public float Percentage;
+        public float Voltage;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vector3
+    {
+        public float X;
+        public float Y;
+        public float Z;
     }
 }

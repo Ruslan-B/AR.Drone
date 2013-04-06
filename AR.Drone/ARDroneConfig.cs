@@ -1,8 +1,8 @@
 ﻿namespace AR.Drone
 {
-    public class DroneConfig
+    public class ARDroneConfig
     {
-        public DroneConfig()
+        public ARDroneConfig()
         {
             Hostname = "192.168.1.1";
         }

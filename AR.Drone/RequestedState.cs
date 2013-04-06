@@ -5,8 +5,6 @@
         None,
         Landed,
         Flying,
-        Hovering,
-        Progressing,
         Emergency
     }
 }
