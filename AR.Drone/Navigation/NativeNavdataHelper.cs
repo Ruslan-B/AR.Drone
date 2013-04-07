@@ -19,16 +19,18 @@ namespace AR.Drone.Navigation
             navigationData.Pitch = nativeNavdata.demo.theta/1000.0f;
             navigationData.Roll = nativeNavdata.demo.phi/1000.0f;
 
-            navigationData.Altitude = nativeNavdata.demo.altitude/100.0f;
+            navigationData.Altitude = nativeNavdata.demo.altitude/1000.0f;
 
-            navigationData.Velocity.X = nativeNavdata.demo.vx/100.0f;
-            navigationData.Velocity.Y = nativeNavdata.demo.vy/100.0f;
-            navigationData.Velocity.Z = nativeNavdata.demo.vz/100.0f;
+            navigationData.Time = nativeNavdata.time.time;
+
+            navigationData.Velocity.X = nativeNavdata.demo.vx/1000.0f;
+            navigationData.Velocity.Y = nativeNavdata.demo.vy/1000.0f;
+            navigationData.Velocity.Z = nativeNavdata.demo.vz/1000.0f;
 
             navigationData.Battery.Low = ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_VBAT_LOW);
             navigationData.Battery.Percentage = nativeNavdata.demo.vbat_flying_percentage;
-            navigationData.Battery.Voltage = nativeNavdata.raw_measures.vbat_raw/100.0f;
-
+            navigationData.Battery.Voltage = nativeNavdata.raw_measures.vbat_raw/1000.0f;
+            
             navigationData.Wifi.LinkQuality = 1.0f - ToSingle(nativeNavdata.wifi.link_quality);
 
             return navigationData;
