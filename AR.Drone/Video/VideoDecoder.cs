@@ -13,8 +13,6 @@ namespace AR.Drone.Video
         private readonly int _height;
         private readonly int _width;
 
-        private bool _initialized;
-
         private FFmpegNative.AVFrame* _pCurrentFrame;
         private FFmpegNative.AVCodecContext* _pDecodingContext;
 
@@ -28,13 +26,12 @@ namespace AR.Drone.Video
         {
             _width = width;
             _height = height;
+
+            Initialize();
         }
 
-        public void Initialize()
+        private void Initialize()
         {
-            if (_initialized) throw new VideoDecoderException("Video decoder already Initialized.");
-            _initialized = true;
-
             FFmpegNative.AVCodec* pCodec = FFmpegNative.avcodec_find_decoder(CodecId);
             if (pCodec == null)
                 throw new VideoDecoderException("Unsupported codec.");
@@ -59,7 +56,7 @@ namespace AR.Drone.Video
                 var packet = new FFmpegNative.AVPacket {data = pData, size = data.Length};
                 int decodedSize = FFmpegNative.avcodec_decode_video2(_pDecodingContext, _pCurrentFrame, &gotPicture, &packet);
                 if (decodedSize < 0)
-                    Trace.TraceWarning("Error while decoding frame");
+                    Trace.TraceWarning("Error while decoding frame.");
             }
             frame = *_pCurrentFrame;
             return gotPicture == 1;
@@ -68,11 +65,8 @@ namespace AR.Drone.Video
 
         protected override void DisposeOverride()
         {
-            if (_initialized)
-            {
-                FFmpegNative.avcodec_close(_pDecodingContext);
-                FFmpegNative.av_free(_pCurrentFrame);
-            }
+            FFmpegNative.avcodec_close(_pDecodingContext);
+            FFmpegNative.av_free(_pCurrentFrame);
         }
     }
 }

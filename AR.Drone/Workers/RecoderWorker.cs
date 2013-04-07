@@ -32,7 +32,7 @@ namespace AR.Drone.Workers
         {
             ConcurrentQueueHelper.Flush(_packetQueue);
 
-            string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm-ss}.rec", DateTime.Now);
+            string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm-ss}.track", DateTime.Now);
             using (var recorder = new PacketWriter(path))
             {
                 while (token.IsCancellationRequested == false)

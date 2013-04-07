@@ -36,7 +36,6 @@ namespace AR.Drone.Workers
             ConcurrentQueueHelper.Flush(_packetQueue);
             // fixing staring state, all structures will be creating using this values
 
-            bool initialized = false;
             using (var videoDecoder = new VideoDecoder(Width, Height))
             using (var videoConverter = new VideoConverter(Width, Height, OutputPixelFormat))
                 while (token.IsCancellationRequested == false)
@@ -44,14 +43,6 @@ namespace AR.Drone.Workers
                     VideoPacket packet;
                     if (_packetQueue.TryDequeue(out packet))
                     {
-                        if (initialized == false)
-                        {
-                            initialized = true;
-                            videoDecoder.Initialize();
-                            videoConverter.Initialize();
-                        }
-
-
                         FFmpegNative.AVFrame decodedFrame;
                         if (videoDecoder.TryDecode(ref packet.Data, out decodedFrame))
                         {
