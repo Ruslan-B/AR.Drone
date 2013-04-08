@@ -18,9 +18,7 @@ Things todo:
 - Access to drone configuaration;
 - Native interface to read/write drone configuration;
 - Multi-configuration support;
-- Wifi managment (only on Windows so far);
-- x64 support;
-- Mono on linux support;
+- Wifi managment (only on Windows so far).
 
 ## Usage
 
