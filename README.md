@@ -25,9 +25,11 @@ Things todo:
 
 Hot to build from scratch:  
 - Clone 
-	git clone git://github.com/Ruslan-B/AR.Drone.git 
-	cd AR.Drone  
-	git submodule update --init  
+```bash
+git clone git://github.com/Ruslan-B/AR.Drone.git 
+cd AR.Drone  
+git submodule update --init  
+```
 - Copy FFmpeg shared libraries to .\AR.Drone\FFmpeg.AutoGen\FFmpeg\bin  
 you can use prebuilt [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/) win32 libraries
 - Build solution using VS2010 or VS2012
