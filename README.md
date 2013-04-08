@@ -16,10 +16,11 @@ Drone controling and video streaming support are working fine.
 However, it is a big gap in drone configuaration support.
 
 Things todo:
-- Access to drone configuaration;
-- Native interface to read/write drone configuration;
-- Multi-configuration support;
-- Wifi managment (only on Windows so far).
+- [ ] Access to drone configuaration;
+- [ ] Native interface to read/write drone configuration;
+- [ ] Multi-configuration support;
+- [ ] Wifi managment (only on Windows so far);
+- [ ] 64-bit support.
 
 ## Build
 
@@ -32,9 +33,12 @@ cd AR.Drone
 git submodule update --init   
 ```  
 
-- Copy FFmpeg shared libraries to `.\AR.Drone\FFmpeg.AutoGen\FFmpeg\bin` 
-(you can use prebuilt [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/) win32 libraries);
-- Build solution with VS2010 or VS2012.
+- Copy shared FFmpeg libraries to `.\AR.Drone\FFmpeg.AutoGen\FFmpeg\bin`  
+You can get them form here: [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/)
+Please note that you need **32-bit** version of it - it is current limitation 
+of [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen).
+
+- Build AR.Drone solution with VS2010 or VS2012.
 
 ## Usage
 
