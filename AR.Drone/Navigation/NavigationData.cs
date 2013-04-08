@@ -6,9 +6,9 @@ namespace AR.Drone.Navigation
     public struct NavigationData
     {
         public DroneState State;
-        public float Yaw; // psi
-        public float Pitch; // theta
-        public float Roll; // phi
+        public float Yaw; // psi - Z
+        public float Pitch; // theta - Y
+        public float Roll; // phi - X
         public float Altitude;
         public Vector3 Velocity;
         public Battery Battery;

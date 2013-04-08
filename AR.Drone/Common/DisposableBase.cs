@@ -4,6 +4,8 @@ namespace AR.Drone.Common
 {
     public abstract class DisposableBase : IDisposable
     {
+        private bool _disposed;
+
         public void Dispose()
         {
             Dispose(true);
@@ -11,9 +13,11 @@ namespace AR.Drone.Common
 
         private void Dispose(bool disposing)
         {
-            if (disposing == false)
+            if (disposing && _disposed == false)
             {
                 DisposeOverride();
+
+                _disposed = true;
             }
 
             GC.SuppressFinalize(this);
