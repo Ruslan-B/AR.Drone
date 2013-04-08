@@ -1,9 +1,6 @@
-[submodule "FFmpeg.AutoGen"]
-	path = FFmpeg.AutoGen
-	url = https://github.com/Ruslan-B/FFmpeg.AutoGen.git
-[submodule "AI.Drone.Common"]
-	path = AI.Drone.Common
-	url = https://github.com/Ruslan-B/AI.Drone.Common.git
 [submodule "AI.Core"]
 	path = AI.Core
 	url = https://github.com/Ruslan-B/AI.Core.git
+[submodule "FFmpeg.AutoGen"]
+	path = FFmpeg.AutoGen
+	url = https://github.com/Ruslan-B/FFmpeg.AutoGen.git
