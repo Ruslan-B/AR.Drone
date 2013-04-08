@@ -34,8 +34,8 @@ git submodule update --init
 ```  
 
 - Copy shared FFmpeg libraries to `.\AR.Drone\FFmpeg.AutoGen\FFmpeg\bin`  
-You can get them form here: [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/)
-Please note that you need **32-bit** version of it - it is current limitation 
+You can get them form here - [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/).  
+Please note that you need to use **32-bit** version of FFmpeg libraries - as it is current limitation 
 of [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen).
 
 - Build AR.Drone solution with VS2010 or VS2012.
