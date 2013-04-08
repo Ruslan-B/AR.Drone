@@ -1,6 +1,6 @@
 ## AR.Drone
 
-AR.Drone 2.0 C# .NET/Mono library for controlling, video acquisition and decoding.  
+The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.  
 
 ## Dependencies
 
