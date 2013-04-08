@@ -1,12 +1,28 @@
-AR.Drone
-=======
+## AR.Drone
 
-AR.Drone 2.0 C# .NET/Mono Controlling Library  
+AR.Drone 2.0 C# .NET/Mono Controlling Library.  
 
-Dependencies
-============
+## Dependencies
 
-[FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.
+[FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.  
+
+## Status
+
+This library is still under heavy development, 
+so please don't be suprised if you find some functionality missing or undocumented.  
+
+However, drone controling and video streaming support are working fine
+
+Things todo:
+- Access to drone configuaration;
+- Native interface to read/write drone configuration;
+- Multi-configuration support;
+- Wifi managment (only on Windows so far).
+
+## Usage
+
+The solution includes Winform application - AR.Drone.WinApp, it is includes minimalistic interface 
+for control and display video from AR.Drone 2.0.
 
 License
 =======
