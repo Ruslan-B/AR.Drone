@@ -1,6 +1,7 @@
 ## AR.Drone
 
 The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.  
+Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.
 
 ## Dependencies
 
@@ -10,7 +11,8 @@ The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.
 
 This library is still under heavy development, 
 so please don't be suprised if you find some functionality missing or undocumented.  
-However, drone controling and video streaming support are working fine.
+Drone controling and video streaming support are working fine.
+However, it is a big gap in drone configuaration support.
 
 Things todo:
 - Access to drone configuaration;
