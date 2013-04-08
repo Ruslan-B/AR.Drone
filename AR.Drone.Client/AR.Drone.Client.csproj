@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{56DBF8E3-28A6-4C27-BA0A-B32352608F44}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AR.Drone.Client</RootNamespace>
+    <AssemblyName>AR.Drone.Client</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Command\COMWDGCommand.cs" />
+    <Compile Include="Command\ConfigCommand.cs" />
+    <Compile Include="Command\ControlCommand.cs" />
+    <Compile Include="Command\ControlMode.cs" />
+    <Compile Include="Command\FlatTrimCommand.cs" />
+    <Compile Include="Command\ProgressiveCommand.cs" />
+    <Compile Include="Command\ProgressiveMode.cs" />
+    <Compile Include="Command\RefCommand.cs" />
+    <Compile Include="Command\RefMode.cs" />
+    <Compile Include="Command\VideoChannel.cs" />
+    <Compile Include="IO\BinaryHelper.cs" />
+    <Compile Include="IO\PacketReader.cs" />
+    <Compile Include="IO\PacketWriter.cs" />
+    <Compile Include="Navigation\DroneState.cs" />
+    <Compile Include="Navigation\NativeNavdata.cs" />
+    <Compile Include="Navigation\NativeNavdataHelper.cs" />
+    <Compile Include="Navigation\NavigationPacket.cs" />
+    <Compile Include="Video\VideoHelper.cs" />
+    <Compile Include="NativeApi\def_ardrone_state_mask_t.cs" />
+    <Compile Include="NativeApi\Math\matrix33_t.cs" />
+    <Compile Include="NativeApi\Navdata\CTRL_STATES.cs" />
+    <Compile Include="NativeApi\Navdata\FLYING_STATES.cs" />
+    <Compile Include="Navigation\NavigationData.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_adc_data_frame_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_games_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_gyros_offsets_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_hdvideo_stream_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_kalman_pressure_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_magneto_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_phys_measures_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_pressure_raw_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_altitude_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_cks_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_euler_angles_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_pwm_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_rc_references_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_references_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_trackers_send_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_trims_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_video_stream_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_detect_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_of_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_perf_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_raw_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_vision_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_watchdog_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_wifi_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_demo_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_option_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_raw_measures_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_tag_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_time_t.cs" />
+    <Compile Include="NativeApi\Math\vector21_t.cs" />
+    <Compile Include="NativeApi\Math\vector31_t.cs" />
+    <Compile Include="NativeApi\Navdata\navdata_wind_speed_t.cs" />
+    <Compile Include="NativeApi\Navdata\screen_point_t.cs" />
+    <Compile Include="NativeApi\Navdata\velocities_t.cs" />
+    <Compile Include="NativeApi\Video\parrot_video_encapsulation_t.cs" />
+    <Compile Include="NativeApi\Video\parrot_video_encapsulation_frametypes_t.cs" />
+    <Compile Include="Navigation\NativeNavdataParser.cs" />
+    <Compile Include="Video\Exceptions\VideoConverterException.cs" />
+    <Compile Include="Video\FrameType.cs" />
+    <Compile Include="Video\VideoFrame.cs" />
+    <Compile Include="Video\VideoFramePixelFormat.cs" />
+    <Compile Include="Video\VideoPacket.cs" />
+    <Compile Include="ARDroneConfig.cs" />
+    <Compile Include="ATCommand.cs" />
+    <Compile Include="RequestedState.cs" />
+    <Compile Include="Video\VideoConverter.cs" />
+    <Compile Include="Video\VideoDecoder.cs" />
+    <Compile Include="Workers\RecoderWorker.cs" />
+    <Compile Include="IO\PacketType.cs" />
+    <Compile Include="Workers\VideoDecoderWorker.cs" />
+    <Compile Include="Workers\Watchdog.cs" />
+    <Compile Include="Workers\CommandQueueWorker.cs" />
+    <Compile Include="Helpers\ConcurrentQueueHelper.cs" />
+    <Compile Include="ARDroneClient.cs" />
+    <Compile Include="Workers\NavdataAcquisitionWorker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Workers\VideoAcquisitionWorker.cs" />
+    <Compile Include="Video\Exceptions\VideoDecoderException.cs" />
+    <Compile Include="Workers\NetworkWorker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
+      <Project>{a536b02a-b0b1-4753-8328-17369ef09976}</Project>
+      <Name>FFmpeg.AutoGen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
+      <Project>{f86e869a-631c-4e67-918e-6c61aa0f13bd}</Project>
+      <Name>AI.Core.System</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
