@@ -1,6 +1,6 @@
 ## AR.Drone
 
-AR.Drone 2.0 C# .NET/Mono Controlling Library.  
+AR.Drone 2.0 C# .NET/Mono library for controlling, video acquisition and decoding.  
 
 ## Dependencies
 
@@ -10,8 +10,7 @@ AR.Drone 2.0 C# .NET/Mono Controlling Library.
 
 This library is still under heavy development, 
 so please don't be suprised if you find some functionality missing or undocumented.  
-
-However, drone controling and video streaming support are working fine
+However, drone controling and video streaming support are working fine.
 
 Things todo:
 - Access to drone configuaration;
@@ -24,8 +23,7 @@ Things todo:
 The solution includes Winform application - AR.Drone.WinApp, it is includes minimalistic interface 
 for control and display video from AR.Drone 2.0.
 
-License
-=======
+## License
 
 Copyright 2013 Ruslan Balanukhin ruslan.balanukhin@gmail.com
 
