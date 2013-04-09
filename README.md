@@ -24,7 +24,7 @@ Things todo:
 
 ## Build
 
-Hot to build from scratch:  
+How to build from scratch:  
 - Clone this:
 
 ```bash
@@ -42,7 +42,7 @@ of [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen).
 
 ## Usage
 
-The solution includes Winform application - AR.Drone.WinApp, it is includes minimalistic interface 
+The solution includes Winform application - `AR.Drone.WinApp`, it is includes minimalistic interface 
 for control and display video from AR.Drone 2.0.
 
 ## License
