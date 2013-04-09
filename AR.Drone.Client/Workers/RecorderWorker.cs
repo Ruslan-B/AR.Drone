@@ -9,11 +9,11 @@ using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.Workers
 {
-    public class RecoderWorker : WorkerBase
+    public class RecorderWorker : WorkerBase
     {
         private readonly ConcurrentQueue<object> _packetQueue;
 
-        public RecoderWorker()
+        public RecorderWorker()
         {
             _packetQueue = new ConcurrentQueue<object>();
         }

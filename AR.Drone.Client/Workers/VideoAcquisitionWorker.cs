@@ -101,7 +101,7 @@ namespace AR.Drone.Client.Workers
                     return FrameType.I;
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_UNKNNOWN:
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_HEADERS:
-                    return FrameType.Unknnown;
+                    return FrameType.Unknown;
                 default:
                     throw new ArgumentOutOfRangeException("frame_type");
             }

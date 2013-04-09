@@ -8,7 +8,7 @@ namespace AR.Drone.Client.Workers
         private readonly CommandQueueWorker _commandQueueWorker;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
-        private readonly RecoderWorker _recorderWorker;
+        private readonly RecorderWorker _recorderWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
         private readonly VideoDecoderWorker _videoDecoderWorker;
 
@@ -17,7 +17,7 @@ namespace AR.Drone.Client.Workers
                         CommandQueueWorker commandQueueWorker,
                         VideoAcquisitionWorker videoAcquisitionWorker,
                         VideoDecoderWorker videoDecoderWorker,
-                        RecoderWorker recorderWorker)
+                        RecorderWorker recorderWorker)
         {
             _networkWorker = networkWorker;
             _navdataAcquisitionWorker = navdataAcquisitionWorker;
