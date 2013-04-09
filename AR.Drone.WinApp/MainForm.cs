@@ -127,7 +127,7 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            _arDroneClient.SetVideoChanell(VideoChannel.Next);
+            _arDroneClient.SetVideoChannel(VideoChannel.Next);
         }
 
         private void btnHover_Click(object sender, EventArgs e)

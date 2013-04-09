@@ -5,7 +5,7 @@ Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.
 
 ## Dependencies
 
-[AI.Core](https://github.com/Ruslan-B/AI.Core) - Set of core libraries for autonomous agent support.
+[AI.Core](https://github.com/Ruslan-B/AI.Core) - Set of core libraries for autonomous agent support.  
 [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.  
 
 ## Status

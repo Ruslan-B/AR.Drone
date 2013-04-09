@@ -128,7 +128,7 @@ namespace AR.Drone.Client
                 _commandQueue.Enqueue(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));
         }
 
-        public void SetVideoChanell(VideoChannel channel)
+        public void SetVideoChannel(VideoChannel channel)
         {
             _commandQueue.Enqueue(new ConfigCommand("video:video_channel", channel));
         }
