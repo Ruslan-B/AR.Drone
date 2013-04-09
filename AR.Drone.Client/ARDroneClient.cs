@@ -16,7 +16,7 @@ namespace AR.Drone.Client
         private readonly ARDroneConfig _config;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
-        private readonly RecoderWorker _recorderWorker;
+        private readonly RecorderWorker _recorderWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
         private readonly VideoDecoderWorker _videoDecoderWorker;
         private readonly Watchdog _watchdog;
@@ -35,7 +35,7 @@ namespace AR.Drone.Client
             _commandQueueWorker = new CommandQueueWorker(Config, _commandQueue);
             _videoAcquisitionWorker = new VideoAcquisitionWorker(Config, OnVideoPacketAcquired);
             _videoDecoderWorker = new VideoDecoderWorker(OnFrameDecoded);
-            _recorderWorker = new RecoderWorker();
+            _recorderWorker = new RecorderWorker();
             _watchdog = new Watchdog(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker, _videoDecoderWorker, _recorderWorker);
         }
 
