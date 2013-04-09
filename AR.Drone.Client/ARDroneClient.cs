@@ -17,7 +17,7 @@ namespace AR.Drone.Client
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
-        private readonly Watchdog _watchdog;
+        private readonly WatchdogWorker _watchdogWorker;
 
         private NavigationData _navigationData;
         private RequestedState _requestedState;
@@ -31,7 +31,7 @@ namespace AR.Drone.Client
             _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_config, OnNavigationPacketAcquired);
             _commandQueueWorker = new CommandQueueWorker(_config, _commandQueue);
             _videoAcquisitionWorker = new VideoAcquisitionWorker(_config, OnVideoPacketAcquired);
-            _watchdog = new Watchdog(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
+            _watchdogWorker = new WatchdogWorker(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
@@ -40,14 +40,14 @@ namespace AR.Drone.Client
         
         public bool Active
         {
-            get { return _watchdog.IsAlive; }
+            get { return _watchdogWorker.IsAlive; }
             set
             {
                 if (value)
-                    _watchdog.Start();
+                    _watchdogWorker.Start();
                 else
                 {
-                    _watchdog.Stop();
+                    _watchdogWorker.Stop();
                     RecreateNavigationData();
                 }
             }
@@ -202,7 +202,7 @@ namespace AR.Drone.Client
             _navdataAcquisitionWorker.Dispose();
             _commandQueueWorker.Dispose();
             _videoAcquisitionWorker.Dispose();
-            _watchdog.Dispose();
+            _watchdogWorker.Dispose();
         }
     }
 }

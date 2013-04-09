@@ -8,12 +8,6 @@ namespace AR.Drone.Client.Video
     public unsafe class VideoDecoder : DisposableBase
     {
         private const FFmpegNative.AVCodecID CodecId = FFmpegNative.AVCodecID.AV_CODEC_ID_H264;
-        private const FFmpegNative.AVPixelFormat PixelFormat = FFmpegNative.AVPixelFormat.PIX_FMT_YUV420P;
-
-        private readonly int _height;
-        private readonly int _width;
-
-        private FFmpegNative.AVFrame* _pCurrentFrame;
         private FFmpegNative.AVCodecContext* _pDecodingContext;
 
         static VideoDecoder()
@@ -22,11 +16,8 @@ namespace AR.Drone.Client.Video
             FFmpegNative.avcodec_register_all();
         }
 
-        public VideoDecoder(int width, int height)
+        public VideoDecoder()
         {
-            _width = width;
-            _height = height;
-
             Initialize();
         }
 
@@ -37,28 +28,24 @@ namespace AR.Drone.Client.Video
                 throw new VideoDecoderException("Unsupported codec.");
 
             _pDecodingContext = FFmpegNative.avcodec_alloc_context3(pCodec);
-            _pDecodingContext->width = _width;
-            _pDecodingContext->height = _height;
-            _pDecodingContext->pix_fmt = PixelFormat;
 
             if (FFmpegNative.avcodec_open2(_pDecodingContext, pCodec, null) < 0)
                 throw new VideoDecoderException("Could not open codec.");
-
-
-            _pCurrentFrame = FFmpegNative.avcodec_alloc_frame();
         }
 
+        // todo out VideoFrame
         public bool TryDecode(ref byte[] data, out FFmpegNative.AVFrame frame)
         {
             int gotPicture;
+            frame = new FFmpegNative.AVFrame();
             fixed (byte* pData = &data[0])
+            fixed (FFmpegNative.AVFrame* pFrame = &frame)
             {
                 var packet = new FFmpegNative.AVPacket {data = pData, size = data.Length};
-                int decodedSize = FFmpegNative.avcodec_decode_video2(_pDecodingContext, _pCurrentFrame, &gotPicture, &packet);
+                int decodedSize = FFmpegNative.avcodec_decode_video2(_pDecodingContext, pFrame, &gotPicture, &packet);
                 if (decodedSize < 0)
                     Trace.TraceWarning("Error while decoding frame.");
             }
-            frame = *_pCurrentFrame;
             return gotPicture == 1;
         }
 
@@ -66,7 +53,6 @@ namespace AR.Drone.Client.Video
         protected override void DisposeOverride()
         {
             FFmpegNative.avcodec_close(_pDecodingContext);
-            FFmpegNative.av_free(_pCurrentFrame);
         }
     }
 }

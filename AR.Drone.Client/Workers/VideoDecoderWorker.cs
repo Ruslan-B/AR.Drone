@@ -33,7 +33,7 @@ namespace AR.Drone.Client.Workers
             // flush packet queue
             ConcurrentQueueHelper.Flush(_packetQueue);
 
-            using (var videoDecoder = new VideoDecoder(Width, Height))
+            using (var videoDecoder = new VideoDecoder())
             using (var videoConverter = new VideoConverter(Width, Height, OutputPixelFormat))
                 while (token.IsCancellationRequested == false)
                 {

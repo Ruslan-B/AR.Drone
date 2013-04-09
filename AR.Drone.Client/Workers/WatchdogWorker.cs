@@ -3,14 +3,14 @@ using AI.Core.System;
 
 namespace AR.Drone.Client.Workers
 {
-    public class Watchdog : WorkerBase
+    public class WatchdogWorker : WorkerBase
     {
         private readonly CommandQueueWorker _commandQueueWorker;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
 
-        public Watchdog(NetworkWorker networkWorker,
+        public WatchdogWorker(NetworkWorker networkWorker,
                         NavdataAcquisitionWorker navdataAcquisitionWorker,
                         CommandQueueWorker commandQueueWorker,
                         VideoAcquisitionWorker videoAcquisitionWorker)
