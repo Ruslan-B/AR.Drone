@@ -129,11 +129,11 @@
             // 
             // btnSwitchCam
             // 
-            this.btnSwitchCam.Location = new System.Drawing.Point(569, 407);
+            this.btnSwitchCam.Location = new System.Drawing.Point(563, 407);
             this.btnSwitchCam.Name = "btnSwitchCam";
-            this.btnSwitchCam.Size = new System.Drawing.Size(83, 23);
+            this.btnSwitchCam.Size = new System.Drawing.Size(89, 23);
             this.btnSwitchCam.TabIndex = 8;
-            this.btnSwitchCam.Text = "Video Chanell";
+            this.btnSwitchCam.Text = "Video Channel";
             this.btnSwitchCam.UseVisualStyleBackColor = true;
             this.btnSwitchCam.Click += new System.EventHandler(this.btnSwitchCam_Click);
             // 
