@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using AR.Drone.Client.Command;
 using AI.Core.System;
+using AR.Drone.Client.Command;
 using AR.Drone.Client.Navigation;
 using AR.Drone.Client.Video;
 using AR.Drone.Client.Workers;
@@ -16,12 +16,9 @@ namespace AR.Drone.Client
         private readonly ARDroneConfig _config;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
-        private readonly RecorderWorker _recorderWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
-        private readonly VideoDecoderWorker _videoDecoderWorker;
         private readonly Watchdog _watchdog;
 
-        private NativeNavdata _nativeNavdata;
         private NavigationData _navigationData;
         private RequestedState _requestedState;
 
@@ -30,20 +27,17 @@ namespace AR.Drone.Client
             _config = new ARDroneConfig();
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
-            _networkWorker = new NetworkWorker(Config, OnConnectionChanged);
-            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(Config, OnNavigationPacketAcquired);
-            _commandQueueWorker = new CommandQueueWorker(Config, _commandQueue);
-            _videoAcquisitionWorker = new VideoAcquisitionWorker(Config, OnVideoPacketAcquired);
-            _videoDecoderWorker = new VideoDecoderWorker(OnFrameDecoded);
-            _recorderWorker = new RecorderWorker();
-            _watchdog = new Watchdog(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker, _videoDecoderWorker, _recorderWorker);
+            _networkWorker = new NetworkWorker(_config, OnConnectionChanged);
+            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_config, OnNavigationPacketAcquired);
+            _commandQueueWorker = new CommandQueueWorker(_config, _commandQueue);
+            _videoAcquisitionWorker = new VideoAcquisitionWorker(_config, OnVideoPacketAcquired);
+            _watchdog = new Watchdog(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
         }
 
-        public Action<ARDroneClient, NavigationPacket> NavigationPacketAcquired { get; set; }
-        public Action<ARDroneClient, NavigationData> NavigationDataDecoded { get; set; }
-        public Action<ARDroneClient, VideoPacket> VideoPacketAcquired { get; set; }
-        public Action<ARDroneClient, VideoFrame> VideoFrameDecoded { get; set; }
-
+        public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
+        public Action<NavigationData> NavigationDataDecoded { get; set; }
+        public Action<VideoPacket> VideoPacketAcquired { get; set; }
+        
         public bool Active
         {
             get { return _watchdog.IsAlive; }
@@ -54,7 +48,7 @@ namespace AR.Drone.Client
                 else
                 {
                     _watchdog.Stop();
-                    ResetNavigationState();
+                    RecreateNavigationData();
                 }
             }
         }
@@ -64,28 +58,97 @@ namespace AR.Drone.Client
             get { return _config; }
         }
 
-        // todo remove this property and field
-        public NativeNavdata NativeNavdata
-        {
-            get { return _nativeNavdata; }
-        }
-
         public NavigationData NavigationData
         {
             get { return _navigationData; }
         }
 
-        private void SendConfiguration()
+        private void SendInitialConfiguration()
         {
             _commandQueue.Enqueue(new ConfigCommand("general:navdata_demo", false));
-            _commandQueue.Enqueue(new ConfigCommand("control:altitude_max", 2000));
             _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
         }
 
-        private void ResetNavigationState()
+        private void RecreateNavigationData()
         {
-            _nativeNavdata = new NativeNavdata();
             _navigationData = new NavigationData();
+        }
+
+        private void OnConnectionChanged(bool connected)
+        {
+            if (connected == false)
+            {
+                RecreateNavigationData();
+            }
+        }
+
+        private void OnNavigationPacketAcquired(NavigationPacket packet)
+        {
+            if (_navigationData.State == NavigationState.Unknown)
+                SendInitialConfiguration();
+
+            if (NavigationPacketAcquired != null)
+                NavigationPacketAcquired(packet);
+
+            NativeNavdata nativeNavdata;
+            if (NativeNavdataParser.TryParse(ref packet, out nativeNavdata))
+            {
+                NavigationData navigationData = nativeNavdata.ToNavigationData();
+                OnNavigationDataDecoded(navigationData);
+            }
+        }
+
+        private void OnNavigationDataDecoded(NavigationData navigationData)
+        {
+            _navigationData = navigationData;
+
+            ProcessRequestedState();
+
+            if (NavigationDataDecoded != null)
+                NavigationDataDecoded(navigationData);
+        }
+
+        private void OnVideoPacketAcquired(VideoPacket packet)
+        {
+            if (VideoPacketAcquired != null)
+                VideoPacketAcquired(packet);
+        }
+
+        private void ProcessRequestedState()
+        {
+            switch (_requestedState)
+            {
+                case RequestedState.None:
+                    return;
+                case RequestedState.Emergency:
+                    if (_navigationData.State.HasFlag(NavigationState.Flying))
+                        _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+                    else
+                        _requestedState = RequestedState.None;
+                    break;
+                case RequestedState.Landed:
+                    if (_navigationData.State.HasFlag(NavigationState.Flying) &&
+                        _navigationData.State.HasFlag(NavigationState.Landing) == false)
+                    {
+                        _commandQueue.Enqueue(new RefCommand(RefMode.Land));
+                    }
+                    else
+                        _requestedState = RequestedState.None;
+                    break;
+                case RequestedState.Flying:
+                    if (_navigationData.State.HasFlag(NavigationState.Landed) &&
+                        _navigationData.State.HasFlag(NavigationState.Takeoff) == false &&
+                        _navigationData.State.HasFlag(NavigationState.Emergency) == false &&
+                        _navigationData.Battery.Low == false)
+                    {
+                        _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
+                    }
+                    else
+                        _requestedState = RequestedState.None;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void Emergency()
@@ -106,25 +169,25 @@ namespace AR.Drone.Client
 
         public void Takeoff()
         {
-            if (_navigationData.State.HasFlag(DroneState.Landed))
+            if (_navigationData.State.HasFlag(NavigationState.Landed))
                 _requestedState = RequestedState.Flying;
         }
 
         public void FlatTrim()
         {
-            if (_navigationData.State.HasFlag(DroneState.Landed))
+            if (_navigationData.State.HasFlag(NavigationState.Landed))
                 _commandQueue.Enqueue(new FlatTrimCommand());
         }
 
         public void Hover()
         {
-            if (_navigationData.State.HasFlag(DroneState.Flying))
+            if (_navigationData.State.HasFlag(NavigationState.Flying))
                 _commandQueue.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
         }
 
         public void Progress(ProgressiveMode mode = ProgressiveMode.Progressive, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
         {
-            if (_navigationData.State.HasFlag(DroneState.Flying))
+            if (_navigationData.State.HasFlag(NavigationState.Flying))
                 _commandQueue.Enqueue(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));
         }
 
@@ -133,108 +196,12 @@ namespace AR.Drone.Client
             _commandQueue.Enqueue(new ConfigCommand("video:video_channel", channel));
         }
 
-        private void OnNavigationPacketAcquired(NavigationPacket packet)
-        {
-            if (_navigationData.State == DroneState.Unknown)
-                SendConfiguration();
-
-            if (_recorderWorker.IsAlive)
-                _recorderWorker.EnqueuePacket(packet);
-
-            if (NavigationPacketAcquired != null)
-                NavigationPacketAcquired(this, packet);
-
-            NativeNavdata nativeNavdata;
-            if (NativeNavdataParser.TryParse(ref packet, out nativeNavdata))
-            {
-                _nativeNavdata = nativeNavdata;
-
-                NavigationData navigationData = nativeNavdata.ToNavigationData();
-                OnNavigationDataDecoded(navigationData);
-            }
-        }
-
-        private void OnNavigationDataDecoded(NavigationData navigationData)
-        {
-            _navigationData = navigationData;
-
-            ProcessRequestedState();
-
-            if (NavigationDataDecoded != null)
-                NavigationDataDecoded(this, navigationData);
-        }
-
-        private void OnVideoPacketAcquired(VideoPacket packet)
-        {
-            if (_recorderWorker.IsAlive)
-                _recorderWorker.EnqueuePacket(packet);
-
-            if (_videoDecoderWorker.IsAlive)
-                _videoDecoderWorker.EnqueuePacket(packet);
-
-            if (VideoPacketAcquired != null)
-                VideoPacketAcquired(this, packet);
-        }
-
-        private void OnFrameDecoded(VideoFrame frame)
-        {
-            if (VideoFrameDecoded != null)
-                VideoFrameDecoded(this, frame);
-        }
-
-        private void OnConnectionChanged(bool connected)
-        {
-            if (connected == false)
-            {
-                ResetNavigationState();
-            }
-        }
-
-        private void ProcessRequestedState()
-        {
-            switch (_requestedState)
-            {
-                case RequestedState.None:
-                    return;
-                case RequestedState.Emergency:
-                    if (_navigationData.State.HasFlag(DroneState.Flying))
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
-                    else
-                        _requestedState = RequestedState.None;
-                    break;
-                case RequestedState.Landed:
-                    if (_navigationData.State.HasFlag(DroneState.Flying) &&
-                        _navigationData.State.HasFlag(DroneState.Landing) == false)
-                    {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Land));
-                    }
-                    else
-                        _requestedState = RequestedState.None;
-                    break;
-                case RequestedState.Flying:
-                    if (_navigationData.State.HasFlag(DroneState.Landed) &&
-                        _navigationData.State.HasFlag(DroneState.Takeoff) == false &&
-                        _navigationData.State.HasFlag(DroneState.Emergency) == false &&
-                        _navigationData.Battery.Low == false)
-                    {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
-                    }
-                    else
-                        _requestedState = RequestedState.None;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
         protected override void DisposeOverride()
         {
             _networkWorker.Dispose();
             _navdataAcquisitionWorker.Dispose();
             _commandQueueWorker.Dispose();
             _videoAcquisitionWorker.Dispose();
-            _videoDecoderWorker.Dispose();
-            _recorderWorker.Dispose();
             _watchdog.Dispose();
         }
     }

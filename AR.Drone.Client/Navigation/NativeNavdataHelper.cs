@@ -37,29 +37,29 @@ namespace AR.Drone.Client.Navigation
             return navigationData;
         }
 
-        private static void UpdateStateUsing(def_ardrone_state_mask_t ardroneState, ref DroneState state)
+        private static void UpdateStateUsing(def_ardrone_state_mask_t ardroneState, ref NavigationState state)
         {
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_FLY_MASK))
-                state |= DroneState.Flying;
+                state |= NavigationState.Flying;
             else
-                state |= DroneState.Landed;
+                state |= NavigationState.Landed;
 
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_EMERGENCY_MASK))
-                state |= DroneState.Emergency;
+                state |= NavigationState.Emergency;
         }
 
-        private static void UpdateStateUsing(CTRL_STATES ctrlStates, ref DroneState state)
+        private static void UpdateStateUsing(CTRL_STATES ctrlStates, ref NavigationState state)
         {
             switch (ctrlStates)
             {
                 case CTRL_STATES.CTRL_TRANS_TAKEOFF:
-                    state |= DroneState.Takeoff;
+                    state |= NavigationState.Takeoff;
                     break;
                 case CTRL_STATES.CTRL_TRANS_LANDING:
-                    state |= DroneState.Landing;
+                    state |= NavigationState.Landing;
                     break;
                 case CTRL_STATES.CTRL_HOVERING:
-                    state |= DroneState.Hovering;
+                    state |= NavigationState.Hovering;
                     break;
             }
         }

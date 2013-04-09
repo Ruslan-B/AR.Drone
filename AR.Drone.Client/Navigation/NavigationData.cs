@@ -5,7 +5,7 @@ namespace AR.Drone.Client.Navigation
     [StructLayout(LayoutKind.Sequential)]
     public struct NavigationData
     {
-        public DroneState State;
+        public NavigationState State;
         public float Yaw; // psi - Z
         public float Pitch; // theta - Y
         public float Roll; // phi - X

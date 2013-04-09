@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Helpers;
@@ -9,12 +9,14 @@ using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.Workers
 {
-    public class RecorderWorker : WorkerBase
+    public class PacketRecorderWorker : WorkerBase
     {
+        private readonly string _path;
         private readonly ConcurrentQueue<object> _packetQueue;
-
-        public RecorderWorker()
+        
+        public PacketRecorderWorker(string path)
         {
+            _path = path;
             _packetQueue = new ConcurrentQueue<object>();
         }
 
@@ -32,8 +34,7 @@ namespace AR.Drone.Client.Workers
         {
             ConcurrentQueueHelper.Flush(_packetQueue);
 
-            string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm-ss}.track", DateTime.Now);
-            using (var recorder = new PacketWriter(path))
+            using (var recorder = new PacketWriter(_path))
             {
                 while (token.IsCancellationRequested == false)
                 {

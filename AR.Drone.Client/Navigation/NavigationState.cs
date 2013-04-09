@@ -3,7 +3,7 @@
 namespace AR.Drone.Client.Navigation
 {
     [Flags]
-    public enum DroneState : byte
+    public enum NavigationState : byte
     {
         Unknown = 0,
         Landed = 1 << 1,

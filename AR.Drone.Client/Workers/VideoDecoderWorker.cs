@@ -23,8 +23,6 @@ namespace AR.Drone.Client.Workers
             _packetQueue = new ConcurrentQueue<VideoPacket>();
         }
 
-        //public VideoFramePixelFormat OutputPixelFormat { get; set; }
-
         public void EnqueuePacket(VideoPacket packet)
         {
             _packetQueue.Enqueue(packet);
@@ -34,7 +32,6 @@ namespace AR.Drone.Client.Workers
         {
             // flush packet queue
             ConcurrentQueueHelper.Flush(_packetQueue);
-            // fixing staring state, all structures will be creating using this values
 
             using (var videoDecoder = new VideoDecoder(Width, Height))
             using (var videoConverter = new VideoConverter(Width, Height, OutputPixelFormat))

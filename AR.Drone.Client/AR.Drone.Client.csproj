@@ -52,7 +52,7 @@
     <Compile Include="IO\BinaryHelper.cs" />
     <Compile Include="IO\PacketReader.cs" />
     <Compile Include="IO\PacketWriter.cs" />
-    <Compile Include="Navigation\DroneState.cs" />
+    <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="Navigation\NativeNavdata.cs" />
     <Compile Include="Navigation\NativeNavdataHelper.cs" />
     <Compile Include="Navigation\NavigationPacket.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="RequestedState.cs" />
     <Compile Include="Video\VideoConverter.cs" />
     <Compile Include="Video\VideoDecoder.cs" />
-    <Compile Include="Workers\RecorderWorker.cs" />
+    <Compile Include="Workers\PacketRecorderWorker.cs" />
     <Compile Include="IO\PacketType.cs" />
     <Compile Include="Workers\VideoDecoderWorker.cs" />
     <Compile Include="Workers\Watchdog.cs" />

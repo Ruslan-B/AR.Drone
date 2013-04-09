@@ -8,23 +8,17 @@ namespace AR.Drone.Client.Workers
         private readonly CommandQueueWorker _commandQueueWorker;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
-        private readonly RecorderWorker _recorderWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
-        private readonly VideoDecoderWorker _videoDecoderWorker;
 
         public Watchdog(NetworkWorker networkWorker,
                         NavdataAcquisitionWorker navdataAcquisitionWorker,
                         CommandQueueWorker commandQueueWorker,
-                        VideoAcquisitionWorker videoAcquisitionWorker,
-                        VideoDecoderWorker videoDecoderWorker,
-                        RecorderWorker recorderWorker)
+                        VideoAcquisitionWorker videoAcquisitionWorker)
         {
             _networkWorker = networkWorker;
             _navdataAcquisitionWorker = navdataAcquisitionWorker;
             _commandQueueWorker = commandQueueWorker;
             _videoAcquisitionWorker = videoAcquisitionWorker;
-            _videoDecoderWorker = videoDecoderWorker;
-            _recorderWorker = recorderWorker;
         }
 
         protected override void Loop(CancellationToken token)
@@ -47,17 +41,11 @@ namespace AR.Drone.Client.Workers
                         _commandQueueWorker.Start();
                         _navdataAcquisitionWorker.Start();
                     }
-                    if (_videoAcquisitionWorker.IsAlive == false || _videoDecoderWorker.IsAlive == false)
+                    if (_videoAcquisitionWorker.IsAlive == false)
                     {
                         if (_videoAcquisitionWorker.IsAlive) _videoAcquisitionWorker.Stop();
-                        if (_videoDecoderWorker.IsAlive) _videoDecoderWorker.Stop();
 
                         _videoAcquisitionWorker.Start();
-                        _videoDecoderWorker.Start();
-                    }
-                    if (_recorderWorker.IsAlive == false)
-                    {
-                        _recorderWorker.Start();
                     }
                 }
                 else
@@ -70,8 +58,6 @@ namespace AR.Drone.Client.Workers
             _navdataAcquisitionWorker.Stop();
             _commandQueueWorker.Stop();
             _videoAcquisitionWorker.Stop();
-            _videoDecoderWorker.Stop();
-            _recorderWorker.Stop();
         }
     }
 }

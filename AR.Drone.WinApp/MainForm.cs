@@ -7,28 +7,74 @@ using AR.Drone.Client.Command;
 using AR.Drone.Client.NativeApi.Navdata;
 using AR.Drone.Client.Navigation;
 using AR.Drone.Client.Video;
+using AR.Drone.Client.Workers;
 
 namespace AR.Drone.WinApp
 {
     public partial class MainForm : Form
     {
         private readonly ARDroneClient _arDroneClient;
-        private uint _currentFrameNumber;
-        private VideoFrame _videoFrame;
+        private readonly PacketRecorderWorker _packetRecorderWorker;
+        private readonly VideoDecoderWorker _videoDecoderWorker;
+
+        private Image _frameImage;
+        private NativeNavdata _nativeNavdata;
 
         public MainForm()
         {
             InitializeComponent();
 
+            _videoDecoderWorker = new VideoDecoderWorker(OnVideoDecoderOnFrameDecoded);
+            _videoDecoderWorker.Start();
+
+            string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm}.pack", DateTime.Now);
+            _packetRecorderWorker = new PacketRecorderWorker(path);
+            _packetRecorderWorker.Start();
+
             _arDroneClient = new ARDroneClient();
-            _arDroneClient.VideoFrameDecoded += OnVideoDecoderOnFrameDecoded;
+            _arDroneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
+            _arDroneClient.VideoPacketAcquired += OnVideoPacketAcquired;
+            _arDroneClient.Active = true;
+
             tmrStateUpdate.Enabled = true;
             tmrVideoUpdate.Enabled = true;
         }
 
-        private void OnVideoDecoderOnFrameDecoded(ARDroneClient client, VideoFrame frame)
+        protected override void OnClosed(EventArgs e)
         {
-            _videoFrame = frame;
+            _arDroneClient.Dispose();
+            _videoDecoderWorker.Dispose();
+            _packetRecorderWorker.Dispose();
+
+            base.OnClosed(e);
+        }
+
+        private void OnNavigationPacketAcquired(NavigationPacket packet)
+        {
+            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
+            
+            UpdateNativeNavdata(packet);
+        }
+
+        private void OnVideoPacketAcquired(VideoPacket packet)
+        {
+            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
+
+            _videoDecoderWorker.EnqueuePacket(packet);
+        }
+
+        private void UpdateNativeNavdata(NavigationPacket packet)
+        {
+            NativeNavdata nativeNavdata;
+            if (NativeNavdataParser.TryParse(ref packet, out nativeNavdata))
+            {
+                _nativeNavdata = nativeNavdata;
+            }
+        }
+
+        private void OnVideoDecoderOnFrameDecoded(VideoFrame frame)
+        {
+            _frameImage = ARDroneVideoHelper.CreateImageFromFrame(frame);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -43,11 +89,9 @@ namespace AR.Drone.WinApp
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
         {
-            if (_videoFrame.FrameNumber == _currentFrameNumber) return;
-            _currentFrameNumber = _videoFrame.FrameNumber;
             Image oldImage = pbVideo.Image;
-            Bitmap newImage = ARDroneVideoHelper.CreateImageFromFrame(_videoFrame);
-            pbVideo.Image = newImage;
+            if (oldImage == _frameImage) return;
+            pbVideo.Image = _frameImage;
             if (oldImage != null) oldImage.Dispose();
         }
 
@@ -61,19 +105,17 @@ namespace AR.Drone.WinApp
             node = tvInfo.Nodes.GetOrCreate("Navigation Data");
             DumpBranch(node.Nodes, _arDroneClient.NavigationData);
 
-            NativeNavdata navdata = _arDroneClient.NativeNavdata;
-            
-            var vativeNode = tvInfo.Nodes.GetOrCreate("Native");
+            TreeNode vativeNode = tvInfo.Nodes.GetOrCreate("Native");
 
-            var ctrl_state = (CTRL_STATES)(navdata.demo.ctrl_state >> 0x10);
+            var ctrl_state = (CTRL_STATES) (_nativeNavdata.demo.ctrl_state >> 0x10);
             node = vativeNode.Nodes.GetOrCreate("ctrl_state");
             node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-            var flying_state = (FLYING_STATES)(navdata.demo.ctrl_state & 0xffff);
+            var flying_state = (FLYING_STATES) (_nativeNavdata.demo.ctrl_state & 0xffff);
             node = vativeNode.Nodes.GetOrCreate("flying_state");
             node.Text = string.Format("Ctrl State: {0}", flying_state);
 
-            DumpBranch(vativeNode.Nodes, navdata);
+            DumpBranch(vativeNode.Nodes, _nativeNavdata);
 
             tvInfo.EndUpdate();
         }
