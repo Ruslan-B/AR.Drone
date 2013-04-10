@@ -2,59 +2,51 @@
 using AR.Drone.Client.Video.Exceptions;
 using FFmpeg.AutoGen;
 
-namespace AR.Drone.Client.Video
+namespace AR.Drone.Client.Video.FFmpeg
 {
     public unsafe class VideoConverter : DisposableBase
     {
-        private const FFmpegNative.AVPixelFormat _inputPixelFormat = FFmpegNative.AVPixelFormat.PIX_FMT_YUV420P;
+        private readonly FFmpegNative.AVPixelFormat _pixelFormat;
+        private bool _initialized;
 
-        private readonly int _height;
-        private readonly int _width;
-        private readonly VideoFramePixelFormat _outputPixelFormat;
-        
         private byte[,,] _outputData;
 
         private FFmpegNative.SwsContext* _pContext;
         private FFmpegNative.AVFrame* _pCurrentFrame;
 
 
-        public VideoConverter(int width, int height, VideoFramePixelFormat pixelFormat)
+        public VideoConverter(FFmpegNative.AVPixelFormat pixelFormat)
         {
-            _width = width;
-            _height = height;
-            _outputPixelFormat = pixelFormat;
-
-            Initialize();
+            _pixelFormat = pixelFormat;
         }
 
-        public VideoFramePixelFormat OutputPixelFormat
+        private void Initialize(int width, int height, FFmpegNative.AVPixelFormat inFormat)
         {
-            get { return _outputPixelFormat; }
-        }
+            _initialized = true;
 
-        private void Initialize()
-        {
-            FFmpegNative.AVPixelFormat outputPixelFormat = VideoHelper.Convert(_outputPixelFormat);
-            _pContext = FFmpegNative.sws_getContext(_width, _height, _inputPixelFormat,
-                                                    _width, _height, outputPixelFormat,
+            _pContext = FFmpegNative.sws_getContext(width, height, inFormat,
+                                                    width, height, _pixelFormat,
                                                     FFmpegNative.SWS_FAST_BILINEAR, null, null, null);
             if (_pContext == null)
                 throw new VideoConverterException("Could not initialize the conversion context.");
 
             _pCurrentFrame = FFmpegNative.avcodec_alloc_frame();
 
-            int outputDataSize = FFmpegNative.avpicture_get_size(outputPixelFormat, _width, _height);
-            int depth = outputDataSize/(_height*_width);
-            _outputData = new byte[_height,_width,depth];
+            int outputDataSize = FFmpegNative.avpicture_get_size(_pixelFormat, width, height);
+            int depth = outputDataSize/(height*width);
+            _outputData = new byte[height,width,depth];
 
             fixed (byte* pOutputData = &_outputData[0, 0, 0])
             {
-                FFmpegNative.avpicture_fill((FFmpegNative.AVPicture*) _pCurrentFrame, pOutputData, outputPixelFormat, _width, _height);
+                FFmpegNative.avpicture_fill((FFmpegNative.AVPicture*) _pCurrentFrame, pOutputData, _pixelFormat, width, height);
             }
         }
 
         public byte[,,] ConvertFrame(FFmpegNative.AVFrame frame)
         {
+            if (_initialized == false)
+                Initialize(frame.width, frame.height, (FFmpegNative.AVPixelFormat) frame.format);
+
             fixed (byte* pOutputData = &_outputData[0, 0, 0])
             {
                 byte** pSrcData = &(frame).data_0;
@@ -68,6 +60,8 @@ namespace AR.Drone.Client.Video
 
         protected override void DisposeOverride()
         {
+            if (_initialized == false) return;
+
             FFmpegNative.sws_freeContext(_pContext);
             FFmpegNative.av_free(_pCurrentFrame);
         }

@@ -3,12 +3,12 @@ using AI.Core.System;
 using AR.Drone.Client.Video.Exceptions;
 using FFmpeg.AutoGen;
 
-namespace AR.Drone.Client.Video
+namespace AR.Drone.Client.Video.FFmpeg
 {
     public unsafe class VideoDecoder : DisposableBase
     {
         private const FFmpegNative.AVCodecID CodecId = FFmpegNative.AVCodecID.AV_CODEC_ID_H264;
-        private FFmpegNative.AVCodecContext* _pDecodingContext;
+        private readonly FFmpegNative.AVCodecContext* _pDecodingContext;
 
         static VideoDecoder()
         {
@@ -17,11 +17,6 @@ namespace AR.Drone.Client.Video
         }
 
         public VideoDecoder()
-        {
-            Initialize();
-        }
-
-        private void Initialize()
         {
             FFmpegNative.AVCodec* pCodec = FFmpegNative.avcodec_find_decoder(CodecId);
             if (pCodec == null)
@@ -33,7 +28,6 @@ namespace AR.Drone.Client.Video
                 throw new VideoDecoderException("Could not open codec.");
         }
 
-        // todo out VideoFrame
         public bool TryDecode(ref byte[] data, out FFmpegNative.AVFrame frame)
         {
             int gotPicture;

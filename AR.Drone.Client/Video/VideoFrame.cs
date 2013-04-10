@@ -7,7 +7,7 @@ namespace AR.Drone.Client.Video
     {
         public long Timestamp;
         public uint FrameNumber;
-        public VideoFramePixelFormat PixelFormat;
+        public PixelFormat PixelFormat;
         public byte[,,] Data;
     }
 }

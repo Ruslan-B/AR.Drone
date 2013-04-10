@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.IO;
 using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Helpers;
@@ -11,9 +10,9 @@ namespace AR.Drone.Client.Workers
 {
     public class PacketRecorderWorker : WorkerBase
     {
-        private readonly string _path;
         private readonly ConcurrentQueue<object> _packetQueue;
-        
+        private readonly string _path;
+
         public PacketRecorderWorker(string path)
         {
             _path = path;

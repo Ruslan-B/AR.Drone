@@ -15,7 +15,7 @@ namespace AR.Drone.WinApp
     {
         private readonly ARDroneClient _arDroneClient;
         private readonly PacketRecorderWorker _packetRecorderWorker;
-        private readonly VideoDecoderWorker _videoDecoderWorker;
+        private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
 
         private Image _frameImage;
         private NativeNavdata _nativeNavdata;
@@ -24,8 +24,8 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
-            _videoDecoderWorker = new VideoDecoderWorker(OnVideoDecoderOnFrameDecoded);
-            _videoDecoderWorker.Start();
+            _videoPacketDecoderWorker = new VideoPacketDecoderWorker(OnVideoPacketDecoded);
+            _videoPacketDecoderWorker.Start();
 
             string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm}.pack", DateTime.Now);
             _packetRecorderWorker = new PacketRecorderWorker(path);
@@ -43,24 +43,10 @@ namespace AR.Drone.WinApp
         protected override void OnClosed(EventArgs e)
         {
             _arDroneClient.Dispose();
-            _videoDecoderWorker.Dispose();
+            _videoPacketDecoderWorker.Dispose();
             _packetRecorderWorker.Dispose();
 
             base.OnClosed(e);
-        }
-
-        private void OnNavigationPacketAcquired(NavigationPacket packet)
-        {
-            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
-            
-            UpdateNativeNavdata(packet);
-        }
-
-        private void OnVideoPacketAcquired(VideoPacket packet)
-        {
-            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
-
-            _videoDecoderWorker.EnqueuePacket(packet);
         }
 
         private void UpdateNativeNavdata(NavigationPacket packet)
@@ -71,8 +57,21 @@ namespace AR.Drone.WinApp
                 _nativeNavdata = nativeNavdata;
             }
         }
+        
+        private void OnNavigationPacketAcquired(NavigationPacket packet)
+        {
+            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
 
-        private void OnVideoDecoderOnFrameDecoded(VideoFrame frame)
+            UpdateNativeNavdata(packet);
+        }
+
+        private void OnVideoPacketAcquired(VideoPacket packet)
+        {
+            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
+            if (_videoPacketDecoderWorker.IsAlive) _videoPacketDecoderWorker.EnqueuePacket(packet);
+        }
+
+        private void OnVideoPacketDecoded(VideoFrame frame)
         {
             _frameImage = ARDroneVideoHelper.CreateImageFromFrame(frame);
         }

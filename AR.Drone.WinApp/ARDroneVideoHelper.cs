@@ -2,19 +2,23 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using AR.Drone.Client.Video;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using VideoPixelFormat = AR.Drone.Client.Video.PixelFormat;
 
 namespace AR.Drone.WinApp
 {
     public static class ARDroneVideoHelper
     {
-        public static PixelFormat ConvertPixelFormat(VideoFramePixelFormat inputPixelFormat)
+        public static PixelFormat ConvertPixelFormat(VideoPixelFormat pixelFormat)
         {
-            switch (inputPixelFormat)
+            switch (pixelFormat)
             {
-                case VideoFramePixelFormat.Gray8:
+                case VideoPixelFormat.Gray8:
                     return PixelFormat.Format8bppIndexed;
-                case VideoFramePixelFormat.RGB24:
+                case VideoPixelFormat.BGR24:
                     return PixelFormat.Format24bppRgb;
+                case VideoPixelFormat.RGB24:
+                    throw new NotSupportedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

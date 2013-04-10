@@ -1,8 +1,9 @@
 namespace AR.Drone.Client.Video
 {
-    public enum VideoFramePixelFormat : byte
+    public enum PixelFormat : byte
     {
         Gray8,
+        BGR24,
         RGB24
     }
 }
