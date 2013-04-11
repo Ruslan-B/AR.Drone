@@ -8,13 +8,13 @@ namespace AR.Drone.Client.Workers
     public class NetworkWorker : WorkerBase
     {
         private readonly ARDroneConfig _config;
-        private readonly Action<bool> _connectionStateChanged;
+        private readonly Action<bool> _connectionChanged;
         private bool _isConnected;
 
-        public NetworkWorker(ARDroneConfig config, Action<bool> connectionStateChanged)
+        public NetworkWorker(ARDroneConfig config, Action<bool> connectionChanged)
         {
             _config = config;
-            _connectionStateChanged = connectionStateChanged;
+            _connectionChanged = connectionChanged;
         }
 
         public bool IsConnected
@@ -42,13 +42,13 @@ namespace AR.Drone.Client.Workers
                             if (result != null && result.Status == IPStatus.Success)
                             {
                                 _isConnected = true;
-                                _connectionStateChanged(true);
+                                _connectionChanged(true);
                             }
                             else
                             {
                                 // todo add timeout?
                                 _isConnected = false;
-                                _connectionStateChanged(false);
+                                _connectionChanged(false);
                             }
                         }
                     }

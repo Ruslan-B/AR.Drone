@@ -3,7 +3,7 @@
 namespace AR.Drone.Client.Navigation
 {
     [Flags]
-    public enum NavigationState : byte
+    public enum NavigationState : ushort
     {
         Unknown = 0,
         Landed = 1 << 1,
@@ -11,6 +11,8 @@ namespace AR.Drone.Client.Navigation
         Takeoff = 1 << 3,
         Landing = 1 << 4,
         Hovering = 1 << 5,
-        Emergency = 1 << 6,
+        Command = 1 << 6,
+        Control = 1 << 7,
+        Emergency = 1 << 8
     }
 }

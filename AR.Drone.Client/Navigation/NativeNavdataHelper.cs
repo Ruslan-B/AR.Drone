@@ -46,6 +46,12 @@ namespace AR.Drone.Client.Navigation
 
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_EMERGENCY_MASK))
                 state |= NavigationState.Emergency;
+
+            if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_COMMAND_MASK))
+                state |= NavigationState.Command;
+
+            if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_CONTROL_MASK))
+                state |= NavigationState.Control;
         }
 
         private static void UpdateStateUsing(CTRL_STATES ctrlStates, ref NavigationState state)

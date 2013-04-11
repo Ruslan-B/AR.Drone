@@ -108,9 +108,9 @@
     <Compile Include="Video\VideoPacket.cs" />
     <Compile Include="ARDroneConfig.cs" />
     <Compile Include="ATCommand.cs" />
-    <Compile Include="RequestedState.cs" />
     <Compile Include="Video\FFmpeg\VideoConverter.cs" />
     <Compile Include="Video\FFmpeg\VideoDecoder.cs" />
+    <Compile Include="Workers\ConfigAcquisitionWorker.cs" />
     <Compile Include="Workers\PacketRecorderWorker.cs" />
     <Compile Include="IO\PacketType.cs" />
     <Compile Include="Workers\VideoPacketDecoderWorker.cs" />

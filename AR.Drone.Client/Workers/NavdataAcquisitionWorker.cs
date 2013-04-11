@@ -15,13 +15,13 @@ namespace AR.Drone.Client.Workers
         public const int NavdataTimeout = 2000;
 
         private readonly ARDroneConfig _config;
-        private readonly Action<NavigationPacket> _navdataAcquired;
+        private readonly Action<NavigationPacket> _navigationPacketAcquired;
         private readonly UdpClient _udpClient;
 
-        public NavdataAcquisitionWorker(ARDroneConfig config, Action<NavigationPacket> navdataAcquired)
+        public NavdataAcquisitionWorker(ARDroneConfig config, Action<NavigationPacket> navigationPacketAcquired)
         {
             _config = config;
-            _navdataAcquired = navdataAcquired;
+            _navigationPacketAcquired = navigationPacketAcquired;
             _udpClient = new UdpClient(NavdataPort);
         }
 
@@ -45,7 +45,7 @@ namespace AR.Drone.Client.Workers
                             Timestamp = DateTime.UtcNow.Ticks,
                             Data = data
                         };
-                    _navdataAcquired(packet);
+                    _navigationPacketAcquired(packet);
                     swNavdataTimeout.Restart();
                 }
 

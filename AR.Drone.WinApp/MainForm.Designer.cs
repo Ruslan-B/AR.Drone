@@ -50,6 +50,7 @@
             this.tvInfo = new System.Windows.Forms.TreeView();
             this.tmrVideoUpdate = new System.Windows.Forms.Timer(this.components);
             this.btnReset = new System.Windows.Forms.Button();
+            this.btnReadConfig = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -252,11 +253,22 @@
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
+            // btnReadConfig
+            // 
+            this.btnReadConfig.Location = new System.Drawing.Point(174, 12);
+            this.btnReadConfig.Name = "btnReadConfig";
+            this.btnReadConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnReadConfig.TabIndex = 20;
+            this.btnReadConfig.Text = "Read Config";
+            this.btnReadConfig.UseVisualStyleBackColor = true;
+            this.btnReadConfig.Click += new System.EventHandler(this.btnReadConfig_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 533);
+            this.Controls.Add(this.btnReadConfig);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tvInfo);
             this.Controls.Add(this.btnHover);
@@ -306,6 +318,7 @@
         private System.Windows.Forms.TreeView tvInfo;
         private System.Windows.Forms.Timer tmrVideoUpdate;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Button btnReadConfig;
     }
 }
 

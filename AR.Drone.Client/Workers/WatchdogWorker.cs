@@ -11,9 +11,9 @@ namespace AR.Drone.Client.Workers
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
 
         public WatchdogWorker(NetworkWorker networkWorker,
-                        NavdataAcquisitionWorker navdataAcquisitionWorker,
-                        CommandQueueWorker commandQueueWorker,
-                        VideoAcquisitionWorker videoAcquisitionWorker)
+                              NavdataAcquisitionWorker navdataAcquisitionWorker,
+                              CommandQueueWorker commandQueueWorker,
+                              VideoAcquisitionWorker videoAcquisitionWorker)
         {
             _networkWorker = networkWorker;
             _navdataAcquisitionWorker = navdataAcquisitionWorker;

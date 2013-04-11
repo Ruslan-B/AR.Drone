@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Text;
 using AI.Core.System;
 using AR.Drone.Client.Command;
 using AR.Drone.Client.Navigation;
@@ -14,13 +16,14 @@ namespace AR.Drone.Client
 
         private readonly CommandQueueWorker _commandQueueWorker;
         private readonly ARDroneConfig _config;
+        private readonly ConfigAcquisitionWorker _configAcquisitionWorker;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
         private readonly NetworkWorker _networkWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
         private readonly WatchdogWorker _watchdogWorker;
 
         private NavigationData _navigationData;
-        private RequestedState _requestedState;
+        private Request _request;
 
         public ARDroneClient()
         {
@@ -28,16 +31,17 @@ namespace AR.Drone.Client
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
             _networkWorker = new NetworkWorker(_config, OnConnectionChanged);
-            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_config, OnNavigationPacketAcquired);
             _commandQueueWorker = new CommandQueueWorker(_config, _commandQueue);
+            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_config, OnNavigationPacketAcquired);
             _videoAcquisitionWorker = new VideoAcquisitionWorker(_config, OnVideoPacketAcquired);
+            _configAcquisitionWorker = new ConfigAcquisitionWorker(_config, OnConfigurationPacketAcquired);
             _watchdogWorker = new WatchdogWorker(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
         public Action<NavigationData> NavigationDataDecoded { get; set; }
         public Action<VideoPacket> VideoPacketAcquired { get; set; }
-        
+
         public bool Active
         {
             get { return _watchdogWorker.IsAlive; }
@@ -67,6 +71,7 @@ namespace AR.Drone.Client
         {
             _commandQueue.Enqueue(new ConfigCommand("general:navdata_demo", false));
             _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
+            _request = Request.Configuration;
         }
 
         private void RecreateNavigationData()
@@ -114,28 +119,34 @@ namespace AR.Drone.Client
                 VideoPacketAcquired(packet);
         }
 
+        private void OnConfigurationPacketAcquired(ConfigurationPacket packet)
+        {
+            string config = Encoding.ASCII.GetString(packet.Data);
+            Trace.TraceInformation(config);
+        }
+
         private void ProcessRequestedState()
         {
-            switch (_requestedState)
+            switch (_request)
             {
-                case RequestedState.None:
+                case Request.None:
                     return;
-                case RequestedState.Emergency:
+                case Request.Emergency:
                     if (_navigationData.State.HasFlag(NavigationState.Flying))
                         _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
                     else
-                        _requestedState = RequestedState.None;
+                        _request = Request.None;
                     break;
-                case RequestedState.Landed:
+                case Request.Land:
                     if (_navigationData.State.HasFlag(NavigationState.Flying) &&
                         _navigationData.State.HasFlag(NavigationState.Landing) == false)
                     {
                         _commandQueue.Enqueue(new RefCommand(RefMode.Land));
                     }
                     else
-                        _requestedState = RequestedState.None;
+                        _request = Request.None;
                     break;
-                case RequestedState.Flying:
+                case Request.Fly:
                     if (_navigationData.State.HasFlag(NavigationState.Landed) &&
                         _navigationData.State.HasFlag(NavigationState.Takeoff) == false &&
                         _navigationData.State.HasFlag(NavigationState.Emergency) == false &&
@@ -144,7 +155,18 @@ namespace AR.Drone.Client
                         _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
                     }
                     else
-                        _requestedState = RequestedState.None;
+                        _request = Request.None;
+                    break;
+                case Request.Configuration:
+                    _configAcquisitionWorker.Start();
+                    if (_navigationData.State.HasFlag(NavigationState.Command))
+                    {
+                        _commandQueue.Enqueue(new ControlCommand(ControlMode.AckControlMode));
+                        break;
+                    }
+                    
+                    _commandQueue.Enqueue(new ControlCommand(ControlMode.CfgGetControlMode));
+                    _request = Request.None;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -153,24 +175,29 @@ namespace AR.Drone.Client
 
         public void Emergency()
         {
-            _requestedState = RequestedState.Emergency;
+            _request = Request.Emergency;
         }
 
         public void ResetEmergency()
         {
-            _requestedState = RequestedState.None;
+            _request = Request.None;
             _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+        }
+
+        public void RequestConfiguration()
+        {
+            _request = Request.Configuration;
         }
 
         public void Land()
         {
-            _requestedState = RequestedState.Landed;
+            _request = Request.Land;
         }
 
         public void Takeoff()
         {
             if (_navigationData.State.HasFlag(NavigationState.Landed))
-                _requestedState = RequestedState.Flying;
+                _request = Request.Fly;
         }
 
         public void FlatTrim()
@@ -198,11 +225,21 @@ namespace AR.Drone.Client
 
         protected override void DisposeOverride()
         {
+            _configAcquisitionWorker.Dispose();
             _networkWorker.Dispose();
             _navdataAcquisitionWorker.Dispose();
             _commandQueueWorker.Dispose();
             _videoAcquisitionWorker.Dispose();
             _watchdogWorker.Dispose();
+        }
+
+        internal enum Request
+        {
+            None,
+            Land,
+            Fly,
+            Emergency,
+            Configuration
         }
     }
 }

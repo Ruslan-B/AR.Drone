@@ -14,22 +14,20 @@ namespace AR.Drone.Client.Workers
         public const int NetworkStreamReadSize = 0x10000;
 
         private readonly ARDroneConfig _config;
-        private readonly Action<VideoPacket> _frameAcquired;
-        private TcpClient _tcpClient;
-        private NetworkStream _videoStream;
+        private readonly Action<VideoPacket> _videoPacketAcquired;
 
-        public VideoAcquisitionWorker(ARDroneConfig config, Action<VideoPacket> frameAcquired)
+        public VideoAcquisitionWorker(ARDroneConfig config, Action<VideoPacket> videoPacketAcquired)
         {
             _config = config;
-            _frameAcquired = frameAcquired;
+            _videoPacketAcquired = videoPacketAcquired;
         }
 
         protected override unsafe void Loop(CancellationToken token)
         {
-            using (_tcpClient = new TcpClient(_config.Hostname, VideoPort))
-            using (_videoStream = _tcpClient.GetStream())
+            using (var tcpClient = new TcpClient(_config.Hostname, VideoPort))
+            using (NetworkStream stream = tcpClient.GetStream())
             {
-                VideoPacket packet = new VideoPacket();
+                var packet = new VideoPacket();
                 byte[] packetData = null;
                 int offset = 0;
                 int frameStart = 0;
@@ -38,7 +36,7 @@ namespace AR.Drone.Client.Workers
                 fixed (byte* pBuffer = &buffer[0])
                     while (token.IsCancellationRequested == false)
                     {
-                        offset += _videoStream.Read(buffer, offset, NetworkStreamReadSize);
+                        offset += stream.Read(buffer, offset, NetworkStreamReadSize);
                         if (packetData == null)
                         {
                             // lookup for a frame start
@@ -77,7 +75,7 @@ namespace AR.Drone.Client.Workers
                         {
                             // frame acquired
                             Array.Copy(buffer, frameStart, packetData, 0, packetData.Length);
-                            _frameAcquired(packet);
+                            _videoPacketAcquired(packet);
 
                             // clean up acquired frame
                             packetData = null;

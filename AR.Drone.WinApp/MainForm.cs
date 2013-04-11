@@ -215,5 +215,10 @@ namespace AR.Drone.WinApp
         {
             _arDroneClient.Progress(ProgressiveMode.CombinedYaw, pitch: 0.05f);
         }
+
+        private void btnReadConfig_Click(object sender, EventArgs e)
+        {
+            _arDroneClient.RequestConfiguration();
+        }
     }
 }
