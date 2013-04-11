@@ -67,12 +67,6 @@ namespace AR.Drone.Client
             get { return _navigationData; }
         }
 
-        private void SendInitialConfiguration()
-        {
-            _commandQueue.Enqueue(new ConfigCommand("general:navdata_demo", false));
-            _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
-            _request = Request.Configuration;
-        }
 
         private void RecreateNavigationData()
         {
@@ -90,7 +84,7 @@ namespace AR.Drone.Client
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
             if (_navigationData.State == NavigationState.Unknown)
-                SendInitialConfiguration();
+                _request = Request.Initialize;
 
             if (NavigationPacketAcquired != null)
                 NavigationPacketAcquired(packet);
@@ -107,7 +101,7 @@ namespace AR.Drone.Client
         {
             _navigationData = navigationData;
 
-            ProcessRequestedState();
+            ProcessRequest();
 
             if (NavigationDataDecoded != null)
                 NavigationDataDecoded(navigationData);
@@ -125,17 +119,26 @@ namespace AR.Drone.Client
             Trace.TraceInformation(config);
         }
 
-        private void ProcessRequestedState()
+        private void ProcessRequest()
         {
             switch (_request)
             {
                 case Request.None:
+                    return;
+                case Request.Initialize:
+                    _commandQueue.Enqueue(new ConfigCommand("general:navdata_demo", false));
+                    _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
+                    _request = Request.Configuration;
                     return;
                 case Request.Emergency:
                     if (_navigationData.State.HasFlag(NavigationState.Flying))
                         _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
                     else
                         _request = Request.None;
+                    break;
+                case Request.ResetEmergency:
+                    _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+                    _request = Request.None;
                     break;
                 case Request.Land:
                     if (_navigationData.State.HasFlag(NavigationState.Flying) &&
@@ -162,11 +165,12 @@ namespace AR.Drone.Client
                     if (_navigationData.State.HasFlag(NavigationState.Command))
                     {
                         _commandQueue.Enqueue(new ControlCommand(ControlMode.AckControlMode));
-                        break;
                     }
-                    
-                    _commandQueue.Enqueue(new ControlCommand(ControlMode.CfgGetControlMode));
-                    _request = Request.None;
+                    else
+                    {
+                        _commandQueue.Enqueue(new ControlCommand(ControlMode.CfgGetControlMode));
+                        _request = Request.None;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -180,8 +184,7 @@ namespace AR.Drone.Client
 
         public void ResetEmergency()
         {
-            _request = Request.None;
-            _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+            _request = Request.ResetEmergency;
         }
 
         public void RequestConfiguration()
@@ -236,10 +239,12 @@ namespace AR.Drone.Client
         internal enum Request
         {
             None,
+            Initialize,
+            Configuration,
             Land,
             Fly,
             Emergency,
-            Configuration
+            ResetEmergency
         }
     }
 }
