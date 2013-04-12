@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using AR.Drone.Client.Command;
 using AI.Core.System;
 using AR.Drone.Client.Helpers;
 
@@ -55,6 +54,14 @@ namespace AR.Drone.Client.Workers
                     _commandQueue.Enqueue(new COMWDGCommand());
                 }
                 Thread.Sleep(1);
+            }
+        }
+
+        internal class COMWDGCommand : ATCommand
+        {
+            protected override string ToAt(int sequenceNumber)
+            {
+                return string.Format("AT*COMWDG={0}\r", sequenceNumber);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using AR.Drone.Client.Data;
 using AR.Drone.Client.Navigation;
 using AR.Drone.Client.Video;
 

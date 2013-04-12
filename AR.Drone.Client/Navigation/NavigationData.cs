@@ -6,20 +6,20 @@ namespace AR.Drone.Client.Navigation
     public struct NavigationData
     {
         public NavigationState State;
-        public float Yaw; // psi - Z
-        public float Pitch; // theta - Y
-        public float Roll; // phi - X
-        public float Altitude;
-        public Vector3 Velocity;
+        public float Yaw; // radians - psi - Z
+        public float Pitch; // radians - theta - Y
+        public float Roll; // radians - phi - X
+        public float Altitude; // meters
+        public Vector3 Velocity; // meter/second
         public Battery Battery;
-        public uint Time;
+        public float Time; // seconds
         public Wifi Wifi;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct Wifi
     {
-        public float LinkQuality;
+        public float LinkQuality; // 1 is perfect, less than 1 is worse
 
         public override string ToString()
         {
@@ -32,7 +32,7 @@ namespace AR.Drone.Client.Navigation
     {
         public bool Low;
         public float Percentage;
-        public float Voltage;
+        public float Voltage; // in volts
 
 
         public override string ToString()
@@ -44,9 +44,9 @@ namespace AR.Drone.Client.Navigation
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector3
     {
-        public float X;
-        public float Y;
-        public float Z;
+        public float X; // meter/second
+        public float Y; // meter/second
+        public float Z; // meter/second
 
 
         public override string ToString()

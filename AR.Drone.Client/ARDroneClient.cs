@@ -3,9 +3,11 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 using AI.Core.System;
-using AR.Drone.Client.Command;
+using AR.Drone.Client.Commands;
+using AR.Drone.Client.Configuration;
+using AR.Drone.Client.Data;
 using AR.Drone.Client.Navigation;
-using AR.Drone.Client.Video;
+using AR.Drone.Client.Navigation.Native;
 using AR.Drone.Client.Workers;
 
 namespace AR.Drone.Client
@@ -13,7 +15,6 @@ namespace AR.Drone.Client
     public class ARDroneClient : DisposableBase
     {
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
-
         private readonly CommandQueueWorker _commandQueueWorker;
         private readonly ARDroneConfig _config;
         private readonly ConfigAcquisitionWorker _configAcquisitionWorker;
@@ -39,7 +40,7 @@ namespace AR.Drone.Client
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
-        public Action<NavigationData> NavigationDataDecoded { get; set; }
+        public Action<NavigationData> NavigationDataUpdated { get; set; }
         public Action<VideoPacket> VideoPacketAcquired { get; set; }
 
         public bool Active
@@ -89,22 +90,21 @@ namespace AR.Drone.Client
             if (NavigationPacketAcquired != null)
                 NavigationPacketAcquired(packet);
 
-            NativeNavdata nativeNavdata;
-            if (NativeNavdataParser.TryParse(ref packet, out nativeNavdata))
-            {
-                NavigationData navigationData = nativeNavdata.ToNavigationData();
-                OnNavigationDataDecoded(navigationData);
-            }
+            UpdateNavigationData(packet);
         }
 
-        private void OnNavigationDataDecoded(NavigationData navigationData)
+        private void UpdateNavigationData(NavigationPacket packet)
         {
-            _navigationData = navigationData;
+            NavdataBag navdataBag;
+            if (NavdataBagParser.TryParse(ref packet, out navdataBag))
+            {
+                _navigationData = navdataBag.ToNavigationData();
 
-            ProcessRequest();
+                ProcessRequest();
 
-            if (NavigationDataDecoded != null)
-                NavigationDataDecoded(navigationData);
+                if (NavigationDataUpdated != null)
+                    NavigationDataUpdated(_navigationData);
+            }
         }
 
         private void OnVideoPacketAcquired(VideoPacket packet)
@@ -215,7 +215,7 @@ namespace AR.Drone.Client
                 _commandQueue.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
         }
 
-        public void Progress(ProgressiveMode mode = ProgressiveMode.Progressive, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
+        public void Progress(ProgressiveMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
         {
             if (_navigationData.State.HasFlag(NavigationState.Flying))
                 _commandQueue.Enqueue(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));

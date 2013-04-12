@@ -3,9 +3,10 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using AR.Drone.Client;
-using AR.Drone.Client.Command;
-using AR.Drone.Client.NativeApi.Navdata;
-using AR.Drone.Client.Navigation;
+using AR.Drone.Client.Commands;
+using AR.Drone.Client.Configuration;
+using AR.Drone.Client.Data;
+using AR.Drone.Client.Navigation.Native;
 using AR.Drone.Client.Video;
 using AR.Drone.Client.Workers;
 
@@ -18,7 +19,7 @@ namespace AR.Drone.WinApp
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
 
         private Image _frameImage;
-        private NativeNavdata _nativeNavdata;
+        private NavigationPacket _navigationPacket;
 
         public MainForm()
         {
@@ -49,20 +50,11 @@ namespace AR.Drone.WinApp
             base.OnClosed(e);
         }
 
-        private void UpdateNativeNavdata(NavigationPacket packet)
-        {
-            NativeNavdata nativeNavdata;
-            if (NativeNavdataParser.TryParse(ref packet, out nativeNavdata))
-            {
-                _nativeNavdata = nativeNavdata;
-            }
-        }
-        
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
             if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
 
-            UpdateNativeNavdata(packet);
+            _navigationPacket = packet;
         }
 
         private void OnVideoPacketAcquired(VideoPacket packet)
@@ -106,16 +98,19 @@ namespace AR.Drone.WinApp
 
             TreeNode vativeNode = tvInfo.Nodes.GetOrCreate("Native");
 
-            var ctrl_state = (CTRL_STATES) (_nativeNavdata.demo.ctrl_state >> 0x10);
-            node = vativeNode.Nodes.GetOrCreate("ctrl_state");
-            node.Text = string.Format("Ctrl State: {0}", ctrl_state);
+            NavdataBag navdataBag;
+            if (_navigationPacket.Data != null && NavdataBagParser.TryParse(ref _navigationPacket, out navdataBag))
+            {
+                var ctrl_state = (CTRL_STATES)(navdataBag.demo.ctrl_state >> 0x10);
+                node = vativeNode.Nodes.GetOrCreate("ctrl_state");
+                node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-            var flying_state = (FLYING_STATES) (_nativeNavdata.demo.ctrl_state & 0xffff);
-            node = vativeNode.Nodes.GetOrCreate("flying_state");
-            node.Text = string.Format("Ctrl State: {0}", flying_state);
+                var flying_state = (FLYING_STATES)(navdataBag.demo.ctrl_state & 0xffff);
+                node = vativeNode.Nodes.GetOrCreate("flying_state");
+                node.Text = string.Format("Ctrl State: {0}", flying_state);
 
-            DumpBranch(vativeNode.Nodes, _nativeNavdata);
-
+                DumpBranch(vativeNode.Nodes, navdataBag);
+            }
             tvInfo.EndUpdate();
         }
 
@@ -178,22 +173,22 @@ namespace AR.Drone.WinApp
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(gaz: 0.25f);
+            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, gaz: 0.25f);
         }
 
         private void btnDown_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(gaz: -0.25f);
+            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, gaz: -0.25f);
         }
 
         private void btnTurnLeft_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(yaw: 0.25f);
+            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, yaw: 0.25f);
         }
 
         private void btnTurnRight_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(yaw: -0.25f);
+            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, yaw: -0.25f);
         }
 
         private void btnLeft_Click(object sender, EventArgs e)

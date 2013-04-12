@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Data;
 
 namespace AR.Drone.Client.Workers
 {
@@ -9,6 +11,7 @@ namespace AR.Drone.Client.Workers
     {
         private const int ControlPort = 5559;
         private const int NetworkBufferSize = 0x10000;
+        private const int ConfigTimeout = 1000;
         private readonly ARDroneConfig _config;
         private readonly Action<ConfigurationPacket> _configurationAcquired;
 
@@ -24,28 +27,32 @@ namespace AR.Drone.Client.Workers
             using (NetworkStream stream = tcpClient.GetStream())
             {
                 var buffer = new byte[NetworkBufferSize];
-                while (token.IsCancellationRequested == false)
+                Stopwatch swConfigTimeout = Stopwatch.StartNew();
+                while (token.IsCancellationRequested == false && swConfigTimeout.ElapsedMilliseconds < ConfigTimeout)
                 {
                     int offset = 0;
                     if (tcpClient.Available > 0)
                     {
                         offset += stream.Read(buffer, offset, buffer.Length);
-                        var packet = new ConfigurationPacket
-                            {
-                                Timestamp = DateTime.UtcNow.Ticks,
-                                Data = buffer
-                            };
-                        _configurationAcquired(packet);
+
+                        // config eof check
+                        if (offset > 0 && buffer[offset - 1] == 0x00)
+                        {
+                            var data = new byte[offset];
+                            buffer.CopyTo(data, offset);
+                            var packet = new ConfigurationPacket
+                                {
+                                    Timestamp = DateTime.UtcNow.Ticks,
+                                    Data = data
+                                };
+                            _configurationAcquired(packet);
+
+                            return;
+                        }
                     }
                     Thread.Sleep(10);
                 }
             }
         }
-    }
-
-    public struct ConfigurationPacket
-    {
-        public byte[] Data;
-        public long Timestamp;
     }
 }

@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Data;
 using AR.Drone.Client.Navigation;
 
 namespace AR.Drone.Client.Workers

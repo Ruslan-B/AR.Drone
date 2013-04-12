@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Data;
 using AR.Drone.Client.Helpers;
 using AR.Drone.Client.IO;
 using AR.Drone.Client.Navigation;

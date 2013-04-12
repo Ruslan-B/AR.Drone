@@ -2,7 +2,8 @@
 using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.NativeApi.Video;
+using AR.Drone.Client.Data;
+using AR.Drone.Client.Data.Native.Video;
 using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.Workers
