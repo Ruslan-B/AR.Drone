@@ -16,11 +16,11 @@ Drone controling and video streaming support are working fine.
 However, it is a big gap in drone configuaration support.
 
 Things todo:
-- [x] Access to drone configuaration;
-- [x] Native interface to read/write drone configuration;
-- [ ] Multi-configuration support;
-- [ ] Wifi managment (only on Windows so far);
-- [ ] 64-bit support.
+[x] Access to drone configuaration;
+[x] Native interface to read/write drone configuration;
+[ ] Multi-configuration support;
+[ ] Wifi managment (only on Windows so far);
+[ ] 64-bit support.
 
 ## Build
 
@@ -42,7 +42,7 @@ of [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen).
 
 ## Usage
 
-The solution includes Winform application - `AR.Drone.WinApp`, it is includes minimalistic interface 
+The solution includes Winform application `AR.Drone.WinApp`, it is includes minimalistic interface 
 for control and display video from AR.Drone 2.0.
 
 ## License
