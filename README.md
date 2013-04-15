@@ -15,12 +15,12 @@ so please don't be suprised if you find some functionality missing or undocument
 Drone controling and video streaming support are working fine.
 However, it is a big gap in drone configuaration support.
 
-Things todo:
-[x] Access to drone configuaration;
-[x] Native interface to read/write drone configuration;
-[ ] Multi-configuration support;
-[ ] Wifi managment (only on Windows so far);
-[ ] 64-bit support.
+Things todo:  
+[x] Access to drone configuaration;  
+[x] Native interface to read/write drone configuration;  
+[ ] Multi-configuration support;  
+[ ] Wifi managment (only on Windows so far);  
+[ ] 64-bit support.  
 
 ## Build
 
