@@ -2,11 +2,12 @@
 using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.Data;
-using AR.Drone.Client.Data.Native.Video;
+using AR.Drone.Client.Configuration;
+using AR.Drone.Client.Packets;
 using AR.Drone.Client.Video;
+using AR.Drone.Client.Video.Native;
 
-namespace AR.Drone.Client.Workers
+namespace AR.Drone.Client.Workers.Acquisition
 {
     public class VideoAcquisitionWorker : WorkerBase
     {
@@ -14,18 +15,18 @@ namespace AR.Drone.Client.Workers
         public const int FrameBufferSize = 0x100000;
         public const int NetworkStreamReadSize = 0x10000;
 
-        private readonly ARDroneConfig _config;
+        private readonly INetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 
-        public VideoAcquisitionWorker(ARDroneConfig config, Action<VideoPacket> videoPacketAcquired)
+        public VideoAcquisitionWorker(INetworkConfiguration configuration, Action<VideoPacket> videoPacketAcquired)
         {
-            _config = config;
+            _configuration = configuration;
             _videoPacketAcquired = videoPacketAcquired;
         }
 
         protected override unsafe void Loop(CancellationToken token)
         {
-            using (var tcpClient = new TcpClient(_config.Hostname, VideoPort))
+            using (var tcpClient = new TcpClient(_configuration.DroneHostname, VideoPort))
             using (NetworkStream stream = tcpClient.GetStream())
             {
                 var packet = new VideoPacket();

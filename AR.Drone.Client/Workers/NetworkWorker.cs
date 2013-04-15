@@ -2,18 +2,19 @@
 using System.Net.NetworkInformation;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Configuration;
 
 namespace AR.Drone.Client.Workers
 {
     public class NetworkWorker : WorkerBase
     {
-        private readonly ARDroneConfig _config;
+        private readonly INetworkConfiguration _configuration;
         private readonly Action<bool> _connectionChanged;
         private bool _isConnected;
 
-        public NetworkWorker(ARDroneConfig config, Action<bool> connectionChanged)
+        public NetworkWorker(INetworkConfiguration configuration, Action<bool> connectionChanged)
         {
-            _config = config;
+            _configuration = configuration;
             _connectionChanged = connectionChanged;
         }
 
@@ -38,7 +39,7 @@ namespace AR.Drone.Client.Workers
                         if (@if.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && @if.OperationalStatus == OperationalStatus.Up)
                         {
                             var ping = new Ping();
-                            PingReply result = ping.Send(_config.Hostname);
+                            PingReply result = ping.Send(_configuration.DroneHostname);
                             if (result != null && result.Status == IPStatus.Success)
                             {
                                 _isConnected = true;

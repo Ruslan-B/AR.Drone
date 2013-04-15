@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using AI.Core.System;
-using AR.Drone.Client.Data;
-using AR.Drone.Client.Navigation;
-using AR.Drone.Client.Video;
+using AR.Drone.Client.Packets;
 
 namespace AR.Drone.Client.IO
 {

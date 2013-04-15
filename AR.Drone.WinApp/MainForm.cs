@@ -5,8 +5,9 @@ using System.Windows.Forms;
 using AR.Drone.Client;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
-using AR.Drone.Client.Data;
+using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Client.Navigation.Native;
+using AR.Drone.Client.Packets;
 using AR.Drone.Client.Video;
 using AR.Drone.Client.Workers;
 
@@ -14,7 +15,7 @@ namespace AR.Drone.WinApp
 {
     public partial class MainForm : Form
     {
-        private readonly ARDroneClient _arDroneClient;
+        private readonly DroneClient _droneClient;
         private readonly PacketRecorderWorker _packetRecorderWorker;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
 
@@ -32,10 +33,10 @@ namespace AR.Drone.WinApp
             _packetRecorderWorker = new PacketRecorderWorker(path);
             _packetRecorderWorker.Start();
 
-            _arDroneClient = new ARDroneClient();
-            _arDroneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
-            _arDroneClient.VideoPacketAcquired += OnVideoPacketAcquired;
-            _arDroneClient.Active = true;
+            _droneClient = new DroneClient();
+            _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
+            _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
+            _droneClient.Active = true;
 
             tmrStateUpdate.Enabled = true;
             tmrVideoUpdate.Enabled = true;
@@ -43,7 +44,7 @@ namespace AR.Drone.WinApp
 
         protected override void OnClosed(EventArgs e)
         {
-            _arDroneClient.Dispose();
+            _droneClient.Dispose();
             _videoPacketDecoderWorker.Dispose();
             _packetRecorderWorker.Dispose();
 
@@ -65,17 +66,17 @@ namespace AR.Drone.WinApp
 
         private void OnVideoPacketDecoded(VideoFrame frame)
         {
-            _frameImage = ARDroneVideoHelper.CreateImageFromFrame(frame);
+            _frameImage = VideoHelper.CreateImageFromFrame(frame);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Active = true;
+            _droneClient.Active = true;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Active = false;
+            _droneClient.Active = false;
         }
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
@@ -91,21 +92,24 @@ namespace AR.Drone.WinApp
             tvInfo.BeginUpdate();
 
             TreeNode node = tvInfo.Nodes.GetOrCreate("ClientActive");
-            node.Text = string.Format("Client Active: {0}", _arDroneClient.Active);
+            node.Text = string.Format("Client Active: {0}", _droneClient.Active);
 
             node = tvInfo.Nodes.GetOrCreate("Navigation Data");
-            DumpBranch(node.Nodes, _arDroneClient.NavigationData);
+            DumpBranch(node.Nodes, _droneClient.NavigationData);
+
+            node = tvInfo.Nodes.GetOrCreate("Configuration");
+            DumpBranch(node.Nodes, _droneClient.Configuration);
 
             TreeNode vativeNode = tvInfo.Nodes.GetOrCreate("Native");
 
             NavdataBag navdataBag;
             if (_navigationPacket.Data != null && NavdataBagParser.TryParse(ref _navigationPacket, out navdataBag))
             {
-                var ctrl_state = (CTRL_STATES)(navdataBag.demo.ctrl_state >> 0x10);
+                var ctrl_state = (CTRL_STATES) (navdataBag.demo.ctrl_state >> 0x10);
                 node = vativeNode.Nodes.GetOrCreate("ctrl_state");
                 node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-                var flying_state = (FLYING_STATES)(navdataBag.demo.ctrl_state & 0xffff);
+                var flying_state = (FLYING_STATES) (navdataBag.demo.ctrl_state & 0xffff);
                 node = vativeNode.Nodes.GetOrCreate("flying_state");
                 node.Text = string.Format("Ctrl State: {0}", flying_state);
 
@@ -125,6 +129,8 @@ namespace AR.Drone.WinApp
 
                 if (fieldValue == null)
                     node.Text = node.Name + ": null";
+                else if (fieldValue is IConfigurationItem)
+                    node.Text = node.Name + ": " + ((IConfigurationItem)fieldValue).Value;
                 else
                 {
                     Type fieldType = fieldInfo.FieldType;
@@ -138,82 +144,83 @@ namespace AR.Drone.WinApp
 
         private void btnFlatTrim_Click(object sender, EventArgs e)
         {
-            _arDroneClient.FlatTrim();
+            _droneClient.FlatTrim();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Takeoff();
+            _droneClient.Takeoff();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Land();
+            _droneClient.Land();
         }
 
         private void btnEmergency_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Emergency();
+            _droneClient.Emergency();
         }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            _arDroneClient.ResetEmergency();
+            _droneClient.ResetEmergency();
         }
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            _arDroneClient.SetVideoChannel(VideoChannel.Next);
+            ATCommand command = _droneClient.Configuration.Video.Channel.Set(VideoChannelType.Next).ToCommand();
+            _droneClient.Send(command);
         }
 
         private void btnHover_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Hover();
+            _droneClient.Hover();
         }
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, gaz: 0.25f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, gaz: 0.25f);
         }
 
         private void btnDown_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, gaz: -0.25f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, gaz: -0.25f);
         }
 
         private void btnTurnLeft_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, yaw: 0.25f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, yaw: 0.25f);
         }
 
         private void btnTurnRight_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, yaw: -0.25f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, yaw: -0.25f);
         }
 
         private void btnLeft_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, roll: 0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: 0.05f);
         }
 
         private void btnRight_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, roll: -0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: -0.05f);
         }
 
         private void btnForward_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, pitch: -0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, pitch: -0.05f);
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            _arDroneClient.Progress(ProgressiveMode.CombinedYaw, pitch: 0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, pitch: 0.05f);
         }
 
         private void btnReadConfig_Click(object sender, EventArgs e)
         {
-            _arDroneClient.RequestConfiguration();
+            _droneClient.RequestConfiguration();
         }
     }
 }

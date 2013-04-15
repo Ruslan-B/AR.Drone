@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ConfigCommand.cs" />
@@ -47,14 +48,33 @@
     <Compile Include="Commands\ProgressiveMode.cs" />
     <Compile Include="Commands\RefCommand.cs" />
     <Compile Include="Commands\RefMode.cs" />
-    <Compile Include="Configuration\VideoChannel.cs" />
+    <Compile Include="Configuration\DroneConfiguration.cs" />
+    <Compile Include="Configuration\ConfigurationPacketParser.cs" />
+    <Compile Include="Configuration\IConfigurationItem.cs" />
+    <Compile Include="Configuration\Sections\ControlSection.cs" />
+    <Compile Include="Configuration\CommandHelper.cs" />
+    <Compile Include="Configuration\Sections\CustomSection.cs" />
+    <Compile Include="Configuration\Sections\DetectSection.cs" />
+    <Compile Include="Configuration\Sections\GeneralSection.cs" />
+    <Compile Include="Configuration\ReadOnlyItem.cs" />
+    <Compile Include="Configuration\ReadWriteItem.cs" />
+    <Compile Include="Configuration\Sections\GpsSection.cs" />
+    <Compile Include="Configuration\Sections\LedsSection.cs" />
+    <Compile Include="Configuration\Sections\NetworkSection.cs" />
+    <Compile Include="Configuration\Sections\PicSection.cs" />
+    <Compile Include="Configuration\Sections\SyslogSection.cs" />
+    <Compile Include="Configuration\Sections\UserboxSection.cs" />
+    <Compile Include="Configuration\Sections\VideoSection.cs" />
+    <Compile Include="Configuration\Sections\VideoChannelType.cs" />
+    <Compile Include="Helpers\ConversionHelper.cs" />
     <Compile Include="IO\BinaryHelper.cs" />
     <Compile Include="IO\PacketReader.cs" />
     <Compile Include="IO\PacketWriter.cs" />
+    <Compile Include="Navigation\NavigationPacketParser.cs" />
     <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="Navigation\Native\NavdataBag.cs" />
     <Compile Include="Navigation\NavdataBagHelper.cs" />
-    <Compile Include="Data\NavigationPacket.cs" />
+    <Compile Include="Packets\NavigationPacket.cs" />
     <Compile Include="Video\FFmpeg\PixelFormatHelper.cs" />
     <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
     <Compile Include="Navigation\Native\Math\matrix33_t.cs" />
@@ -104,23 +124,23 @@
     <Compile Include="Video\VideoPacketDecoder.cs" />
     <Compile Include="Video\VideoFrame.cs" />
     <Compile Include="Video\PixelFormat.cs" />
-    <Compile Include="Data\VideoPacket.cs" />
-    <Compile Include="ARDroneConfig.cs" />
+    <Compile Include="Packets\VideoPacket.cs" />
+    <Compile Include="Configuration\INetworkConfiguration.cs" />
     <Compile Include="ATCommand.cs" />
     <Compile Include="Video\FFmpeg\VideoConverter.cs" />
     <Compile Include="Video\FFmpeg\VideoDecoder.cs" />
-    <Compile Include="Workers\ConfigAcquisitionWorker.cs" />
-    <Compile Include="Data\ConfigurationPacket.cs" />
+    <Compile Include="Workers\Acquisition\ConfigurationAcquisitionWorker.cs" />
+    <Compile Include="Packets\ConfigurationPacket.cs" />
     <Compile Include="Workers\PacketRecorderWorker.cs" />
     <Compile Include="IO\PacketType.cs" />
     <Compile Include="Workers\VideoPacketDecoderWorker.cs" />
     <Compile Include="Workers\WatchdogWorker.cs" />
     <Compile Include="Workers\CommandQueueWorker.cs" />
     <Compile Include="Helpers\ConcurrentQueueHelper.cs" />
-    <Compile Include="ARDroneClient.cs" />
-    <Compile Include="Workers\NavdataAcquisitionWorker.cs" />
+    <Compile Include="DroneClient.cs" />
+    <Compile Include="Workers\Acquisition\NavdataAcquisitionWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Workers\VideoAcquisitionWorker.cs" />
+    <Compile Include="Workers\Acquisition\VideoAcquisitionWorker.cs" />
     <Compile Include="Video\Exceptions\VideoDecoderException.cs" />
     <Compile Include="Workers\NetworkWorker.cs" />
   </ItemGroup>
@@ -134,9 +154,7 @@
       <Name>AI.Core.System</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NativeApi\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

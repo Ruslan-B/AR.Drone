@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Helpers;
 
 namespace AR.Drone.Client.Workers
@@ -15,12 +16,12 @@ namespace AR.Drone.Client.Workers
         public const int KeepAliveTimeout = 50;
 
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
-        private readonly ARDroneConfig _config;
+        private readonly INetworkConfiguration _configuration;
         private readonly UdpClient _udpClient;
 
-        public CommandQueueWorker(ARDroneConfig config, ConcurrentQueue<ATCommand> commandQueue)
+        public CommandQueueWorker(INetworkConfiguration configuration, ConcurrentQueue<ATCommand> commandQueue)
         {
-            _config = config;
+            _configuration = configuration;
             _commandQueue = commandQueue;
             _udpClient = new UdpClient(CommandPort);
         }
@@ -30,7 +31,7 @@ namespace AR.Drone.Client.Workers
             int sequenceNumber = 1;
             ConcurrentQueueHelper.Flush(_commandQueue);
 
-            _udpClient.Connect(_config.Hostname, CommandPort);
+            _udpClient.Connect(_configuration.DroneHostname, CommandPort);
 
             byte[] firstMessage = BitConverter.GetBytes(1);
             _udpClient.Send(firstMessage, firstMessage.Length);

@@ -16,8 +16,8 @@ Drone controling and video streaming support are working fine.
 However, it is a big gap in drone configuaration support.
 
 Things todo:
-- [ ] Access to drone configuaration;
-- [ ] Native interface to read/write drone configuration;
+- [x] Access to drone configuaration;
+- [x] Native interface to read/write drone configuration;
 - [ ] Multi-configuration support;
 - [ ] Wifi managment (only on Windows so far);
 - [ ] 64-bit support.

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Workers.Acquisition;
 
 namespace AR.Drone.Client.Workers
 {

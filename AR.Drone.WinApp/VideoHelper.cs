@@ -7,7 +7,7 @@ using VideoPixelFormat = AR.Drone.Client.Video.PixelFormat;
 
 namespace AR.Drone.WinApp
 {
-    public static class ARDroneVideoHelper
+    public static class VideoHelper
     {
         public static PixelFormat ConvertPixelFormat(VideoPixelFormat pixelFormat)
         {

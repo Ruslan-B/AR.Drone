@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.Data;
 using AR.Drone.Client.Helpers;
+using AR.Drone.Client.Packets;
 using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.Workers

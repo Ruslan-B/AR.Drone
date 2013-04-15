@@ -4,10 +4,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.Data;
-using AR.Drone.Client.Navigation;
+using AR.Drone.Client.Configuration;
+using AR.Drone.Client.Packets;
 
-namespace AR.Drone.Client.Workers
+namespace AR.Drone.Client.Workers.Acquisition
 {
     public class NavdataAcquisitionWorker : WorkerBase
     {
@@ -15,20 +15,20 @@ namespace AR.Drone.Client.Workers
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
 
-        private readonly ARDroneConfig _config;
+        private readonly INetworkConfiguration _configuration;
         private readonly Action<NavigationPacket> _navigationPacketAcquired;
         private readonly UdpClient _udpClient;
 
-        public NavdataAcquisitionWorker(ARDroneConfig config, Action<NavigationPacket> navigationPacketAcquired)
+        public NavdataAcquisitionWorker(INetworkConfiguration configuration, Action<NavigationPacket> navigationPacketAcquired)
         {
-            _config = config;
+            _configuration = configuration;
             _navigationPacketAcquired = navigationPacketAcquired;
             _udpClient = new UdpClient(NavdataPort);
         }
 
         protected override void Loop(CancellationToken token)
         {
-            _udpClient.Connect(_config.Hostname, NavdataPort);
+            _udpClient.Connect(_configuration.DroneHostname, NavdataPort);
 
             SendKeepAliveSignal();
 
