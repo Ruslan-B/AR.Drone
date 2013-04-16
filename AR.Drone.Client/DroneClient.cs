@@ -44,6 +44,11 @@ namespace AR.Drone.Client
         public Action<ConfigurationPacket> ConfigurationPacketAcquired { get; set; }
         public Action<DroneConfiguration> ConfigurationUpdated { get; set; }
 
+        private void ResetNavigationData()
+        {
+            _navigationData = new NavigationData();
+        }
+
         public bool Active
         {
             get { return _watchdogWorker.IsAlive; }
@@ -54,7 +59,7 @@ namespace AR.Drone.Client
                 else
                 {
                     _watchdogWorker.Stop();
-                    RecreateNavigationData();
+                    ResetNavigationData();
                 }
             }
         }
@@ -69,17 +74,11 @@ namespace AR.Drone.Client
             get { return _navigationData; }
         }
 
-
-        private void RecreateNavigationData()
-        {
-            _navigationData = new NavigationData();
-        }
-
         private void OnConnectionChanged(bool connected)
         {
             if (connected == false)
             {
-                RecreateNavigationData();
+                ResetNavigationData();
             }
         }
 

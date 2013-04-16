@@ -6,7 +6,7 @@ namespace AR.Drone.Client.Navigation
 {
     public static class NavdataBagHelper
     {
-        private const float DegreeToRadian = (float) (180.0f/Math.PI);
+        private const float DegreeToRadian = (float)(Math.PI / 180.0f);
 
         public static NavigationData ToNavigationData(this NavdataBag navdataBag)
         {
@@ -18,9 +18,9 @@ namespace AR.Drone.Client.Navigation
             var ctrlState = (CTRL_STATES) (navdataBag.demo.ctrl_state >> 0x10);
             UpdateStateUsing(ctrlState, ref navigationData.State);
 
-            navigationData.Yaw = DegreeToRadian*navdataBag.demo.psi/1000.0f;
-            navigationData.Pitch = DegreeToRadian*navdataBag.demo.theta/1000.0f;
-            navigationData.Roll = DegreeToRadian*navdataBag.demo.phi/1000.0f;
+            navigationData.Yaw = DegreeToRadian*(navdataBag.demo.psi/1000.0f);
+            navigationData.Pitch = DegreeToRadian*(navdataBag.demo.theta/1000.0f);
+            navigationData.Roll = DegreeToRadian*(navdataBag.demo.phi/1000.0f);
 
             navigationData.Altitude = navdataBag.demo.altitude/1000.0f;
 
