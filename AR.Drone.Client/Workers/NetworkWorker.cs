@@ -38,8 +38,16 @@ namespace AR.Drone.Client.Workers
                         // check for wireless and up
                         if (@if.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && @if.OperationalStatus == OperationalStatus.Up)
                         {
-                            var ping = new Ping();
-                            PingReply result = ping.Send(_configuration.DroneHostname);
+                            PingReply result = null;
+                            using (var ping = new Ping())
+                                try
+                                {
+                                    result = ping.Send(_configuration.DroneHostname);
+                                }
+                                catch (PingException)
+                                {
+                                }
+
                             if (result != null && result.Status == IPStatus.Success)
                             {
                                 _isConnected = true;
