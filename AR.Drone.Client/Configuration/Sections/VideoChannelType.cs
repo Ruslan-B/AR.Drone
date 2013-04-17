@@ -4,6 +4,6 @@ namespace AR.Drone.Client.Configuration.Sections
     {
         Horizontal = 0, // Selects the horizontal camera
         Vertical, // Selects the vertical camera
-        Next = 3 // Selects the next available format among those above.
+        Next = 4 // Selects the next available format among those above.
     }
 }
