@@ -29,7 +29,7 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
 
-            string path = string.Format("ardrone_{0:yyyy-MM-dd-HH-mm}.pack", DateTime.Now);
+            string path = string.Format("flight_{0:yyyy-MM-dd-HH-mm}.ardrone", DateTime.Now);
             _packetRecorderWorker = new PacketRecorderWorker(path);
             _packetRecorderWorker.Start();
 
@@ -200,12 +200,12 @@ namespace AR.Drone.WinApp
 
         private void btnLeft_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: 0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: -0.05f);
         }
 
         private void btnRight_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: -0.05f);
+            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: 0.05f);
         }
 
         private void btnForward_Click(object sender, EventArgs e)
