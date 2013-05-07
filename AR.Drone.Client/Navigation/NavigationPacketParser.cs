@@ -11,7 +11,7 @@ namespace AR.Drone.Client.Navigation
             NavdataBag navdataBag;
             if (NavdataBagParser.TryParse(ref packet, out navdataBag))
             {
-                navigationData = navdataBag.ToNavigationData();
+                navigationData = NavdataConverter.ToNavigationData(navdataBag);
                 return true;
             }
             return false;

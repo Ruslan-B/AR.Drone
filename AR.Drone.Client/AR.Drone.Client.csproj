@@ -73,7 +73,7 @@
     <Compile Include="Navigation\NavigationPacketParser.cs" />
     <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="Navigation\Native\NavdataBag.cs" />
-    <Compile Include="Navigation\NavdataBagHelper.cs" />
+    <Compile Include="Navigation\NavdataConverter.cs" />
     <Compile Include="Packets\NavigationPacket.cs" />
     <Compile Include="Video\FFmpeg\PixelFormatHelper.cs" />
     <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
