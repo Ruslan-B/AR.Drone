@@ -17,13 +17,11 @@ namespace AR.Drone.Client.Workers
 
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly INetworkConfiguration _configuration;
-        private readonly UdpClient _udpClient;
 
         public CommandQueueWorker(INetworkConfiguration configuration, ConcurrentQueue<ATCommand> commandQueue)
         {
             _configuration = configuration;
             _commandQueue = commandQueue;
-            _udpClient = new UdpClient(CommandPort);
         }
 
         protected override void Loop(CancellationToken token)
@@ -31,30 +29,33 @@ namespace AR.Drone.Client.Workers
             int sequenceNumber = 1;
             ConcurrentQueueHelper.Flush(_commandQueue);
 
-            _udpClient.Connect(_configuration.DroneHostname, CommandPort);
-
-            byte[] firstMessage = BitConverter.GetBytes(1);
-            _udpClient.Send(firstMessage, firstMessage.Length);
-
-            Stopwatch swKeepAlive = Stopwatch.StartNew();
-            while (token.IsCancellationRequested == false)
+            using (var udpClient = new UdpClient(CommandPort))
             {
-                ATCommand command;
-                if (_commandQueue.TryDequeue(out command))
-                {
-                    byte[] payload = command.CreatePayload(sequenceNumber);
+                udpClient.Connect(_configuration.DroneHostname, CommandPort);
 
-                    Trace.WriteIf((command is COMWDGCommand) == false, Encoding.ASCII.GetString(payload));
+                byte[] firstMessage = BitConverter.GetBytes(1);
+                udpClient.Send(firstMessage, firstMessage.Length);
 
-                    _udpClient.Send(payload, payload.Length);
-                    sequenceNumber++;
-                    swKeepAlive.Restart();
-                }
-                else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
+                Stopwatch swKeepAlive = Stopwatch.StartNew();
+                while (token.IsCancellationRequested == false)
                 {
-                    _commandQueue.Enqueue(new COMWDGCommand());
+                    ATCommand command;
+                    if (_commandQueue.TryDequeue(out command))
+                    {
+                        byte[] payload = command.CreatePayload(sequenceNumber);
+
+                        Trace.WriteIf((command is COMWDGCommand) == false, Encoding.ASCII.GetString(payload));
+
+                        udpClient.Send(payload, payload.Length);
+                        sequenceNumber++;
+                        swKeepAlive.Restart();
+                    }
+                    else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
+                    {
+                        _commandQueue.Enqueue(new COMWDGCommand());
+                    }
+                    Thread.Sleep(1);
                 }
-                Thread.Sleep(1);
             }
         }
 
