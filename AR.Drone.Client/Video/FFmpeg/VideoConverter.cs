@@ -6,46 +6,46 @@ namespace AR.Drone.Client.Video.FFmpeg
 {
     public unsafe class VideoConverter : DisposableBase
     {
-        private readonly FFmpegNative.AVPixelFormat _pixelFormat;
+        private readonly AVPixelFormat _pixelFormat;
         private bool _initialized;
 
         private byte[,,] _outputData;
 
-        private FFmpegNative.SwsContext* _pContext;
-        private FFmpegNative.AVFrame* _pCurrentFrame;
+        private SwsContext* _pContext;
+        private AVFrame* _pCurrentFrame;
 
 
-        public VideoConverter(FFmpegNative.AVPixelFormat pixelFormat)
+        public VideoConverter(AVPixelFormat pixelFormat)
         {
             _pixelFormat = pixelFormat;
         }
 
-        private void Initialize(int width, int height, FFmpegNative.AVPixelFormat inFormat)
+        private void Initialize(int width, int height, AVPixelFormat inFormat)
         {
             _initialized = true;
 
-            _pContext = FFmpegNative.sws_getContext(width, height, inFormat,
+            _pContext = FFmpegInvoke.sws_getContext(width, height, inFormat,
                                                     width, height, _pixelFormat,
-                                                    FFmpegNative.SWS_FAST_BILINEAR, null, null, null);
+                                                    FFmpegInvoke.SWS_FAST_BILINEAR, null, null, null);
             if (_pContext == null)
                 throw new VideoConverterException("Could not initialize the conversion context.");
 
-            _pCurrentFrame = FFmpegNative.avcodec_alloc_frame();
+            _pCurrentFrame = FFmpegInvoke.avcodec_alloc_frame();
 
-            int outputDataSize = FFmpegNative.avpicture_get_size(_pixelFormat, width, height);
+            int outputDataSize = FFmpegInvoke.avpicture_get_size(_pixelFormat, width, height);
             int depth = outputDataSize/(height*width);
             _outputData = new byte[height,width,depth];
 
             fixed (byte* pOutputData = &_outputData[0, 0, 0])
             {
-                FFmpegNative.avpicture_fill((FFmpegNative.AVPicture*) _pCurrentFrame, pOutputData, _pixelFormat, width, height);
+                FFmpegInvoke.avpicture_fill((AVPicture*) _pCurrentFrame, pOutputData, _pixelFormat, width, height);
             }
         }
 
-        public byte[,,] ConvertFrame(FFmpegNative.AVFrame frame)
+        public byte[,,] ConvertFrame(AVFrame frame)
         {
             if (_initialized == false)
-                Initialize(frame.width, frame.height, (FFmpegNative.AVPixelFormat) frame.format);
+                Initialize(frame.width, frame.height, (AVPixelFormat) frame.format);
 
             fixed (byte* pOutputData = &_outputData[0, 0, 0])
             {
@@ -53,7 +53,7 @@ namespace AR.Drone.Client.Video.FFmpeg
                 byte** pDstData = &(_pCurrentFrame)->data_0;
 
                 _pCurrentFrame->data_0 = pOutputData;
-                FFmpegNative.sws_scale(_pContext, pSrcData, frame.linesize, 0, frame.height, pDstData, _pCurrentFrame->linesize);
+                FFmpegInvoke.sws_scale(_pContext, pSrcData, frame.linesize, 0, frame.height, pDstData, _pCurrentFrame->linesize);
             }
             return _outputData;
         }
@@ -62,8 +62,8 @@ namespace AR.Drone.Client.Video.FFmpeg
         {
             if (_initialized == false) return;
 
-            FFmpegNative.sws_freeContext(_pContext);
-            FFmpegNative.av_free(_pCurrentFrame);
+            FFmpegInvoke.sws_freeContext(_pContext);
+            FFmpegInvoke.av_free(_pCurrentFrame);
         }
     }
 }

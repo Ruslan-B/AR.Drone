@@ -26,7 +26,7 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
-            _videoPacketDecoderWorker = new VideoPacketDecoderWorker(OnVideoPacketDecoded);
+            _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.Gray8, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
 
             string path = string.Format("flight_{0:yyyy-MM-dd-HH-mm}.ardrone", DateTime.Now);

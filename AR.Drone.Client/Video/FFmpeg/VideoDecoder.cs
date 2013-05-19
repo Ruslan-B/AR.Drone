@@ -7,36 +7,36 @@ namespace AR.Drone.Client.Video.FFmpeg
 {
     public unsafe class VideoDecoder : DisposableBase
     {
-        private const FFmpegNative.AVCodecID CodecId = FFmpegNative.AVCodecID.AV_CODEC_ID_H264;
-        private readonly FFmpegNative.AVCodecContext* _pDecodingContext;
+        private const AVCodecID CodecId = AVCodecID.AV_CODEC_ID_H264;
+        private readonly AVCodecContext* _pDecodingContext;
 
         static VideoDecoder()
         {
-            FFmpegNative.av_register_all();
-            FFmpegNative.avcodec_register_all();
+            FFmpegInvoke.av_register_all();
+            FFmpegInvoke.avcodec_register_all();
         }
 
         public VideoDecoder()
         {
-            FFmpegNative.AVCodec* pCodec = FFmpegNative.avcodec_find_decoder(CodecId);
+            AVCodec* pCodec = FFmpegInvoke.avcodec_find_decoder(CodecId);
             if (pCodec == null)
                 throw new VideoDecoderException("Unsupported codec.");
 
-            _pDecodingContext = FFmpegNative.avcodec_alloc_context3(pCodec);
+            _pDecodingContext = FFmpegInvoke.avcodec_alloc_context3(pCodec);
 
-            if (FFmpegNative.avcodec_open2(_pDecodingContext, pCodec, null) < 0)
+            if (FFmpegInvoke.avcodec_open2(_pDecodingContext, pCodec, null) < 0)
                 throw new VideoDecoderException("Could not open codec.");
         }
 
-        public bool TryDecode(ref byte[] data, out FFmpegNative.AVFrame frame)
+        public bool TryDecode(ref byte[] data, out AVFrame frame)
         {
             int gotPicture;
-            frame = new FFmpegNative.AVFrame();
+            frame = new AVFrame();
             fixed (byte* pData = &data[0])
-            fixed (FFmpegNative.AVFrame* pFrame = &frame)
+            fixed (AVFrame* pFrame = &frame)
             {
-                var packet = new FFmpegNative.AVPacket {data = pData, size = data.Length};
-                int decodedSize = FFmpegNative.avcodec_decode_video2(_pDecodingContext, pFrame, &gotPicture, &packet);
+                var packet = new AVPacket {data = pData, size = data.Length};
+                int decodedSize = FFmpegInvoke.avcodec_decode_video2(_pDecodingContext, pFrame, &gotPicture, &packet);
                 if (decodedSize < 0)
                     Trace.TraceWarning("Error while decoding frame.");
             }
@@ -46,7 +46,7 @@ namespace AR.Drone.Client.Video.FFmpeg
 
         protected override void DisposeOverride()
         {
-            FFmpegNative.avcodec_close(_pDecodingContext);
+            FFmpegInvoke.avcodec_close(_pDecodingContext);
         }
     }
 }

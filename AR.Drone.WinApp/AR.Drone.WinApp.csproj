@@ -11,6 +11,8 @@
     <AssemblyName>AR.Drone.WinApp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -23,6 +25,11 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +40,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -56,17 +68,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
-      <Project>{a536b02a-b0b1-4753-8328-17369ef09976}</Project>
-      <Name>FFmpeg.AutoGen</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
       <Project>{F86E869A-631C-4E67-918E-6C61AA0F13BD}</Project>
       <Name>AI.Core.System</Name>
     </ProjectReference>
     <ProjectReference Include="..\AR.Drone.Client\AR.Drone.Client.csproj">
-      <Project>{56dbf8e3-28a6-4c27-ba0a-b32352608f44}</Project>
-      <Name>ARDrone</Name>
+      <Project>{56DBF8E3-28A6-4C27-BA0A-B32352608F44}</Project>
+      <Name>AR.Drone.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
+      <Project>{A536B02A-B0B1-4753-8328-17369EF09976}</Project>
+      <Name>FFmpeg.AutoGen</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

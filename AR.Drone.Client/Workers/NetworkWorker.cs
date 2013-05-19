@@ -3,6 +3,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Configuration;
+using System.Linq;
 
 namespace AR.Drone.Client.Workers
 {
@@ -36,8 +37,15 @@ namespace AR.Drone.Client.Workers
                     foreach (NetworkInterface @if in ifs)
                     {
                         // check for wireless and up
-                        if (@if.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && @if.OperationalStatus == OperationalStatus.Up)
+                        IPInterfaceProperties ifProperties = @if.GetIPProperties();
+                        if (@if.NetworkInterfaceType == NetworkInterfaceType.Ethernet || @if.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                         {
+                            var address = ifProperties.UnicastAddresses
+                                .Select(x=>x.Address)
+                                    .Where(a=>a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+                            if (address == null)
+                                continue;
+
                             PingReply result = null;
                             using (var ping = new Ping())
                                 try

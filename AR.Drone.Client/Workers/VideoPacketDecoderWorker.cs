@@ -10,13 +10,13 @@ namespace AR.Drone.Client.Workers
 {
     public class VideoPacketDecoderWorker : WorkerBase
     {
-        private const PixelFormat OutputPixelFormat = PixelFormat.BGR24;
-
+        private readonly PixelFormat _pixelFormat;
         private readonly Action<VideoFrame> _onFrameDecoded;
         private readonly ConcurrentQueue<VideoPacket> _packetQueue;
 
-        public VideoPacketDecoderWorker(Action<VideoFrame> onFrameDecoded)
+        public VideoPacketDecoderWorker(PixelFormat pixelFormat, Action<VideoFrame> onFrameDecoded)
         {
+            _pixelFormat = pixelFormat;
             _onFrameDecoded = onFrameDecoded;
             _packetQueue = new ConcurrentQueue<VideoPacket>();
         }
@@ -31,7 +31,7 @@ namespace AR.Drone.Client.Workers
             // flush packet queue
             ConcurrentQueueHelper.Flush(_packetQueue);
 
-            using (var videoDecoder = new VideoPacketDecoder(OutputPixelFormat))
+            using (var videoDecoder = new VideoPacketDecoder(_pixelFormat))
                 while (token.IsCancellationRequested == false)
                 {
                     VideoPacket packet;

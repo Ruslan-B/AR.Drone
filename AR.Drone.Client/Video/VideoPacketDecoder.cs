@@ -22,7 +22,7 @@ namespace AR.Drone.Client.Video
                 _videoDecoder = new VideoDecoder();
 
             frame = new VideoFrame();
-            FFmpegNative.AVFrame avFrame;
+            AVFrame avFrame;
             if (_videoDecoder.TryDecode(ref packet.Data, out avFrame))
             {
                 if (_videoConverter == null)
