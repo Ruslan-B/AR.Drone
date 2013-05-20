@@ -3,9 +3,9 @@ using FFmpeg.AutoGen;
 
 namespace AR.Drone.Client.Video.FFmpeg
 {
-    public class PixelFormatHelper
+    public static class PixelFormatConverter
     {
-        public static AVPixelFormat ToAVPixelFormat(PixelFormat pixelFormat)
+        public static AVPixelFormat ToAVPixelFormat(this PixelFormat pixelFormat)
         {
             switch (pixelFormat)
             {

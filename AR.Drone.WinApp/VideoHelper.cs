@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using AR.Drone.Client.Video;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using VideoPixelFormat = AR.Drone.Client.Video.PixelFormat;
+using System.Runtime.InteropServices;
 
 namespace AR.Drone.WinApp
 {
@@ -26,24 +27,22 @@ namespace AR.Drone.WinApp
 
         public static unsafe Bitmap CreateImageFromFrame(VideoFrame frame)
         {
-            fixed (void* pData = &frame.Data[0, 0, 0])
+            PixelFormat pixelFormat = ConvertPixelFormat(frame.PixelFormat);
+            var bitmap = new Bitmap(frame.Width, frame.Height, pixelFormat);
+            if (pixelFormat == PixelFormat.Format8bppIndexed)
             {
-                PixelFormat pixelFormat = ConvertPixelFormat(frame.PixelFormat);
-                int height = frame.Data.GetLength(0);
-                int width = frame.Data.GetLength(1);
-                int depth = frame.Data.GetLength(2);
-                var bitmap = new Bitmap(width, height, width*depth, pixelFormat, new IntPtr(pData));
-                if (pixelFormat == PixelFormat.Format8bppIndexed)
+                ColorPalette palette = bitmap.Palette;
+                for (int i = 0; i < palette.Entries.Length; i++)
                 {
-                    ColorPalette palette = bitmap.Palette;
-                    for (int i = 0; i < palette.Entries.Length; i++)
-                    {
-                        palette.Entries[i] = Color.FromArgb(i, i, i);
-                    }
-                    bitmap.Palette = palette;
+                    palette.Entries[i] = Color.FromArgb(i, i, i);
                 }
-                return bitmap;
+                bitmap.Palette = palette;
             }
+            Rectangle rect = new Rectangle(0, 0, frame.Width, frame.Height);
+            BitmapData data = bitmap.LockBits(rect, ImageLockMode.WriteOnly, pixelFormat);
+            Marshal.Copy(frame.Data, 0, data.Scan0, frame.Data.Length);
+            bitmap.UnlockBits(data);
+            return bitmap;
         }
     }
 }

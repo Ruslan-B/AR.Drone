@@ -26,10 +26,12 @@ namespace AR.Drone.Client.Video
             if (_videoDecoder.TryDecode(ref packet.Data, out avFrame))
             {
                 if (_videoConverter == null)
-                    _videoConverter = new VideoConverter(PixelFormatHelper.ToAVPixelFormat(_pixelFormat));
+                    _videoConverter = new VideoConverter(_pixelFormat.ToAVPixelFormat());
 
                 frame.Timestamp = packet.Timestamp;
                 frame.FrameNumber = packet.FrameNumber;
+                frame.Width = packet.Width;
+                frame.Height = packet.Height;
                 frame.PixelFormat = _pixelFormat;
                 frame.Data = _videoConverter.ConvertFrame(avFrame);
 

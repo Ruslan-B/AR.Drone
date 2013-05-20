@@ -11,6 +11,8 @@
     <AssemblyName>AR.Drone.Client</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,7 +77,6 @@
     <Compile Include="Navigation\Native\NavdataBag.cs" />
     <Compile Include="Navigation\NavdataConverter.cs" />
     <Compile Include="Packets\NavigationPacket.cs" />
-    <Compile Include="Video\FFmpeg\PixelFormatHelper.cs" />
     <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
     <Compile Include="Navigation\Native\Math\matrix33_t.cs" />
     <Compile Include="Navigation\Native\CTRL_STATES.cs" />
@@ -143,15 +144,16 @@
     <Compile Include="Workers\Acquisition\VideoAcquisitionWorker.cs" />
     <Compile Include="Video\Exceptions\VideoDecoderException.cs" />
     <Compile Include="Workers\NetworkWorker.cs" />
+    <Compile Include="Video\FFmpeg\PixelFormatConverter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
-      <Project>{a536b02a-b0b1-4753-8328-17369ef09976}</Project>
-      <Name>FFmpeg.AutoGen</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
-      <Project>{f86e869a-631c-4e67-918e-6c61aa0f13bd}</Project>
+      <Project>{F86E869A-631C-4E67-918E-6C61AA0F13BD}</Project>
       <Name>AI.Core.System</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
+      <Project>{A536B02A-B0B1-4753-8328-17369EF09976}</Project>
+      <Name>FFmpeg.AutoGen</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

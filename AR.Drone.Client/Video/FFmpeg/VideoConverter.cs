@@ -9,7 +9,7 @@ namespace AR.Drone.Client.Video.FFmpeg
         private readonly AVPixelFormat _pixelFormat;
         private bool _initialized;
 
-        private byte[,,] _outputData;
+        private byte[] _outputData;
 
         private SwsContext* _pContext;
         private AVFrame* _pCurrentFrame;
@@ -33,21 +33,20 @@ namespace AR.Drone.Client.Video.FFmpeg
             _pCurrentFrame = FFmpegInvoke.avcodec_alloc_frame();
 
             int outputDataSize = FFmpegInvoke.avpicture_get_size(_pixelFormat, width, height);
-            int depth = outputDataSize/(height*width);
-            _outputData = new byte[height,width,depth];
+            _outputData = new byte[outputDataSize];
 
-            fixed (byte* pOutputData = &_outputData[0, 0, 0])
+            fixed (byte* pOutputData = &_outputData[0])
             {
                 FFmpegInvoke.avpicture_fill((AVPicture*) _pCurrentFrame, pOutputData, _pixelFormat, width, height);
             }
         }
 
-        public byte[,,] ConvertFrame(AVFrame frame)
+        public byte[] ConvertFrame(AVFrame frame)
         {
             if (_initialized == false)
                 Initialize(frame.width, frame.height, (AVPixelFormat) frame.format);
 
-            fixed (byte* pOutputData = &_outputData[0, 0, 0])
+            fixed (byte* pOutputData = &_outputData[0])
             {
                 byte** pSrcData = &(frame).data_0;
                 byte** pDstData = &(_pCurrentFrame)->data_0;
