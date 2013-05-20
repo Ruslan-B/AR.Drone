@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Configuration;
 using System.Linq;
+using System.Net;
+using System.IO;
 
 namespace AR.Drone.Client.Workers
 {
     public class NetworkWorker : WorkerBase
     {
+        private const int TelnetPort = 23;
+        private const int TelnetConnectTimeout = 1000;
         private readonly INetworkConfiguration _configuration;
         private readonly Action<bool> _connectionChanged;
         private bool _isConnected;
@@ -33,41 +38,31 @@ namespace AR.Drone.Client.Workers
                 bool isNetworkAvailable = NetworkInterface.GetIsNetworkAvailable();
                 if (isNetworkAvailable)
                 {
-                    NetworkInterface[] ifs = NetworkInterface.GetAllNetworkInterfaces();
-                    foreach (NetworkInterface @if in ifs)
-                    {
-                        // check for wireless and up
-                        IPInterfaceProperties ifProperties = @if.GetIPProperties();
-                        if (@if.NetworkInterfaceType == NetworkInterfaceType.Ethernet || @if.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                   
+                    bool connected = false;
+                    using (var client = new TcpClient())
+                        try
                         {
-                            var address = ifProperties.UnicastAddresses
-                                .Select(x=>x.Address)
-                                    .Where(a=>a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
-                            if (address == null)
-                                continue;
-
-                            PingReply result = null;
-                            using (var ping = new Ping())
-                                try
-                                {
-                                    result = ping.Send(_configuration.DroneHostname);
-                                }
-                                catch (PingException)
-                                {
-                                }
-
-                            if (result != null && result.Status == IPStatus.Success)
+                            IPAddress[] addresses = Dns.GetHostAddresses(_configuration.DroneHostname);
+                            foreach (var address in addresses)
                             {
-                                _isConnected = true;
-                                _connectionChanged(true);
-                            }
-                            else
-                            {
-                                // todo add timeout?
-                                _isConnected = false;
-                                _connectionChanged(false);
+                                IAsyncResult result = client.BeginConnect(address, TelnetPort, null, null);
+                                connected = result.AsyncWaitHandle.WaitOne(TelnetConnectTimeout,  false);
                             }
                         }
+                        catch (SocketException)
+                        {
+                        }
+
+                    if (connected)
+                    {
+                        _isConnected = true;
+                        _connectionChanged(true);
+                    }
+                    else
+                    {
+                        _isConnected = false;
+                        _connectionChanged(false);
                     }
                 }
                 Thread.Sleep(1000);
