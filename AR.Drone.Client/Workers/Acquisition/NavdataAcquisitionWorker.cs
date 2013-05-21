@@ -16,48 +16,67 @@ namespace AR.Drone.Client.Workers.Acquisition
         public const int NavdataTimeout = 2000;
 
         private readonly INetworkConfiguration _configuration;
-        private readonly Action<NavigationPacket> _navigationPacketAcquired;
+        private readonly Action _onAcquisitionStopped;
+        private readonly Action<NavigationPacket> _packetAcquired;
+        private bool _isAcquiring;
 
-        public NavdataAcquisitionWorker(INetworkConfiguration configuration, Action<NavigationPacket> navigationPacketAcquired)
+        public NavdataAcquisitionWorker(INetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
         {
             _configuration = configuration;
-            _navigationPacketAcquired = navigationPacketAcquired;
+            _packetAcquired = packetAcquired;
+            _onAcquisitionStopped = onAcquisitionStopped;
+        }
+
+        public bool IsAcquiring
+        {
+            get { return _isAcquiring; }
         }
 
         protected override void Loop(CancellationToken token)
         {
+            _isAcquiring = false;
             using (var udpClient = new UdpClient(NavdataPort))
-            {
-                udpClient.Connect(_configuration.DroneHostname, NavdataPort);
-
-                SendKeepAliveSignal(udpClient);
-
-                var droneEp = new IPEndPoint(IPAddress.Any, NavdataPort);
-                Stopwatch swKeepAlive = Stopwatch.StartNew();
-                Stopwatch swNavdataTimeout = Stopwatch.StartNew();
-                while (token.IsCancellationRequested == false &&
-                       swNavdataTimeout.ElapsedMilliseconds < NavdataTimeout)
+                try
                 {
-                    if (udpClient.Available > 0)
-                    {
-                        byte[] data = udpClient.Receive(ref droneEp);
-                        var packet = new NavigationPacket
-                            {
-                                Timestamp = DateTime.UtcNow.Ticks,
-                                Data = data
-                            };
-                        _navigationPacketAcquired(packet);
-                        swNavdataTimeout.Restart();
-                    }
+                    udpClient.Connect(_configuration.DroneHostname, NavdataPort);
 
-                    if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
+                    SendKeepAliveSignal(udpClient);
+
+                    var remoteEp = new IPEndPoint(IPAddress.Any, NavdataPort);
+                    Stopwatch swKeepAlive = Stopwatch.StartNew();
+                    Stopwatch swNavdataTimeout = Stopwatch.StartNew();
+                    while (token.IsCancellationRequested == false && swNavdataTimeout.ElapsedMilliseconds < NavdataTimeout)
                     {
-                        SendKeepAliveSignal(udpClient);
-                        swKeepAlive.Restart();
+                        if (udpClient.Available > 0)
+                        {
+                            byte[] data = udpClient.Receive(ref remoteEp);
+                            var packet = new NavigationPacket
+                                {
+                                    Timestamp = DateTime.UtcNow.Ticks,
+                                    Data = data
+                                };
+                            _packetAcquired(packet);
+
+                            _isAcquiring = true;
+                            swNavdataTimeout.Restart();
+                        }
+
+                        if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
+                        {
+                            SendKeepAliveSignal(udpClient);
+                            swKeepAlive.Restart();
+                        }
+                        Thread.Sleep(5);
                     }
-                    Thread.Sleep(5);
                 }
-            }
+                finally
+                {
+                    if (_isAcquiring)
+                    {
+                        _isAcquiring = false;
+                        _onAcquisitionStopped();
+                    }
+                }
         }
 
         private void SendKeepAliveSignal(UdpClient udpClient)

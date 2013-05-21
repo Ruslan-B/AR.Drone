@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Forms;
 using AR.Drone.Client;
@@ -169,8 +170,13 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            ATCommand command = _droneClient.Configuration.Video.Channel.Set(VideoChannelType.Next).ToCommand();
+            DroneConfiguration configuration = _droneClient.Configuration;
+            ATCommand command = configuration.Video.Channel.Set(VideoChannelType.Next).ToCommand();
             _droneClient.Send(command);
+        }
+
+        private void Test(Expression<Action<DroneConfiguration>> x)
+        {
         }
 
         private void btnHover_Click(object sender, EventArgs e)

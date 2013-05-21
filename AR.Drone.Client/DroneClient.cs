@@ -18,10 +18,10 @@ namespace AR.Drone.Client
         private readonly DroneConfiguration _configuration;
         private readonly ConfigurationAcquisitionWorker _configurationAcquisitionWorker;
         private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
-        private readonly NetworkWorker _networkWorker;
         private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
         private readonly WatchdogWorker _watchdogWorker;
 
+        private bool _isFirstNavigationPacket;
         private NavigationData _navigationData;
         private RequestedState _requestedState;
 
@@ -30,12 +30,12 @@ namespace AR.Drone.Client
             _configuration = new DroneConfiguration();
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
-            _networkWorker = new NetworkWorker(_configuration, OnConnectionChanged);
+            _isFirstNavigationPacket = true;
             _commandQueueWorker = new CommandQueueWorker(_configuration, _commandQueue);
-            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_configuration, OnNavigationPacketAcquired);
+            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_configuration, OnNavigationPacketAcquired, OnAcquisitionStopped);
             _videoAcquisitionWorker = new VideoAcquisitionWorker(_configuration, OnVideoPacketAcquired);
             _configurationAcquisitionWorker = new ConfigurationAcquisitionWorker(_configuration, OnConfigurationPacketAcquired);
-            _watchdogWorker = new WatchdogWorker(_networkWorker, _navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
+            _watchdogWorker = new WatchdogWorker(_navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
@@ -43,11 +43,6 @@ namespace AR.Drone.Client
         public Action<VideoPacket> VideoPacketAcquired { get; set; }
         public Action<ConfigurationPacket> ConfigurationPacketAcquired { get; set; }
         public Action<DroneConfiguration> ConfigurationUpdated { get; set; }
-
-        private void ResetNavigationData()
-        {
-            _navigationData = new NavigationData();
-        }
 
         public bool Active
         {
@@ -59,9 +54,13 @@ namespace AR.Drone.Client
                 else
                 {
                     _watchdogWorker.Stop();
-                    ResetNavigationData();
                 }
             }
+        }
+
+        public bool IsConnected
+        {
+            get { return _navdataAcquisitionWorker.IsAcquiring; }
         }
 
         public DroneConfiguration Configuration
@@ -74,19 +73,13 @@ namespace AR.Drone.Client
             get { return _navigationData; }
         }
 
-        private void OnConnectionChanged(bool connected)
+        private void OnAcquisitionStopped()
         {
-            if (connected == false)
-            {
-                ResetNavigationData();
-            }
+            _isFirstNavigationPacket = true;
         }
 
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
-            if (_navigationData.State == NavigationState.Unknown)
-                _requestedState = RequestedState.Initialize;
-
             if (NavigationPacketAcquired != null)
                 NavigationPacketAcquired(packet);
 
@@ -99,6 +92,12 @@ namespace AR.Drone.Client
             if (NavigationPacketParser.TryParse(ref packet, out navigationData))
             {
                 _navigationData = navigationData;
+
+                if (_isFirstNavigationPacket)
+                {
+                    _requestedState = RequestedState.Initialize;
+                    _isFirstNavigationPacket = false;
+                }
 
                 ProcessRequestedState();
 
@@ -236,7 +235,6 @@ namespace AR.Drone.Client
         protected override void DisposeOverride()
         {
             _configurationAcquisitionWorker.Dispose();
-            _networkWorker.Dispose();
             _navdataAcquisitionWorker.Dispose();
             _commandQueueWorker.Dispose();
             _videoAcquisitionWorker.Dispose();
