@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using AR.Drone.Client.Video;
+using AR.Drone.Video;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
-using VideoPixelFormat = AR.Drone.Client.Video.PixelFormat;
+using VideoPixelFormat = AR.Drone.Video.PixelFormat;
 using System.Runtime.InteropServices;
 
 namespace AR.Drone.WinApp

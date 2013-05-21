@@ -66,7 +66,7 @@ namespace AR.Drone.Client.Workers.Acquisition
                             SendKeepAliveSignal(udpClient);
                             swKeepAlive.Restart();
                         }
-                        Thread.Sleep(5);
+                        Thread.Sleep(2);
                     }
                 }
                 finally

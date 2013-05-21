@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.Packets
 {
@@ -10,7 +9,7 @@ namespace AR.Drone.Client.Packets
         public uint FrameNumber;
         public ushort Height;
         public ushort Width;
-        public FrameType FrameType;
+        public VideoFrameType FrameType;
         public byte[] Data;
     }
 }

@@ -9,8 +9,8 @@ using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Client.Navigation.Native;
 using AR.Drone.Client.Packets;
-using AR.Drone.Client.Video;
 using AR.Drone.Client.Workers;
+using AR.Drone.Video;
 
 namespace AR.Drone.WinApp
 {
@@ -131,7 +131,7 @@ namespace AR.Drone.WinApp
                 if (fieldValue == null)
                     node.Text = node.Name + ": null";
                 else if (fieldValue is IConfigurationItem)
-                    node.Text = node.Name + ": " + ((IConfigurationItem)fieldValue).Value;
+                    node.Text = node.Name + ": " + ((IConfigurationItem) fieldValue).Value;
                 else
                 {
                     Type fieldType = fieldInfo.FieldType;

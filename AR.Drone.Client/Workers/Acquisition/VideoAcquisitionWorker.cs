@@ -4,7 +4,6 @@ using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Packets;
-using AR.Drone.Client.Video;
 using AR.Drone.Client.Video.Native;
 
 namespace AR.Drone.Client.Workers.Acquisition
@@ -45,10 +44,7 @@ namespace AR.Drone.Client.Workers.Acquisition
                             int maxSearchIndex = offset - sizeof (parrot_video_encapsulation_t);
                             for (int i = 0; i < maxSearchIndex; i++)
                             {
-                                if (buffer[i] == 'P' &&
-                                    buffer[i + 1] == 'a' &&
-                                    buffer[i + 2] == 'V' &&
-                                    buffer[i + 3] == 'E')
+                                if (buffer[i] == 'P' && buffer[i + 1] == 'a' && buffer[i + 2] == 'V' && buffer[i + 3] == 'E')
                                 {
                                     parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*) (pBuffer + i);
                                     packetData = new byte[pve.payload_size];
@@ -89,19 +85,19 @@ namespace AR.Drone.Client.Workers.Acquisition
             }
         }
 
-        private FrameType Convert(byte frame_type)
+        private VideoFrameType Convert(byte frame_type)
         {
             var frameType = (parrot_video_encapsulation_frametypes_t) frame_type;
             switch (frameType)
             {
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_IDR_FRAME:
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_I_FRAME:
-                    return FrameType.I;
+                    return VideoFrameType.I;
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_P_FRAME:
-                    return FrameType.I;
+                    return VideoFrameType.I;
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_UNKNNOWN:
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_HEADERS:
-                    return FrameType.Unknown;
+                    return VideoFrameType.Unknown;
                 default:
                     throw new ArgumentOutOfRangeException("frame_type");
             }

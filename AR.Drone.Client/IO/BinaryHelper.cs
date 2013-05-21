@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using AR.Drone.Client.Packets;
-using AR.Drone.Client.Video;
 
 namespace AR.Drone.Client.IO
 {
@@ -40,7 +39,7 @@ namespace AR.Drone.Client.IO
             packet.FrameNumber = reader.ReadUInt32();
             packet.Height = reader.ReadUInt16();
             packet.Width = reader.ReadUInt16();
-            packet.FrameType = (FrameType) reader.ReadByte();
+            packet.FrameType = (VideoFrameType) reader.ReadByte();
             int dataSize = reader.ReadInt32();
             packet.Data = reader.ReadBytes(dataSize);
             return packet;

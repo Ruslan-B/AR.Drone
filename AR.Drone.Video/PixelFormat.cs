@@ -1,4 +1,4 @@
-namespace AR.Drone.Client.Video
+namespace AR.Drone.Video
 {
     public enum PixelFormat : byte
     {

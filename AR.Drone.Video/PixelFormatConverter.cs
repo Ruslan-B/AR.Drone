@@ -1,7 +1,7 @@
 using System;
 using FFmpeg.AutoGen;
 
-namespace AR.Drone.Client.Video.FFmpeg
+namespace AR.Drone.Video
 {
     public static class PixelFormatConverter
     {

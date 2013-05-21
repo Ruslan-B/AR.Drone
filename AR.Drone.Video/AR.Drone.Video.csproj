@@ -4,18 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{78C83708-BF89-4A5D-B823-21D06EED6A6B}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{36C63293-4C2D-41EC-B231-FAF55845C014}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AR.Drone.WinApp</RootNamespace>
-    <AssemblyName>AR.Drone.WinApp</AssemblyName>
+    <RootNamespace>AR.Drone.Video</RootNamespace>
+    <AssemblyName>AR.Drone.Video</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,16 +20,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnvironmentVariables>
-      <EnvironmentVariables>
-        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
-      </EnvironmentVariables>
-    </EnvironmentVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,32 +30,27 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnvironmentVariables>
-      <EnvironmentVariables>
-        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
-      </EnvironmentVariables>
-    </EnvironmentVariables>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="VideoHelper.cs" />
-    <Compile Include="TreeViewHelper.cs" />
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Exceptions\VideoConverterException.cs" />
+    <Compile Include="Exceptions\VideoDecoderException.cs" />
+    <Compile Include="PixelFormat.cs" />
+    <Compile Include="PixelFormatConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="VideoConverter.cs" />
+    <Compile Include="VideoDecoder.cs" />
+    <Compile Include="VideoFrame.cs" />
+    <Compile Include="VideoPacketDecoder.cs" />
+    <Compile Include="VideoPacketDecoderWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
@@ -75,10 +60,6 @@
     <ProjectReference Include="..\AR.Drone.Client\AR.Drone.Client.csproj">
       <Project>{56DBF8E3-28A6-4C27-BA0A-B32352608F44}</Project>
       <Name>AR.Drone.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AR.Drone.Video\AR.Drone.Video.csproj">
-      <Project>{36C63293-4C2D-41EC-B231-FAF55845C014}</Project>
-      <Name>AR.Drone.Video</Name>
     </ProjectReference>
     <ProjectReference Include="..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
       <Project>{A536B02A-B0B1-4753-8328-17369EF09976}</Project>

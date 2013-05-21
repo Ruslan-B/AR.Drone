@@ -39,7 +39,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ConfigCommand.cs" />
@@ -122,40 +121,27 @@
     <Compile Include="Video\Native\parrot_video_encapsulation_t.cs" />
     <Compile Include="Video\Native\parrot_video_encapsulation_frametypes_t.cs" />
     <Compile Include="Navigation\Native\NavdataBagParser.cs" />
-    <Compile Include="Video\Exceptions\VideoConverterException.cs" />
-    <Compile Include="Video\FrameType.cs" />
-    <Compile Include="Video\VideoPacketDecoder.cs" />
-    <Compile Include="Video\VideoFrame.cs" />
-    <Compile Include="Video\PixelFormat.cs" />
+    <Compile Include="Packets\VideoFrameType.cs" />
     <Compile Include="Packets\VideoPacket.cs" />
     <Compile Include="Configuration\INetworkConfiguration.cs" />
     <Compile Include="ATCommand.cs" />
-    <Compile Include="Video\FFmpeg\VideoConverter.cs" />
-    <Compile Include="Video\FFmpeg\VideoDecoder.cs" />
     <Compile Include="Workers\Acquisition\ConfigurationAcquisitionWorker.cs" />
     <Compile Include="Packets\ConfigurationPacket.cs" />
+    <Compile Include="Commands\COMWDGCommand.cs" />
     <Compile Include="Workers\PacketRecorderWorker.cs" />
     <Compile Include="IO\PacketType.cs" />
-    <Compile Include="Workers\VideoPacketDecoderWorker.cs" />
     <Compile Include="Workers\WatchdogWorker.cs" />
     <Compile Include="Workers\CommandQueueWorker.cs" />
-    <Compile Include="Helpers\ConcurrentQueueHelper.cs" />
     <Compile Include="DroneClient.cs" />
     <Compile Include="Workers\Acquisition\NavdataAcquisitionWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workers\Acquisition\VideoAcquisitionWorker.cs" />
-    <Compile Include="Video\Exceptions\VideoDecoderException.cs" />
     <Compile Include="Workers\NetworkWorker.cs" />
-    <Compile Include="Video\FFmpeg\PixelFormatConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
       <Project>{F86E869A-631C-4E67-918E-6C61AA0F13BD}</Project>
       <Name>AI.Core.System</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">
-      <Project>{A536B02A-B0B1-4753-8328-17369EF09976}</Project>
-      <Name>FFmpeg.AutoGen</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

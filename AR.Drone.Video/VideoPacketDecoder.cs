@@ -1,9 +1,8 @@
 ﻿using AI.Core.System;
 using AR.Drone.Client.Packets;
-using AR.Drone.Client.Video.FFmpeg;
 using FFmpeg.AutoGen;
 
-namespace AR.Drone.Client.Video
+namespace AR.Drone.Video
 {
     public class VideoPacketDecoder : DisposableBase
     {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.Helpers;
 using AR.Drone.Client.IO;
 using AR.Drone.Client.Packets;
 
@@ -30,7 +29,7 @@ namespace AR.Drone.Client.Workers
 
         protected override void Loop(CancellationToken token)
         {
-            ConcurrentQueueHelper.Flush(_packetQueue);
+            _packetQueue.Flush();
 
             using (var recorder = new PacketWriter(_path))
             {

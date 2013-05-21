@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace AR.Drone.Client.Video
+namespace AR.Drone.Video
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct VideoFrame

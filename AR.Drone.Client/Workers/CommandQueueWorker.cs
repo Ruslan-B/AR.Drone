@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using AI.Core.System;
+using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Helpers;
 
@@ -27,7 +28,7 @@ namespace AR.Drone.Client.Workers
         protected override void Loop(CancellationToken token)
         {
             int sequenceNumber = 1;
-            ConcurrentQueueHelper.Flush(_commandQueue);
+            _commandQueue.Flush();
 
             using (var udpClient = new UdpClient(CommandPort))
             {
@@ -44,7 +45,7 @@ namespace AR.Drone.Client.Workers
                     {
                         byte[] payload = command.CreatePayload(sequenceNumber);
 
-                        Trace.WriteIf((command is COMWDGCommand) == false, Encoding.ASCII.GetString(payload));
+                        Trace.WriteIf((command is ComWdgCommand) == false, Encoding.ASCII.GetString(payload));
 
                         udpClient.Send(payload, payload.Length);
                         sequenceNumber++;
@@ -52,18 +53,10 @@ namespace AR.Drone.Client.Workers
                     }
                     else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
                     {
-                        _commandQueue.Enqueue(new COMWDGCommand());
+                        _commandQueue.Enqueue(new ComWdgCommand());
                     }
-                    Thread.Sleep(1);
+                    Thread.Sleep(10);
                 }
-            }
-        }
-
-        internal class COMWDGCommand : ATCommand
-        {
-            protected override string ToAt(int sequenceNumber)
-            {
-                return string.Format("AT*COMWDG={0}\r", sequenceNumber);
             }
         }
     }

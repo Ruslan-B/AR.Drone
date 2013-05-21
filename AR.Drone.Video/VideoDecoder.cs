@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using AI.Core.System;
-using AR.Drone.Client.Video.Exceptions;
+using AR.Drone.Video.Exceptions;
 using FFmpeg.AutoGen;
 
-namespace AR.Drone.Client.Video.FFmpeg
+namespace AR.Drone.Video
 {
     public unsafe class VideoDecoder : DisposableBase
     {
