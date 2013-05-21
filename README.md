@@ -5,8 +5,8 @@ Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.
 
 ## Dependencies
 
-[AI.Core](https://github.com/Ruslan-B/AI.Core) - Set of core libraries for autonomous agent support.  
-[FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.  
+[AI.Core](/Ruslan-B/AI.Core) - Set of core libraries for autonomous agent support.  
+[FFmpeg.AutoGen](/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.  
 
 ## Status
 
@@ -29,10 +29,9 @@ cd AR.Drone
 git submodule update --init   
 ```  
 
-- Copy shared FFmpeg libraries to `.\AR.Drone\FFmpeg.AutoGen\FFmpeg\bin`  
-You can get them form here - [Zeranoe FFmpeg](http://ffmpeg.zeranoe.com/builds/).  
+- For video support please review [FFmpeg.AutoGen](/Ruslan-B/FFmpeg.AutoGen).
 
-- Build AR.Drone solution with VS2010 or VS2012.
+- Build AR.Drone solution with MonoDevelop, VS2010 or VS2012.
 
 ## Usage
 
