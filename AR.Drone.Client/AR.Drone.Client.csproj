@@ -66,6 +66,8 @@
     <Compile Include="Configuration\Sections\PicSection.cs" />
     <Compile Include="Configuration\Sections\SyslogSection.cs" />
     <Compile Include="Configuration\Sections\UserboxSection.cs" />
+    <Compile Include="Configuration\Sections\VideoBitrateControlMode.cs" />
+    <Compile Include="Configuration\Sections\VideoCodecType.cs" />
     <Compile Include="Configuration\Sections\VideoSection.cs" />
     <Compile Include="Configuration\Sections\VideoChannelType.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
