@@ -14,7 +14,6 @@ namespace AR.Drone.Client.Workers.Acquisition
         public const int NavdataPort = 5554;
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
-
         private readonly INetworkConfiguration _configuration;
         private readonly Action _onAcquisitionStopped;
         private readonly Action<NavigationPacket> _packetAcquired;
@@ -51,10 +50,10 @@ namespace AR.Drone.Client.Workers.Acquisition
                         {
                             byte[] data = udpClient.Receive(ref remoteEp);
                             var packet = new NavigationPacket
-                                {
-                                    Timestamp = DateTime.UtcNow.Ticks,
-                                    Data = data
-                                };
+                            {
+                                Timestamp = DateTime.UtcNow.Ticks,
+                                Data = data
+                            };
                             _packetAcquired(packet);
 
                             _isAcquiring = true;
@@ -82,7 +81,13 @@ namespace AR.Drone.Client.Workers.Acquisition
         private void SendKeepAliveSignal(UdpClient udpClient)
         {
             byte[] payload = BitConverter.GetBytes(1);
-            udpClient.Send(payload, payload.Length);
+            try
+            {
+                udpClient.Send(payload, payload.Length);
+            }
+            catch (SocketException)
+            {
+            }
         }
     }
 }
