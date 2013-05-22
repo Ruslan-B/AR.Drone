@@ -19,7 +19,6 @@ namespace AR.Drone.WinApp
         private readonly DroneClient _droneClient;
         private readonly PacketRecorderWorker _packetRecorderWorker;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
-
         private Image _frameImage;
         private NavigationPacket _navigationPacket;
 
@@ -37,6 +36,7 @@ namespace AR.Drone.WinApp
             _droneClient = new DroneClient();
             _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
             _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
+            _droneClient.ConfigurationUpdated += OnConfigurationUpdated;
             _droneClient.Active = true;
 
             tmrStateUpdate.Enabled = true;
@@ -54,20 +54,33 @@ namespace AR.Drone.WinApp
 
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
-            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
+            if (_packetRecorderWorker.IsAlive)
+                _packetRecorderWorker.EnqueuePacket(packet);
 
             _navigationPacket = packet;
         }
 
         private void OnVideoPacketAcquired(VideoPacket packet)
         {
-            if (_packetRecorderWorker.IsAlive) _packetRecorderWorker.EnqueuePacket(packet);
-            if (_videoPacketDecoderWorker.IsAlive) _videoPacketDecoderWorker.EnqueuePacket(packet);
+            if (_packetRecorderWorker.IsAlive)
+                _packetRecorderWorker.EnqueuePacket(packet);
+            if (_videoPacketDecoderWorker.IsAlive)
+                _videoPacketDecoderWorker.EnqueuePacket(packet);
         }
 
         private void OnVideoPacketDecoded(VideoFrame frame)
         {
             _frameImage = VideoHelper.CreateImageFromFrame(frame);
+        }
+
+        private void OnConfigurationUpdated(DroneConfiguration configuration)
+        {
+            if (configuration.Video.Codec != VideoCodecType.H264_720P ||
+                configuration.Video.BitrateCtrlMode != VideoBitrateControlMode.Dynamic)
+            {
+                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_720P).ToCommand());
+                _droneClient.Send(configuration.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic).ToCommand());
+            }
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -83,9 +96,11 @@ namespace AR.Drone.WinApp
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
         {
             Image oldImage = pbVideo.Image;
-            if (oldImage == _frameImage) return;
+            if (oldImage == _frameImage)
+                return;
             pbVideo.Image = _frameImage;
-            if (oldImage != null) oldImage.Dispose();
+            if (oldImage != null)
+                oldImage.Dispose();
         }
 
         private void tmrStateUpdate_Tick(object sender, EventArgs e)
@@ -106,11 +121,11 @@ namespace AR.Drone.WinApp
             NavdataBag navdataBag;
             if (_navigationPacket.Data != null && NavdataBagParser.TryParse(ref _navigationPacket, out navdataBag))
             {
-                var ctrl_state = (CTRL_STATES) (navdataBag.demo.ctrl_state >> 0x10);
+                var ctrl_state = (CTRL_STATES)(navdataBag.demo.ctrl_state >> 0x10);
                 node = vativeNode.Nodes.GetOrCreate("ctrl_state");
                 node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-                var flying_state = (FLYING_STATES) (navdataBag.demo.ctrl_state & 0xffff);
+                var flying_state = (FLYING_STATES)(navdataBag.demo.ctrl_state & 0xffff);
                 node = vativeNode.Nodes.GetOrCreate("flying_state");
                 node.Text = string.Format("Ctrl State: {0}", flying_state);
 
@@ -131,7 +146,7 @@ namespace AR.Drone.WinApp
                 if (fieldValue == null)
                     node.Text = node.Name + ": null";
                 else if (fieldValue is IConfigurationItem)
-                    node.Text = node.Name + ": " + ((IConfigurationItem) fieldValue).Value;
+                    node.Text = node.Name + ": " + ((IConfigurationItem)fieldValue).Value;
                 else
                 {
                     Type fieldType = fieldInfo.FieldType;
