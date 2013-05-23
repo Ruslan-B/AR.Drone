@@ -1,17 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.IO;
 using AR.Drone.Client.Packets;
 
-namespace AR.Drone.Client.Workers
+namespace AR.Drone.Media
 {
-    public class PacketRecorderWorker : WorkerBase
+    public class PacketRecorder : WorkerBase
     {
         private readonly ConcurrentQueue<object> _packetQueue;
         private readonly string _path;
 
-        public PacketRecorderWorker(string path)
+        public PacketRecorder(string path)
         {
             _path = path;
             _packetQueue = new ConcurrentQueue<object>();

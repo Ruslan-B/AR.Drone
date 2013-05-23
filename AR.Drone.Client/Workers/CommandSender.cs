@@ -7,11 +7,10 @@ using System.Threading;
 using AI.Core.System;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
-using AR.Drone.Client.Helpers;
 
 namespace AR.Drone.Client.Workers
 {
-    public class CommandQueueWorker : WorkerBase
+    public class CommandSender : WorkerBase
     {
         public const int CommandPort = 5556;
         public const int KeepAliveTimeout = 50;
@@ -19,7 +18,7 @@ namespace AR.Drone.Client.Workers
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly INetworkConfiguration _configuration;
 
-        public CommandQueueWorker(INetworkConfiguration configuration, ConcurrentQueue<ATCommand> commandQueue)
+        public CommandSender(INetworkConfiguration configuration, ConcurrentQueue<ATCommand> commandQueue)
         {
             _configuration = configuration;
             _commandQueue = commandQueue;

@@ -3,7 +3,7 @@ using System.IO;
 using AI.Core.System;
 using AR.Drone.Client.Packets;
 
-namespace AR.Drone.Client.IO
+namespace AR.Drone.Media
 {
     public class PacketWriter : DisposableBase
     {
@@ -25,14 +25,14 @@ namespace AR.Drone.Client.IO
                 _writer.Write((byte) PacketType.Navigation);
 
                 var navigationPacket = (NavigationPacket) packet;
-                _writer.WritePacket(navigationPacket);
+                BinaryHelper.WriteNavigationPacket(_writer, navigationPacket);
             }
             else if (packet is VideoPacket)
             {
                 _writer.Write((byte) PacketType.Video);
 
                 var videoPacket = (VideoPacket) packet;
-                _writer.WritePacket(videoPacket);
+                BinaryHelper.WriteVideoPacket(_writer, videoPacket);
             }
             else
             {

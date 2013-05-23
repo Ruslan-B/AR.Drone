@@ -1,18 +1,27 @@
 ﻿using System.IO;
 using AR.Drone.Client.Packets;
 
-namespace AR.Drone.Client.IO
+namespace AR.Drone.Media
 {
     public static class BinaryHelper
     {
-        public static void WritePacket(this BinaryWriter writer, NavigationPacket packet)
+        public static void WriteNavigationPacket(BinaryWriter writer, NavigationPacket packet)
         {
             writer.Write(packet.Timestamp);
             writer.Write(packet.Data.Length);
             writer.Write(packet.Data);
         }
 
-        public static void WritePacket(this BinaryWriter writer, VideoPacket packet)
+        public static NavigationPacket ReadNavigationPacket(BinaryReader reader)
+        {
+            var packet = new NavigationPacket();
+            packet.Timestamp = reader.ReadInt64();
+            int dataSize = reader.ReadInt32();
+            packet.Data = reader.ReadBytes(dataSize);
+            return packet;
+        }
+        
+        public static void WriteVideoPacket(BinaryWriter writer, VideoPacket packet)
         {
             writer.Write(packet.Timestamp);
             writer.Write(packet.FrameNumber);
@@ -23,16 +32,7 @@ namespace AR.Drone.Client.IO
             writer.Write(packet.Data);
         }
 
-        public static NavigationPacket ReadNavigationPacket(this BinaryReader reader)
-        {
-            var packet = new NavigationPacket();
-            packet.Timestamp = reader.ReadInt64();
-            int dataSize = reader.ReadInt32();
-            packet.Data = reader.ReadBytes(dataSize);
-            return packet;
-        }
-
-        public static VideoPacket ReadVideoPacket(this BinaryReader reader)
+        public static VideoPacket ReadVideoPacket(BinaryReader reader)
         {
             var packet = new VideoPacket();
             packet.Timestamp = reader.ReadInt64();

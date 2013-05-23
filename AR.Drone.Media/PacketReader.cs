@@ -2,7 +2,7 @@
 using System.IO;
 using AI.Core.System;
 
-namespace AR.Drone.Client.IO
+namespace AR.Drone.Media
 {
     public class PacketReader : DisposableBase
     {
@@ -24,9 +24,9 @@ namespace AR.Drone.Client.IO
                 switch (packetType)
                 {
                     case PacketType.Navigation:
-                        return _reader.ReadNavigationPacket();
+                        return BinaryHelper.ReadNavigationPacket(_reader);
                     case PacketType.Video:
-                        return _reader.ReadVideoPacket();
+                        return BinaryHelper.ReadVideoPacket(_reader);
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

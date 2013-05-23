@@ -8,7 +8,7 @@ using AR.Drone.Client.Video.Native;
 
 namespace AR.Drone.Client.Workers.Acquisition
 {
-    public class VideoAcquisitionWorker : WorkerBase
+    public class VideoAcquisition : WorkerBase
     {
         public const int VideoPort = 5555;
         public const int FrameBufferSize = 0x100000;
@@ -17,7 +17,7 @@ namespace AR.Drone.Client.Workers.Acquisition
         private readonly INetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 
-        public VideoAcquisitionWorker(INetworkConfiguration configuration, Action<VideoPacket> videoPacketAcquired)
+        public VideoAcquisition(INetworkConfiguration configuration, Action<VideoPacket> videoPacketAcquired)
         {
             _configuration = configuration;
             _videoPacketAcquired = videoPacketAcquired;

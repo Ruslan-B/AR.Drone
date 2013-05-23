@@ -9,7 +9,7 @@ using AR.Drone.Client.Packets;
 
 namespace AR.Drone.Client.Workers.Acquisition
 {
-    public class NavdataAcquisitionWorker : WorkerBase
+    public class NavdataAcquisition : WorkerBase
     {
         public const int NavdataPort = 5554;
         public const int KeepAliveTimeout = 200;
@@ -19,7 +19,7 @@ namespace AR.Drone.Client.Workers.Acquisition
         private readonly Action<NavigationPacket> _packetAcquired;
         private bool _isAcquiring;
 
-        public NavdataAcquisitionWorker(INetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
+        public NavdataAcquisition(INetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
         {
             _configuration = configuration;
             _packetAcquired = packetAcquired;

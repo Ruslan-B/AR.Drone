@@ -70,9 +70,6 @@
     <Compile Include="Configuration\Sections\VideoSection.cs" />
     <Compile Include="Configuration\Sections\VideoChannelType.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
-    <Compile Include="IO\BinaryHelper.cs" />
-    <Compile Include="IO\PacketReader.cs" />
-    <Compile Include="IO\PacketWriter.cs" />
     <Compile Include="Navigation\NavigationPacketParser.cs" />
     <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="Navigation\Native\NavdataBag.cs" />
@@ -125,18 +122,15 @@
     <Compile Include="Packets\VideoPacket.cs" />
     <Compile Include="Configuration\INetworkConfiguration.cs" />
     <Compile Include="ATCommand.cs" />
-    <Compile Include="Workers\Acquisition\ConfigurationAcquisitionWorker.cs" />
+    <Compile Include="Workers\Acquisition\ConfigurationAcquisition.cs" />
     <Compile Include="Packets\ConfigurationPacket.cs" />
-    <Compile Include="Commands\COMWDGCommand.cs" />
-    <Compile Include="Workers\PacketRecorderWorker.cs" />
-    <Compile Include="IO\PacketType.cs" />
-    <Compile Include="Workers\WatchdogWorker.cs" />
-    <Compile Include="Workers\CommandQueueWorker.cs" />
+    <Compile Include="Commands\ComWdgCommand.cs" />
+    <Compile Include="Workers\Watchdog.cs" />
+    <Compile Include="Workers\CommandSender.cs" />
     <Compile Include="DroneClient.cs" />
-    <Compile Include="Workers\Acquisition\NavdataAcquisitionWorker.cs" />
+    <Compile Include="Workers\Acquisition\NavdataAcquisition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Workers\Acquisition\VideoAcquisitionWorker.cs" />
-    <Compile Include="Workers\NetworkWorker.cs" />
+    <Compile Include="Workers\Acquisition\VideoAcquisition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">

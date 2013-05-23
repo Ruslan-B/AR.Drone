@@ -76,6 +76,10 @@
       <Project>{56DBF8E3-28A6-4C27-BA0A-B32352608F44}</Project>
       <Name>AR.Drone.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AR.Drone.Media\AR.Drone.Media.csproj">
+      <Project>{DD02DB21-14CF-4E03-BEE2-AFB2B1C49A4D}</Project>
+      <Name>AR.Drone.Media</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AR.Drone.Video\AR.Drone.Video.csproj">
       <Project>{36C63293-4C2D-41EC-B231-FAF55845C014}</Project>
       <Name>AR.Drone.Video</Name>

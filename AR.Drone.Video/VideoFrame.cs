@@ -9,6 +9,7 @@ namespace AR.Drone.Video
         public uint FrameNumber;
         public int Width;
         public int Height;
+        public int Depth;
         public PixelFormat PixelFormat;
         public byte[] Data;
     }

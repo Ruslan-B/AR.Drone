@@ -9,7 +9,7 @@ using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Client.Navigation.Native;
 using AR.Drone.Client.Packets;
-using AR.Drone.Client.Workers;
+using AR.Drone.Media;
 using AR.Drone.Video;
 
 namespace AR.Drone.WinApp
@@ -17,7 +17,7 @@ namespace AR.Drone.WinApp
     public partial class MainForm : Form
     {
         private readonly DroneClient _droneClient;
-        private readonly PacketRecorderWorker _packetRecorderWorker;
+        private readonly PacketRecorder _packetRecorderWorker;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
         private Image _frameImage;
         private NavigationPacket _navigationPacket;
@@ -30,7 +30,7 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker.Start();
 
             string path = string.Format("flight_{0:yyyy-MM-dd-HH-mm}.ardrone", DateTime.Now);
-            _packetRecorderWorker = new PacketRecorderWorker(path);
+            _packetRecorderWorker = new PacketRecorder(path);
             _packetRecorderWorker.Start();
 
             _droneClient = new DroneClient();

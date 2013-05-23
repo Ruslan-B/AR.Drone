@@ -1,4 +1,4 @@
-﻿namespace AR.Drone.Client.IO
+﻿namespace AR.Drone.Media
 {
     public enum PacketType : byte
     {

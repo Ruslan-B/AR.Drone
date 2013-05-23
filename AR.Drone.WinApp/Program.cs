@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using AI.Core.System;
 
 namespace AR.Drone.WinApp
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
-        /// The main entry point for the application.
+        ///     The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
+            // register LD_LIBRARY_PATH on window 
+            InteropHelper.RegisterLibrariesSearchPath(Environment.GetEnvironmentVariable(InteropHelper.LD_LIBRARY_PATH));
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

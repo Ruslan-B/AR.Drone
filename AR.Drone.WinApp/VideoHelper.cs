@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using AR.Drone.Video;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using VideoPixelFormat = AR.Drone.Video.PixelFormat;
-using System.Runtime.InteropServices;
 
 namespace AR.Drone.WinApp
 {
@@ -25,7 +25,7 @@ namespace AR.Drone.WinApp
             }
         }
 
-        public static unsafe Bitmap CreateImageFromFrame(VideoFrame frame)
+        public static Bitmap CreateImageFromFrame(VideoFrame frame)
         {
             PixelFormat pixelFormat = ConvertPixelFormat(frame.PixelFormat);
             var bitmap = new Bitmap(frame.Width, frame.Height, pixelFormat);
@@ -38,7 +38,7 @@ namespace AR.Drone.WinApp
                 }
                 bitmap.Palette = palette;
             }
-            Rectangle rect = new Rectangle(0, 0, frame.Width, frame.Height);
+            var rect = new Rectangle(0, 0, frame.Width, frame.Height);
             BitmapData data = bitmap.LockBits(rect, ImageLockMode.WriteOnly, pixelFormat);
             Marshal.Copy(frame.Data, 0, data.Scan0, frame.Data.Length);
             bitmap.UnlockBits(data);

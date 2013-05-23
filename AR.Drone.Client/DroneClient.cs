@@ -13,15 +13,14 @@ namespace AR.Drone.Client
     public class DroneClient : DisposableBase
     {
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
-
-        private readonly CommandQueueWorker _commandQueueWorker;
+        private readonly CommandSender _commandSender;
         private readonly DroneConfiguration _configuration;
-        private readonly ConfigurationAcquisitionWorker _configurationAcquisitionWorker;
-        private readonly NavdataAcquisitionWorker _navdataAcquisitionWorker;
-        private readonly VideoAcquisitionWorker _videoAcquisitionWorker;
-        private readonly WatchdogWorker _watchdogWorker;
+        private readonly ConfigurationAcquisition _configurationAcquisition;
+        private readonly NavdataAcquisition _navdataAcquisition;
+        private readonly VideoAcquisition _videoAcquisition;
+        private readonly Watchdog _watchdog;
 
-        private bool _isFirstNavigationPacket;
+        private bool _initializationRequested;
         private NavigationData _navigationData;
         private RequestedState _requestedState;
 
@@ -30,12 +29,11 @@ namespace AR.Drone.Client
             _configuration = new DroneConfiguration();
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
-            _isFirstNavigationPacket = true;
-            _commandQueueWorker = new CommandQueueWorker(_configuration, _commandQueue);
-            _navdataAcquisitionWorker = new NavdataAcquisitionWorker(_configuration, OnNavigationPacketAcquired, OnAcquisitionStopped);
-            _videoAcquisitionWorker = new VideoAcquisitionWorker(_configuration, OnVideoPacketAcquired);
-            _configurationAcquisitionWorker = new ConfigurationAcquisitionWorker(_configuration, OnConfigurationPacketAcquired);
-            _watchdogWorker = new WatchdogWorker(_navdataAcquisitionWorker, _commandQueueWorker, _videoAcquisitionWorker);
+            _commandSender = new CommandSender(_configuration, _commandQueue);
+            _navdataAcquisition = new NavdataAcquisition(_configuration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
+            _videoAcquisition = new VideoAcquisition(_configuration, OnVideoPacketAcquired);
+            _configurationAcquisition = new ConfigurationAcquisition(_configuration, OnConfigurationPacketAcquired);
+            _watchdog = new Watchdog(_navdataAcquisition, _commandSender, _videoAcquisition);
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
@@ -46,21 +44,21 @@ namespace AR.Drone.Client
 
         public bool Active
         {
-            get { return _watchdogWorker.IsAlive; }
+            get { return _watchdog.IsAlive; }
             set
             {
                 if (value)
-                    _watchdogWorker.Start();
+                    _watchdog.Start();
                 else
                 {
-                    _watchdogWorker.Stop();
+                    _watchdog.Stop();
                 }
             }
         }
 
         public bool IsConnected
         {
-            get { return _navdataAcquisitionWorker.IsAcquiring; }
+            get { return _navdataAcquisition.IsAcquiring; }
         }
 
         public DroneConfiguration Configuration
@@ -73,12 +71,12 @@ namespace AR.Drone.Client
             get { return _navigationData; }
         }
 
-        private void OnAcquisitionStopped()
+        private void OnNavdataAcquisitionStopped()
         {
-            _isFirstNavigationPacket = true;
+            _initializationRequested = false;
         }
 
-        private void OnNavigationPacketAcquired(NavigationPacket packet)
+        private void OnNavdataPacketAcquired(NavigationPacket packet)
         {
             if (NavigationPacketAcquired != null)
                 NavigationPacketAcquired(packet);
@@ -93,10 +91,10 @@ namespace AR.Drone.Client
             {
                 _navigationData = navigationData;
 
-                if (_isFirstNavigationPacket)
+                if (_initializationRequested == false)
                 {
                     _requestedState = RequestedState.Initialize;
-                    _isFirstNavigationPacket = false;
+                    _initializationRequested = true;
                 }
 
                 ProcessRequestedState();
@@ -137,7 +135,7 @@ namespace AR.Drone.Client
                     _requestedState = RequestedState.GetConfiguration;
                     return;
                 case RequestedState.GetConfiguration:
-                    _configurationAcquisitionWorker.Start();
+                    _configurationAcquisition.Start();
                     if (_navigationData.State.HasFlag(NavigationState.Command))
                     {
                         _commandQueue.Enqueue(new ControlCommand(ControlMode.AckControlMode));
@@ -234,11 +232,11 @@ namespace AR.Drone.Client
 
         protected override void DisposeOverride()
         {
-            _configurationAcquisitionWorker.Dispose();
-            _navdataAcquisitionWorker.Dispose();
-            _commandQueueWorker.Dispose();
-            _videoAcquisitionWorker.Dispose();
-            _watchdogWorker.Dispose();
+            _configurationAcquisition.Dispose();
+            _navdataAcquisition.Dispose();
+            _commandSender.Dispose();
+            _videoAcquisition.Dispose();
+            _watchdog.Dispose();
         }
 
         internal enum RequestedState

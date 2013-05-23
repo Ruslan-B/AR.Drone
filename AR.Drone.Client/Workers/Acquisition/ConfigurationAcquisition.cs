@@ -8,7 +8,7 @@ using AR.Drone.Client.Packets;
 
 namespace AR.Drone.Client.Workers.Acquisition
 {
-    public class ConfigurationAcquisitionWorker : WorkerBase
+    public class ConfigurationAcquisition : WorkerBase
     {
         private const int ControlPort = 5559;
         private const int NetworkBufferSize = 0x10000;
@@ -16,7 +16,7 @@ namespace AR.Drone.Client.Workers.Acquisition
         private readonly INetworkConfiguration _networkConfiguration;
         private readonly Action<ConfigurationPacket> _configurationAcquired;
 
-        public ConfigurationAcquisitionWorker(INetworkConfiguration networkConfiguration, Action<ConfigurationPacket> configurationAcquired)
+        public ConfigurationAcquisition(INetworkConfiguration networkConfiguration, Action<ConfigurationPacket> configurationAcquired)
         {
             _networkConfiguration = networkConfiguration;
             _configurationAcquired = configurationAcquired;
