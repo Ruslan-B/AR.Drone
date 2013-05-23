@@ -8,7 +8,7 @@ using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Client.Navigation.Native;
-using AR.Drone.Client.Packets;
+using AR.Drone.Data;
 using AR.Drone.Media;
 using AR.Drone.Video;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using AI.Core.System;
-using AR.Drone.Client.Packets;
+using AR.Drone.Data;
 
 namespace AR.Drone.Media
 {

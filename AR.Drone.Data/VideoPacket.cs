@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace AR.Drone.Client.Packets
+namespace AR.Drone.Data
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct VideoPacket

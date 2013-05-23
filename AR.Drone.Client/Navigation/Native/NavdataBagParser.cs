@@ -1,6 +1,6 @@
 using System;
 using AR.Drone.Client.Navigation.Native.Options;
-using AR.Drone.Client.Packets;
+using AR.Drone.Data;
 
 namespace AR.Drone.Client.Navigation.Native
 {

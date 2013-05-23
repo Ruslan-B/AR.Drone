@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Drone.Video", "AR.Drone.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Drone.Media", "AR.Drone.Media\AR.Drone.Media.csproj", "{DD02DB21-14CF-4E03-BEE2-AFB2B1C49A4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Drone.Data", "AR.Drone.Data\AR.Drone.Data.csproj", "{7D1B0B10-82F9-413F-BEE9-0174753D93A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{DD02DB21-14CF-4E03-BEE2-AFB2B1C49A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD02DB21-14CF-4E03-BEE2-AFB2B1C49A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD02DB21-14CF-4E03-BEE2-AFB2B1C49A4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D1B0B10-82F9-413F-BEE9-0174753D93A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D1B0B10-82F9-413F-BEE9-0174753D93A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D1B0B10-82F9-413F-BEE9-0174753D93A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D1B0B10-82F9-413F-BEE9-0174753D93A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

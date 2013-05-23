@@ -74,7 +74,6 @@
     <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="Navigation\Native\NavdataBag.cs" />
     <Compile Include="Navigation\NavdataConverter.cs" />
-    <Compile Include="Packets\NavigationPacket.cs" />
     <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
     <Compile Include="Navigation\Native\Math\matrix33_t.cs" />
     <Compile Include="Navigation\Native\CTRL_STATES.cs" />
@@ -118,12 +117,9 @@
     <Compile Include="Video\Native\parrot_video_encapsulation_t.cs" />
     <Compile Include="Video\Native\parrot_video_encapsulation_frametypes_t.cs" />
     <Compile Include="Navigation\Native\NavdataBagParser.cs" />
-    <Compile Include="Packets\VideoFrameType.cs" />
-    <Compile Include="Packets\VideoPacket.cs" />
     <Compile Include="Configuration\INetworkConfiguration.cs" />
     <Compile Include="ATCommand.cs" />
     <Compile Include="Workers\Acquisition\ConfigurationAcquisition.cs" />
-    <Compile Include="Packets\ConfigurationPacket.cs" />
     <Compile Include="Commands\ComWdgCommand.cs" />
     <Compile Include="Workers\Watchdog.cs" />
     <Compile Include="Workers\CommandSender.cs" />
@@ -136,6 +132,10 @@
     <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
       <Project>{F86E869A-631C-4E67-918E-6C61AA0F13BD}</Project>
       <Name>AI.Core.System</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
+      <Project>{7D1B0B10-82F9-413F-BEE9-0174753D93A1}</Project>
+      <Name>AR.Drone.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

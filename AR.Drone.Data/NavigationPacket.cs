@@ -1,11 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace AR.Drone.Client.Packets
+namespace AR.Drone.Data
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct ConfigurationPacket
+    public struct NavigationPacket
     {
-        public byte[] Data;
         public long Timestamp;
+        public byte[] Data;
     }
 }

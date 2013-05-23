@@ -1,4 +1,4 @@
-namespace AR.Drone.Client.Packets
+namespace AR.Drone.Data
 {
     public enum VideoFrameType : byte
     {

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using AR.Drone.Client.Packets;
+using AR.Drone.Data;
 
 namespace AR.Drone.Client.Configuration
 {
