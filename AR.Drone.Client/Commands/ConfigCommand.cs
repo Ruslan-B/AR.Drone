@@ -17,7 +17,7 @@ namespace AR.Drone.Client.Commands
             : this(key, value.ToString("D"))
         {
         }
-        
+
         public ConfigCommand(string key, float value)
             : this(key, ConversionHelper.ToInt(value))
         {

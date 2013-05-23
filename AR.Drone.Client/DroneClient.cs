@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using AI.Core.System;
+using AR.Drone.Client.Acquisition.Configuration;
+using AR.Drone.Client.Acquisition.Navigation;
+using AR.Drone.Client.Acquisition.Video;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
-using AR.Drone.Client.Navigation;
-using AR.Drone.Client.Workers;
-using AR.Drone.Client.Workers.Acquisition;
 using AR.Drone.Data;
 
 namespace AR.Drone.Client
