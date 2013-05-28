@@ -77,6 +77,7 @@ namespace AR.Drone.Client
         private void OnNavdataAcquisitionStopped()
         {
             _initializationRequested = false;
+            _videoAcquisition.Stop();
         }
 
         private void OnNavdataPacketAcquired(NavigationPacket packet)

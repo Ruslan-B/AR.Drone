@@ -8,19 +8,25 @@ namespace AR.Drone.Video
 {
     public class VideoPacketDecoderWorker : WorkerBase
     {
+        private bool _skipFrames;
         private readonly Action<VideoFrame> _onFrameDecoded;
         private readonly ConcurrentQueue<VideoPacket> _packetQueue;
         private readonly PixelFormat _pixelFormat;
 
-        public VideoPacketDecoderWorker(PixelFormat pixelFormat, Action<VideoFrame> onFrameDecoded)
+        public VideoPacketDecoderWorker(PixelFormat pixelFormat, bool skipFrames, Action<VideoFrame> onFrameDecoded)
         {
             _pixelFormat = pixelFormat;
+            _skipFrames = skipFrames;
             _onFrameDecoded = onFrameDecoded;
             _packetQueue = new ConcurrentQueue<VideoPacket>();
         }
 
         public void EnqueuePacket(VideoPacket packet)
         {
+            if (_skipFrames && packet.FrameType == VideoFrameType.I && _packetQueue.Count > 0)
+            {
+                _packetQueue.Flush();
+            }
             _packetQueue.Enqueue(packet);
         }
 

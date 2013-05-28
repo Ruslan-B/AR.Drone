@@ -11,9 +11,8 @@ namespace AR.Drone.Client.Acquisition.Video
     public class VideoAcquisition : WorkerBase
     {
         public const int VideoPort = 5555;
-        public const int FrameBufferSize = 0x100000;
+        public const int FrameBufferSize = 0x1000000;
         public const int NetworkStreamReadSize = 0x10000;
-
         private readonly INetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 
@@ -37,26 +36,31 @@ namespace AR.Drone.Client.Acquisition.Video
                 fixed (byte* pBuffer = &buffer[0])
                     while (token.IsCancellationRequested == false)
                     {
-                        offset += stream.Read(buffer, offset, NetworkStreamReadSize);
+                        int read = stream.Read(buffer, offset, NetworkStreamReadSize);
+                        
+                        if (read == 0)
+                            continue;
+
+                        offset += read;
                         if (packetData == null)
                         {
                             // lookup for a frame start
-                            int maxSearchIndex = offset - sizeof (parrot_video_encapsulation_t);
+                            int maxSearchIndex = offset - sizeof(parrot_video_encapsulation_t);
                             for (int i = 0; i < maxSearchIndex; i++)
                             {
                                 if (buffer[i] == 'P' && buffer[i + 1] == 'a' && buffer[i + 2] == 'V' && buffer[i + 3] == 'E')
                                 {
-                                    parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*) (pBuffer + i);
+                                    parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*)(pBuffer + i);
                                     packetData = new byte[pve.payload_size];
                                     packet = new VideoPacket
-                                        {
-                                            Timestamp = DateTime.UtcNow.Ticks,
-                                            FrameNumber = pve.frame_number,
-                                            Width = pve.display_width,
-                                            Height = pve.display_height,
-                                            FrameType = VideoFrameTypeConverter.Convert(pve.frame_type),
-                                            Data = packetData
-                                        };
+                                    {
+                                        Timestamp = DateTime.UtcNow.Ticks,
+                                        FrameNumber = pve.frame_number,
+                                        Width = pve.display_width,
+                                        Height = pve.display_height,
+                                        FrameType = VideoFrameTypeConverter.Convert(pve.frame_type),
+                                        Data = packetData
+                                    };
                                     frameStart = i + pve.header_size;
                                     frameEnd = frameStart + packet.Data.Length;
                                     break;
