@@ -1,4 +1,4 @@
-## AR.Drone
+## AR.Drone [![Build Status](https://travis-ci.org/Ruslan-B/AR.Drone.png)](https://travis-ci.org/Ruslan-B/AR.Drone)
 
 The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.  
 Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.

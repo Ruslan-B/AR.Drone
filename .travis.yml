@@ -1,0 +1,10 @@
+language: c
+ 
+before_install:
+  - git submodule update --init --recursive
+
+install:
+  - sudo apt-get install mono-devel mono-gmcs nunit-console
+ 
+script:
+  - xbuild ./AR.Drone.sln.sln
