@@ -65,7 +65,7 @@ namespace AR.Drone.Client.Acquisition.Navigation
                             SendKeepAliveSignal(udpClient);
                             swKeepAlive.Restart();
                         }
-                        Thread.Sleep(2);
+                        Thread.Sleep(5);
                     }
                 }
                 finally

@@ -14,7 +14,6 @@ namespace AR.Drone.Client
     {
         public const int CommandPort = 5556;
         public const int KeepAliveTimeout = 50;
-
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly INetworkConfiguration _configuration;
 
@@ -27,7 +26,6 @@ namespace AR.Drone.Client
         protected override void Loop(CancellationToken token)
         {
             int sequenceNumber = 1;
-            _commandQueue.Flush();
 
             using (var udpClient = new UdpClient(CommandPort))
             {

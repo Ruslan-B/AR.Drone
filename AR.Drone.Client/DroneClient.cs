@@ -19,7 +19,6 @@ namespace AR.Drone.Client
         private readonly NavdataAcquisition _navdataAcquisition;
         private readonly VideoAcquisition _videoAcquisition;
         private readonly Watchdog _watchdog;
-
         private bool _initializationRequested;
         private NavigationData _navigationData;
         private RequestedState _requestedState;
@@ -37,9 +36,13 @@ namespace AR.Drone.Client
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
+
         public Action<NavigationData> NavigationDataUpdated { get; set; }
+
         public Action<VideoPacket> VideoPacketAcquired { get; set; }
+
         public Action<ConfigurationPacket> ConfigurationPacketAcquired { get; set; }
+
         public Action<DroneConfiguration> ConfigurationUpdated { get; set; }
 
         public bool Active
@@ -130,6 +133,7 @@ namespace AR.Drone.Client
                     return;
                 case RequestedState.Initialize:
                     ATCommand cmdNavdataDemo = _configuration.General.NavdataDemo.Set(false).ToCommand();
+                    _commandQueue.Flush();
                     _commandQueue.Enqueue(cmdNavdataDemo);
                     _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
                     _requestedState = RequestedState.GetConfiguration;
@@ -241,12 +245,18 @@ namespace AR.Drone.Client
 
         internal enum RequestedState
         {
-            None,
-            Initialize,
-            GetConfiguration,
-            Land,
-            Fly,
-            Emergency,
+            None
+,
+            Initialize
+,
+            GetConfiguration
+,
+            Land
+,
+            Fly
+,
+            Emergency
+,
             ResetEmergency
         }
     }
