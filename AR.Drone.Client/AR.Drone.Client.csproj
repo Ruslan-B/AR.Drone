@@ -42,9 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Acquisition\Video\VideoFrameTypeConverter.cs" />
+    <Compile Include="Commands\CalibrateCommand.cs" />
     <Compile Include="Commands\ConfigCommand.cs" />
+    <Compile Include="Commands\ConfigIdsCommand.cs" />
     <Compile Include="Commands\ControlCommand.cs" />
     <Compile Include="Commands\ControlMode.cs" />
+    <Compile Include="Commands\Device.cs" />
     <Compile Include="Commands\FlatTrimCommand.cs" />
     <Compile Include="Commands\ProgressiveCommand.cs" />
     <Compile Include="Commands\ProgressiveMode.cs" />

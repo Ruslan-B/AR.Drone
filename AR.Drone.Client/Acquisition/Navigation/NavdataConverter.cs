@@ -34,9 +34,17 @@ namespace AR.Drone.Client.Acquisition.Navigation
             navigationData.Battery.Percentage = navdataBag.demo.vbat_flying_percentage;
             navigationData.Battery.Voltage = navdataBag.raw_measures.vbat_raw/1000.0f;
 
-            navigationData.Wifi.LinkQuality = 1.0f - ConversionHelper.ToSingle(navdataBag.wifi.link_quality);
-
+            navigationData.Magneto.Rectified.X = navdataBag.magneto.magneto_rectified.x;
+            navigationData.Magneto.Rectified.Y = navdataBag.magneto.magneto_rectified.y;
+            navigationData.Magneto.Rectified.Z = navdataBag.magneto.magneto_rectified.z;
+            
+            navigationData.Magneto.Offset.X = navdataBag.magneto.magneto_offset.x;
+            navigationData.Magneto.Offset.Y = navdataBag.magneto.magneto_offset.y;
+            navigationData.Magneto.Offset.Z = navdataBag.magneto.magneto_offset.z;
+            
             navigationData.Video.FrameNumber = navdataBag.video_stream.frame_number;
+
+            navigationData.Wifi.LinkQuality = 1.0f - ConversionHelper.ToSingle(navdataBag.wifi.link_quality);
 
             return navigationData;
         }

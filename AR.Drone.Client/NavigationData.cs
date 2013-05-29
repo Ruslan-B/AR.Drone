@@ -12,9 +12,10 @@ namespace AR.Drone.Client
         public float Altitude; // meters
         public Vector3 Velocity; // meter/second
         public Battery Battery;
+        public Magneto Magneto;
         public float Time; // seconds
-        public Wifi Wifi;
         public Video Video;
+        public Wifi Wifi;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -41,6 +42,13 @@ namespace AR.Drone.Client
         {
             return string.Format("{{X:{0} Y:{1} Z:{2}}}", X, Y, Z);
         }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Magneto
+    {
+        public Vector3 Rectified;
+        public Vector3 Offset;
     }
 
     [StructLayout(LayoutKind.Sequential)]
