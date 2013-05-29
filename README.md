@@ -16,7 +16,7 @@ Drone controling, access to configuaration, video streaming support are working 
 
 Things todo:  
 [ ] Multi-configuration support;  
-[ ] Wifi managment (only on Windows so far).  
+[ ] Generic WiFi managment (Windows and OS X so far).  
 
 ## Build
 
