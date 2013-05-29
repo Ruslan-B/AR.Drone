@@ -10,13 +10,9 @@ Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.
 
 ## Status
 
+All major features are supported - video, configuration and control.  
 This library is still under heavy development, 
 so please don't be suprised if you find some functionality missing or undocumented.  
-Drone controling, access to configuaration, video streaming support are working fine.
-
-Things todo:  
-[ ] Multi-configuration support;  
-[ ] Generic WiFi managment (Windows and OS X so far).  
 
 ## Build
 
