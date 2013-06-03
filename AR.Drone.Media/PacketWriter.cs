@@ -7,13 +7,11 @@ namespace AR.Drone.Media
 {
     public class PacketWriter : DisposableBase
     {
-        private readonly FileStream _stream;
         private readonly BinaryWriter _writer;
 
-        public PacketWriter(string path)
+        public PacketWriter(Stream stream)
         {
-            _stream = new FileStream(path, FileMode.Create);
-            _writer = new BinaryWriter(_stream);
+            _writer = new BinaryWriter(stream);
         }
 
         public void Write(object packet)
@@ -45,7 +43,6 @@ namespace AR.Drone.Media
         {
             _writer.Flush();
             _writer.Dispose();
-            _stream.Dispose();
         }
     }
 }

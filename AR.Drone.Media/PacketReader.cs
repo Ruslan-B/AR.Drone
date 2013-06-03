@@ -7,12 +7,10 @@ namespace AR.Drone.Media
     public class PacketReader : DisposableBase
     {
         private readonly BinaryReader _reader;
-        private readonly FileStream _stream;
 
-        public PacketReader(string path)
+        public PacketReader(Stream stream)
         {
-            _stream = new FileStream(path, FileMode.Open);
-            _reader = new BinaryReader(_stream);
+            _reader = new BinaryReader(stream);
         }
 
         public object Read()
@@ -40,7 +38,6 @@ namespace AR.Drone.Media
         protected override void DisposeOverride()
         {
             _reader.Dispose();
-            _stream.Dispose();
         }
     }
 }

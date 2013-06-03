@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Threading;
 using AI.Core.System;
 using AR.Drone.Data;
@@ -8,11 +9,11 @@ namespace AR.Drone.Media
     public class PacketRecorder : WorkerBase
     {
         private readonly ConcurrentQueue<object> _packetQueue;
-        private readonly string _path;
+        private readonly Stream _stream;
 
-        public PacketRecorder(string path)
+        public PacketRecorder(Stream stream)
         {
-            _path = path;
+            _stream = stream;
             _packetQueue = new ConcurrentQueue<object>();
         }
 
@@ -30,7 +31,7 @@ namespace AR.Drone.Media
         {
             _packetQueue.Flush();
 
-            using (var recorder = new PacketWriter(_path))
+            using (var recorder = new PacketWriter(_stream))
             {
                 while (token.IsCancellationRequested == false)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Forms;
@@ -30,7 +31,8 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker.Start();
 
             string path = string.Format("flight_{0:yyyy-MM-dd-HH-mm}.ardrone", DateTime.Now);
-            _packetRecorderWorker = new PacketRecorder(path);
+            var stream = new FileStream(path, FileMode.OpenOrCreate);
+            _packetRecorderWorker = new PacketRecorder(stream);
             _packetRecorderWorker.Start();
 
             _droneClient = new DroneClient();
@@ -121,11 +123,11 @@ namespace AR.Drone.WinApp
             NavdataBag navdataBag;
             if (_navigationPacket.Data != null && NavdataBagParser.TryParse(ref _navigationPacket, out navdataBag))
             {
-                var ctrl_state = (CTRL_STATES)(navdataBag.demo.ctrl_state >> 0x10);
+                var ctrl_state = (CTRL_STATES) (navdataBag.demo.ctrl_state >> 0x10);
                 node = vativeNode.Nodes.GetOrCreate("ctrl_state");
                 node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-                var flying_state = (FLYING_STATES)(navdataBag.demo.ctrl_state & 0xffff);
+                var flying_state = (FLYING_STATES) (navdataBag.demo.ctrl_state & 0xffff);
                 node = vativeNode.Nodes.GetOrCreate("flying_state");
                 node.Text = string.Format("Ctrl State: {0}", flying_state);
 
@@ -146,7 +148,7 @@ namespace AR.Drone.WinApp
                 if (fieldValue == null)
                     node.Text = node.Name + ": null";
                 else if (fieldValue is IConfigurationItem)
-                    node.Text = node.Name + ": " + ((IConfigurationItem)fieldValue).Value;
+                    node.Text = node.Name + ": " + ((IConfigurationItem) fieldValue).Value;
                 else
                 {
                     Type fieldType = fieldInfo.FieldType;
