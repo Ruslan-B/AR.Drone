@@ -21,7 +21,7 @@ namespace AR.Drone.Client
         private readonly Watchdog _watchdog;
         private bool _initializationRequested;
         private NavigationData _navigationData;
-        private RequestedState _requestedState;
+        private StateRequest _stateRequest;
 
         public DroneClient()
         {
@@ -74,6 +74,11 @@ namespace AR.Drone.Client
             get { return _navigationData; }
         }
 
+        public void Send(ATCommand command)
+        {
+            _commandQueue.Enqueue(command);
+        }
+
         private void OnNavdataAcquisitionStopped()
         {
             _initializationRequested = false;
@@ -95,13 +100,8 @@ namespace AR.Drone.Client
             {
                 _navigationData = navigationData;
 
-                if (_initializationRequested == false)
-                {
-                    _requestedState = RequestedState.Initialize;
-                    _initializationRequested = true;
-                }
 
-                ProcessRequestedState();
+                ProcessTransition();
 
                 if (NavigationDataUpdated != null)
                     NavigationDataUpdated(_navigationData);
@@ -126,60 +126,66 @@ namespace AR.Drone.Client
             }
         }
 
-        private void ProcessRequestedState()
+        private void ProcessTransition()
         {
-            switch (_requestedState)
+            if (_initializationRequested == false)
             {
-                case RequestedState.None:
+                _initializationRequested = true;
+                _stateRequest = StateRequest.Initialization;
+            }
+
+            switch (_stateRequest)
+            {
+                case StateRequest.None:
                     return;
-                case RequestedState.Initialize:
-                    ATCommand cmdNavdataDemo = _configuration.General.NavdataDemo.Set(false).ToCommand();
+                case StateRequest.Initialization:
                     _commandQueue.Flush();
-                    _commandQueue.Enqueue(cmdNavdataDemo);
-                    _commandQueue.Enqueue(new ControlCommand(ControlMode.NoControlMode));
-                    _requestedState = RequestedState.GetConfiguration;
+                    ATCommand cmdNavdataDemo = _configuration.General.NavdataDemo.Set(false).ToCommand();
+                    Send(cmdNavdataDemo);
+                    Send(new ControlCommand(ControlMode.NoControlMode));
+                    _stateRequest = StateRequest.Configuration;
                     return;
-                case RequestedState.GetConfiguration:
+                case StateRequest.Configuration:
                     _configurationAcquisition.Start();
                     if (_navigationData.State.HasFlag(NavigationState.Command))
                     {
-                        _commandQueue.Enqueue(new ControlCommand(ControlMode.AckControlMode));
+                        Send(new ControlCommand(ControlMode.AckControlMode));
                     }
                     else
                     {
-                        _commandQueue.Enqueue(new ControlCommand(ControlMode.CfgGetControlMode));
-                        _requestedState = RequestedState.None;
+                        Send(new ControlCommand(ControlMode.CfgGetControlMode));
+                        _stateRequest = StateRequest.None;
                     }
                     break;
-                case RequestedState.Emergency:
+                case StateRequest.Emergency:
                     if (_navigationData.State.HasFlag(NavigationState.Flying))
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
+                        Send(new RefCommand(RefMode.Emergency));
                     else
-                        _requestedState = RequestedState.None;
+                        _stateRequest = StateRequest.None;
                     break;
-                case RequestedState.ResetEmergency:
-                    _commandQueue.Enqueue(new RefCommand(RefMode.Emergency));
-                    _requestedState = RequestedState.None;
+                case StateRequest.ResetEmergency:
+                    Send(new RefCommand(RefMode.Emergency));
+                    _stateRequest = StateRequest.None;
                     break;
-                case RequestedState.Land:
+                case StateRequest.Land:
                     if (_navigationData.State.HasFlag(NavigationState.Flying) &&
                         _navigationData.State.HasFlag(NavigationState.Landing) == false)
                     {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Land));
+                        Send(new RefCommand(RefMode.Land));
                     }
                     else
-                        _requestedState = RequestedState.None;
+                        _stateRequest = StateRequest.None;
                     break;
-                case RequestedState.Fly:
+                case StateRequest.Fly:
                     if (_navigationData.State.HasFlag(NavigationState.Landed) &&
                         _navigationData.State.HasFlag(NavigationState.Takeoff) == false &&
                         _navigationData.State.HasFlag(NavigationState.Emergency) == false &&
                         _navigationData.Battery.Low == false)
                     {
-                        _commandQueue.Enqueue(new RefCommand(RefMode.Takeoff));
+                        Send(new RefCommand(RefMode.Takeoff));
                     }
                     else
-                        _requestedState = RequestedState.None;
+                        _stateRequest = StateRequest.None;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -188,51 +194,46 @@ namespace AR.Drone.Client
 
         public void Emergency()
         {
-            _requestedState = RequestedState.Emergency;
+            _stateRequest = StateRequest.Emergency;
         }
 
         public void ResetEmergency()
         {
-            _requestedState = RequestedState.ResetEmergency;
+            _stateRequest = StateRequest.ResetEmergency;
         }
 
         public void RequestConfiguration()
         {
-            _requestedState = RequestedState.GetConfiguration;
+            _stateRequest = StateRequest.Configuration;
         }
 
         public void Land()
         {
-            _requestedState = RequestedState.Land;
+            _stateRequest = StateRequest.Land;
         }
 
         public void Takeoff()
         {
             if (_navigationData.State.HasFlag(NavigationState.Landed))
-                _requestedState = RequestedState.Fly;
+                _stateRequest = StateRequest.Fly;
         }
 
         public void FlatTrim()
         {
             if (_navigationData.State.HasFlag(NavigationState.Landed))
-                _commandQueue.Enqueue(new FlatTrimCommand());
+                Send(new FlatTrimCommand());
         }
 
         public void Hover()
         {
             if (_navigationData.State.HasFlag(NavigationState.Flying))
-                _commandQueue.Enqueue(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
+                Send(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
         }
 
         public void Progress(ProgressiveMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
         {
             if (_navigationData.State.HasFlag(NavigationState.Flying))
-                _commandQueue.Enqueue(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));
-        }
-
-        public void Send(ATCommand command)
-        {
-            _commandQueue.Enqueue(command);
+                Send(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));
         }
 
         protected override void DisposeOverride()
@@ -242,23 +243,6 @@ namespace AR.Drone.Client
             _commandSender.Dispose();
             _videoAcquisition.Dispose();
             _watchdog.Dispose();
-        }
-
-        internal enum RequestedState
-        {
-            None
-,
-            Initialize
-,
-            GetConfiguration
-,
-            Land
-,
-            Fly
-,
-            Emergency
-,
-            ResetEmergency
         }
     }
 }
