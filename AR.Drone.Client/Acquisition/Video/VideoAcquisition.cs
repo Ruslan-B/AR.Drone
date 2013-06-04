@@ -11,8 +11,8 @@ namespace AR.Drone.Client.Acquisition.Video
     public class VideoAcquisition : WorkerBase
     {
         public const int VideoPort = 5555;
-        public const int FrameBufferSize = 0x1000000;
-        public const int NetworkStreamReadSize = 0x10000;
+        public const int FrameBufferSize = 0x400000;
+        public const int NetworkStreamReadSize = 0x8000;
         private readonly INetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 

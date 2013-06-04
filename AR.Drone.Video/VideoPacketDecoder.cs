@@ -28,7 +28,7 @@ namespace AR.Drone.Video
                 byte[] data = _videoConverter.ConvertFrame(avFrame);
 
                 frame.Timestamp = packet.Timestamp;
-                frame.FrameNumber = packet.FrameNumber;
+                frame.Number = packet.FrameNumber;
                 frame.Width = packet.Width;
                 frame.Height = packet.Height;
                 frame.Depth = data.Length/(packet.Width*packet.Height);

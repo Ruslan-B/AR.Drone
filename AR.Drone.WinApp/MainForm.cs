@@ -20,7 +20,9 @@ namespace AR.Drone.WinApp
         private readonly DroneClient _droneClient;
         private readonly PacketRecorder _packetRecorderWorker;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
-        private Image _frameImage;
+        private VideoFrame _currentFrame;
+        private VideoFrame _newFrame;
+        private Bitmap _frameBitmap;
         private NavigationPacket _navigationPacket;
 
         public MainForm()
@@ -72,7 +74,7 @@ namespace AR.Drone.WinApp
 
         private void OnVideoPacketDecoded(VideoFrame frame)
         {
-            _frameImage = VideoHelper.CreateImageFromFrame(frame);
+            _newFrame = frame;
         }
 
         private void OnConfigurationUpdated(DroneConfiguration configuration)
@@ -97,12 +99,20 @@ namespace AR.Drone.WinApp
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
         {
-            Image oldImage = pbVideo.Image;
-            if (oldImage == _frameImage)
+            if (_currentFrame.Number == _newFrame.Number)
                 return;
-            pbVideo.Image = _frameImage;
-            if (oldImage != null)
-                oldImage.Dispose();
+            _currentFrame = _newFrame;
+                
+            if (_frameBitmap == null)
+            {
+                _frameBitmap = VideoHelper.CreateBitmap(ref _newFrame);
+                pbVideo.Image = _frameBitmap;
+            }
+            else
+            {
+                VideoHelper.UpdateBitmap(ref _frameBitmap, ref _newFrame);
+                pbVideo.Invalidate();
+            }
         }
 
         private void tmrStateUpdate_Tick(object sender, EventArgs e)
@@ -123,11 +133,11 @@ namespace AR.Drone.WinApp
             NavdataBag navdataBag;
             if (_navigationPacket.Data != null && NavdataBagParser.TryParse(ref _navigationPacket, out navdataBag))
             {
-                var ctrl_state = (CTRL_STATES) (navdataBag.demo.ctrl_state >> 0x10);
+                var ctrl_state = (CTRL_STATES)(navdataBag.demo.ctrl_state >> 0x10);
                 node = vativeNode.Nodes.GetOrCreate("ctrl_state");
                 node.Text = string.Format("Ctrl State: {0}", ctrl_state);
 
-                var flying_state = (FLYING_STATES) (navdataBag.demo.ctrl_state & 0xffff);
+                var flying_state = (FLYING_STATES)(navdataBag.demo.ctrl_state & 0xffff);
                 node = vativeNode.Nodes.GetOrCreate("flying_state");
                 node.Text = string.Format("Ctrl State: {0}", flying_state);
 
@@ -148,7 +158,7 @@ namespace AR.Drone.WinApp
                 if (fieldValue == null)
                     node.Text = node.Name + ": null";
                 else if (fieldValue is IConfigurationItem)
-                    node.Text = node.Name + ": " + ((IConfigurationItem) fieldValue).Value;
+                    node.Text = node.Name + ": " + ((IConfigurationItem)fieldValue).Value;
                 else
                 {
                     Type fieldType = fieldInfo.FieldType;

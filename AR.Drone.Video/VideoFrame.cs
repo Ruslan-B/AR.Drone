@@ -6,7 +6,7 @@ namespace AR.Drone.Video
     public struct VideoFrame
     {
         public long Timestamp;
-        public uint FrameNumber;
+        public uint Number;
         public int Width;
         public int Height;
         public int Depth;
