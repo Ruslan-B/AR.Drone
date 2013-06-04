@@ -20,8 +20,8 @@ namespace AR.Drone.WinApp
         private readonly DroneClient _droneClient;
         private readonly PacketRecorder _packetRecorderWorker;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
-        private VideoFrame _currentFrame;
-        private VideoFrame _newFrame;
+        private uint _frameNumber;
+        private VideoFrame _frame;
         private Bitmap _frameBitmap;
         private NavigationPacket _navigationPacket;
 
@@ -74,15 +74,15 @@ namespace AR.Drone.WinApp
 
         private void OnVideoPacketDecoded(VideoFrame frame)
         {
-            _newFrame = frame;
+            _frame = frame;
         }
 
         private void OnConfigurationUpdated(DroneConfiguration configuration)
         {
-            if (configuration.Video.Codec != VideoCodecType.H264_720P ||
+            if (configuration.Video.Codec != VideoCodecType.H264_360P ||
                 configuration.Video.BitrateCtrlMode != VideoBitrateControlMode.Dynamic)
             {
-                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_720P).ToCommand());
+                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_360P).ToCommand());
                 _droneClient.Send(configuration.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic).ToCommand());
             }
         }
@@ -99,20 +99,16 @@ namespace AR.Drone.WinApp
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
         {
-            if (_currentFrame.Number == _newFrame.Number)
+            if (_frameNumber == _frame.Number)
                 return;
-            _currentFrame = _newFrame;
+            _frameNumber = _frame.Number;
                 
             if (_frameBitmap == null)
-            {
-                _frameBitmap = VideoHelper.CreateBitmap(ref _newFrame);
-                pbVideo.Image = _frameBitmap;
-            }
+                _frameBitmap = VideoHelper.CreateBitmap(ref _frame);
             else
-            {
-                VideoHelper.UpdateBitmap(ref _frameBitmap, ref _newFrame);
-                pbVideo.Invalidate();
-            }
+                VideoHelper.UpdateBitmap(ref _frameBitmap, ref _frame);
+
+            pbVideo.Image = _frameBitmap;
         }
 
         private void tmrStateUpdate_Tick(object sender, EventArgs e)
