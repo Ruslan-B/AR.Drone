@@ -1,4 +1,4 @@
-﻿using AI.Core.System;
+﻿using AR.Drone.Infrastructure;
 using AR.Drone.Video.Exceptions;
 using FFmpeg.AutoGen;
 
@@ -41,18 +41,19 @@ namespace AR.Drone.Video
             }
         }
 
-        public byte[] ConvertFrame(AVFrame frame)
+        public byte[] ConvertFrame(ref AVFrame frame)
         {
             if (_initialized == false)
                 Initialize(frame.width, frame.height, (AVPixelFormat) frame.format);
 
+            fixed (AVFrame* pFrame = &frame)
             fixed (byte* pOutputData = &_outputData[0])
             {
-                byte** pSrcData = &(frame).data_0;
+                byte** pSrcData = &(pFrame)->data_0;
                 byte** pDstData = &(_pCurrentFrame)->data_0;
 
                 _pCurrentFrame->data_0 = pOutputData;
-                FFmpegInvoke.sws_scale(_pContext, pSrcData, frame.linesize, 0, frame.height, pDstData, _pCurrentFrame->linesize);
+                FFmpegInvoke.sws_scale(_pContext, pSrcData, pFrame->linesize, 0, frame.height, pDstData, _pCurrentFrame->linesize);
             }
             return _outputData;
         }

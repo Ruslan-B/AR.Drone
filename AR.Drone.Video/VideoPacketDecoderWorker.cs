@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using AI.Core.System;
+using AR.Drone.Infrastructure;
 using AR.Drone.Data;
 
 namespace AR.Drone.Video

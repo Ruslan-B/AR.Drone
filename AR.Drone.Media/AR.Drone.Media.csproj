@@ -44,13 +44,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AI.Core\AI.Core.System\AI.Core.System.csproj">
-      <Project>{F86E869A-631C-4E67-918E-6C61AA0F13BD}</Project>
-      <Name>AI.Core.System</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
       <Project>{7D1B0B10-82F9-413F-BEE9-0174753D93A1}</Project>
       <Name>AR.Drone.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AR.Drone.Infrastructure\AR.Drone.Infrastructure.csproj">
+      <Project>{5be68b3d-1112-464d-8c17-844e834bb3ba}</Project>
+      <Name>AR.Drone.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

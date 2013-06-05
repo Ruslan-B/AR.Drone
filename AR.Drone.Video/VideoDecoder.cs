@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using AI.Core.System;
+using AR.Drone.Infrastructure;
 using AR.Drone.Video.Exceptions;
 using FFmpeg.AutoGen;
 
@@ -28,15 +28,13 @@ namespace AR.Drone.Video
                 throw new VideoDecoderException("Could not open codec.");
         }
 
-        public bool TryDecode(ref byte[] data, out AVFrame frame)
+        public bool TryDecode(ref AVPacket packet, ref AVFrame frame)
         {
             int gotPicture;
-            frame = new AVFrame();
-            fixed (byte* pData = &data[0])
+            fixed (AVPacket* pPacket = &packet)
             fixed (AVFrame* pFrame = &frame)
             {
-                var packet = new AVPacket {data = pData, size = data.Length};
-                int decodedSize = FFmpegInvoke.avcodec_decode_video2(_pDecodingContext, pFrame, &gotPicture, &packet);
+                int decodedSize = FFmpegInvoke.avcodec_decode_video2(_pDecodingContext, pFrame, &gotPicture, pPacket);
                 if (decodedSize < 0)
                     Trace.TraceWarning("Error while decoding frame.");
             }

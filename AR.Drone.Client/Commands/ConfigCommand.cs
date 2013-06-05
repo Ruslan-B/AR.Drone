@@ -1,5 +1,5 @@
 using System;
-using AR.Drone.Client.Helpers;
+using AR.Drone.Data.Helpers;
 
 namespace AR.Drone.Client.Commands
 {

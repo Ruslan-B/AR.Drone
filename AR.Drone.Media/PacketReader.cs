@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using AI.Core.System;
+using AR.Drone.Infrastructure;
 
 namespace AR.Drone.Media
 {

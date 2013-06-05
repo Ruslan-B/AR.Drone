@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Forms;
 using AR.Drone.Client;
-using AR.Drone.Client.Acquisition.Navigation.Native;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
 using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Data;
+using AR.Drone.Data.Navigation.Native;
 using AR.Drone.Media;
 using AR.Drone.Video;
 

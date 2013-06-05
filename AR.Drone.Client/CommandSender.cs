@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using AI.Core.System;
+using AR.Drone.Infrastructure;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
 

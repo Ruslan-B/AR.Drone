@@ -1,7 +1,6 @@
 ﻿using System.Threading;
-using AI.Core.System;
-using AR.Drone.Client.Acquisition.Navigation;
-using AR.Drone.Client.Acquisition.Video;
+using AR.Drone.Client.Acquisition;
+using AR.Drone.Infrastructure;
 
 namespace AR.Drone.Client
 {

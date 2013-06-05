@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,14 +31,61 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Navigation\NavigationData.cs" />
+    <Compile Include="Navigation\NavigationState.cs" />
     <Compile Include="ConfigurationPacket.cs" />
     <Compile Include="NavigationPacket.cs" />
+    <Compile Include="Navigation\Native\CTRL_STATES.cs" />
+    <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
+    <Compile Include="Navigation\Native\FLYING_STATES.cs" />
+    <Compile Include="Navigation\Native\Math\matrix33_t.cs" />
+    <Compile Include="Navigation\Native\Math\vector21_t.cs" />
+    <Compile Include="Navigation\Native\Math\vector31_t.cs" />
+    <Compile Include="Navigation\Native\NavdataBag.cs" />
+    <Compile Include="Navigation\Native\NavdataBagParser.cs" />
+    <Compile Include="Navigation\Native\navdata_option_t.cs" />
+    <Compile Include="Navigation\Native\navdata_t.cs" />
+    <Compile Include="Navigation\Native\navdata_tag_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_adc_data_frame_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_altitude_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_cks_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_demo_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_euler_angles_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_games_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_gyros_offsets_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_hdvideo_stream_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_kalman_pressure_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_magneto_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_phys_measures_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_pressure_raw_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_pwm_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_raw_measures_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_rc_references_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_references_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_time_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_trackers_send_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_trims_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_video_stream_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_vision_detect_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_vision_of_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_vision_perf_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_vision_raw_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_vision_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_watchdog_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_wifi_t.cs" />
+    <Compile Include="Navigation\Native\Options\navdata_wind_speed_t.cs" />
+    <Compile Include="Navigation\Native\Options\screen_point_t.cs" />
+    <Compile Include="Navigation\Native\Options\velocities_t.cs" />
+    <Compile Include="Navigation\NavdataConverter.cs" />
+    <Compile Include="Navigation\NavigationPacketParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VideoFrameType.cs" />
     <Compile Include="VideoPacket.cs" />
