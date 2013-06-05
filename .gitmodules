@@ -1,6 +1,3 @@
-[submodule "AI.Core"]
-	path = AI.Core
-	url = https://github.com/Ruslan-B/AI.Core.git
 [submodule "FFmpeg.AutoGen"]
 	path = FFmpeg.AutoGen
 	url = https://github.com/Ruslan-B/FFmpeg.AutoGen.git
