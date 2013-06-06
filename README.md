@@ -35,6 +35,8 @@ for control and display video from AR.Drone 2.0.
 
 ##License
 
+Copyright 2013 Ruslan Balanukhin ruslan.balanukhin@gmail.com
+
 GNU Lesser General Public License (LGPL) version 3 or later.  
 http://www.gnu.org/licenses/lgpl.html
 
