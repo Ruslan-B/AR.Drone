@@ -12,8 +12,8 @@ namespace AR.Drone.Client.Acquisition
     public class VideoAcquisition : WorkerBase
     {
         public const int VideoPort = 5555;
-        public const int FrameBufferSize = 0x400000;
-        public const int NetworkStreamReadSize = 0x8000;
+        public const int FrameBufferSize = 0x100000;
+        public const int NetworkStreamReadSize = 0x1000;
         private readonly INetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 
@@ -38,9 +38,12 @@ namespace AR.Drone.Client.Acquisition
                     while (token.IsCancellationRequested == false)
                     {
                         int read = stream.Read(buffer, offset, NetworkStreamReadSize);
-                        
+
                         if (read == 0)
+                        {
+                            Thread.Sleep(1);
                             continue;
+                        }
 
                         offset += read;
                         if (packetData == null)
@@ -85,7 +88,6 @@ namespace AR.Drone.Client.Acquisition
                             offset -= frameEnd;
                             Array.Copy(buffer, frameEnd, buffer, 0, offset);
                         }
-                        Thread.Sleep(10);
                     }
             }
         }

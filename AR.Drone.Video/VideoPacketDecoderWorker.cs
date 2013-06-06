@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using AR.Drone.Infrastructure;
 using AR.Drone.Data;
@@ -8,7 +9,9 @@ namespace AR.Drone.Video
 {
     public class VideoPacketDecoderWorker : WorkerBase
     {
-        private bool _skipFrames;
+        private const int SkipFramesThreshold = 1;
+
+        private readonly bool _skipFrames;
         private readonly Action<VideoFrame> _onFrameDecoded;
         private readonly ConcurrentQueue<VideoPacket> _packetQueue;
         private readonly PixelFormat _pixelFormat;
@@ -23,8 +26,9 @@ namespace AR.Drone.Video
 
         public void EnqueuePacket(VideoPacket packet)
         {
-            if (_skipFrames && packet.FrameType == VideoFrameType.I && _packetQueue.Count > 0)
+            if (_skipFrames && packet.FrameType == VideoFrameType.I && _packetQueue.Count > SkipFramesThreshold)
             {
+                Trace.TraceInformation("Skipping {0} frames.", _packetQueue.Count);
                 _packetQueue.Flush();
             }
             _packetQueue.Enqueue(packet);
@@ -47,7 +51,10 @@ namespace AR.Drone.Video
                             _onFrameDecoded(frame);
                         }
                     }
-                    Thread.Sleep(10);
+                    else
+                    {
+                        Thread.Sleep(1);
+                    }
                 }
         }
     }

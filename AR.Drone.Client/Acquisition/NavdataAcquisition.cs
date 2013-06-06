@@ -46,7 +46,11 @@ namespace AR.Drone.Client.Acquisition
                     Stopwatch swNavdataTimeout = Stopwatch.StartNew();
                     while (token.IsCancellationRequested == false && swNavdataTimeout.ElapsedMilliseconds < NavdataTimeout)
                     {
-                        if (udpClient.Available > 0)
+                        if (udpClient.Available == 0)
+                        {
+                            Thread.Sleep(1);
+                        }
+                        else
                         {
                             byte[] data = udpClient.Receive(ref remoteEp);
                             var packet = new NavigationPacket
@@ -65,7 +69,6 @@ namespace AR.Drone.Client.Acquisition
                             SendKeepAliveSignal(udpClient);
                             swKeepAlive.Restart();
                         }
-                        Thread.Sleep(5);
                     }
                 }
                 finally

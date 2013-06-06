@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using AR.Drone.Infrastructure;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
+using AR.Drone.Infrastructure;
 
 namespace AR.Drone.Client
 {
@@ -52,7 +52,10 @@ namespace AR.Drone.Client
                     {
                         _commandQueue.Enqueue(new ComWdgCommand());
                     }
-                    Thread.Sleep(10);
+                    else
+                    {
+                        Thread.Sleep(1);
+                    }
                 }
             }
         }

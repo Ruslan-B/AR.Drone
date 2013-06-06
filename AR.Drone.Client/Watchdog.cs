@@ -32,7 +32,7 @@ namespace AR.Drone.Client
                     if (_commandSender.IsAlive == false) _commandSender.Start();
                     if (_videoAcquisition.IsAlive == false) _videoAcquisition.Start();
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
 
             _navdataAcquisition.Stop();

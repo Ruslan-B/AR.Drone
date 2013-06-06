@@ -32,7 +32,11 @@ namespace AR.Drone.Client.Acquisition
                 while (token.IsCancellationRequested == false && swConfigTimeout.ElapsedMilliseconds < ConfigTimeout)
                 {
                     int offset = 0;
-                    if (tcpClient.Available > 0)
+                    if (tcpClient.Available == 0)
+                    {
+                        Thread.Sleep(1);
+                    }
+                    else
                     {
                         offset += stream.Read(buffer, offset, buffer.Length);
 
@@ -51,7 +55,6 @@ namespace AR.Drone.Client.Acquisition
                             return;
                         }
                     }
-                    Thread.Sleep(10);
                 }
             }
         }
