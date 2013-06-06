@@ -33,12 +33,10 @@ git submodule update --init
 The solution includes Winform application - AR.Drone.WinApp, it is includes minimalistic interface 
 for control and display video from AR.Drone 2.0.
 
-## License
+##License
 
-Copyright 2013 Ruslan Balanukhin ruslan.balanukhin@gmail.com
-
-GNU General Public License (GPL) version 3 or later.  
-http://www.gnu.org/licenses/gpl.html
+GNU Lesser General Public License (LGPL) version 3 or later.  
+http://www.gnu.org/licenses/lgpl.html
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
