@@ -39,6 +39,6 @@ namespace AR.Drone.Client.Configuration.Sections
         public readonly ReadWriteItem<float> outdoor_control_yaw = new ReadWriteItem<float>("control:outdoor_control_yaw");
         public readonly ReadWriteItem<int> flying_mode = new ReadWriteItem<int>("control:flying_mode");
         public readonly ReadWriteItem<int> hovering_range = new ReadWriteItem<int>("control:hovering_range");
-        public readonly ReadWriteItem<string> flight_anim = new ReadWriteItem<string>("control:flight_anim");
+        public readonly FlightAnimationItem flight_anim = new FlightAnimationItem("control:flight_anim");
     }
 }

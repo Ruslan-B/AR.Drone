@@ -26,7 +26,7 @@ namespace AR.Drone.Client.Configuration
             get { return Value; }
         }
 
-        public bool TryUpdate(string value)
+        public virtual bool TryUpdate(string value)
         {
             T newValue = _parse(value);
             if (Equals(Value, newValue) == false)
