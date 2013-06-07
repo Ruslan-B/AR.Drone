@@ -60,6 +60,7 @@
     <Compile Include="Configuration\CommandHelper.cs" />
     <Compile Include="Configuration\Sections\CustomSection.cs" />
     <Compile Include="Configuration\Sections\DetectSection.cs" />
+    <Compile Include="Configuration\Sections\FlightAnimation.cs" />
     <Compile Include="Configuration\Sections\GeneralSection.cs" />
     <Compile Include="Configuration\ReadOnlyItem.cs" />
     <Compile Include="Configuration\ReadWriteItem.cs" />
