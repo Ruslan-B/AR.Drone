@@ -28,13 +28,14 @@ namespace AR.Drone.Video
             {
                 _avPacket.data = pData;
                 _avPacket.size = packet.Data.Length;
-                frame = new VideoFrame();
                 if (_videoDecoder.TryDecode(ref _avPacket, ref _avFrame))
                 {
+
                     if (_videoConverter == null) _videoConverter = new VideoConverter(_pixelFormat.ToAVPixelFormat());
 
                     byte[] data = _videoConverter.ConvertFrame(ref _avFrame);
 
+                    frame = new VideoFrame();
                     frame.Timestamp = packet.Timestamp;
                     frame.Number = packet.FrameNumber;
                     frame.Width = packet.Width;
@@ -42,10 +43,10 @@ namespace AR.Drone.Video
                     frame.Depth = data.Length/(packet.Width*packet.Height);
                     frame.PixelFormat = _pixelFormat;
                     frame.Data = data;
-
                     return true;
                 }
             }
+            frame = null;
             return false;
         }
 
