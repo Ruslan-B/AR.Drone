@@ -1,9 +1,13 @@
-﻿namespace AR.Drone.Client.Commands
+﻿using System;
+
+namespace AR.Drone.Client.Commands
 {
+    [Flags]
     public enum ProgressiveMode
     {
-        Progressive = 0,
-        CombinedYaw = 1,
-        AbsoluteControl = 2,
+        None = 0,
+        Progressive = 1 << 0,
+        CombinedYaw = 1 << 2,
+        AbsoluteControl = 1 << 3
     }
 }

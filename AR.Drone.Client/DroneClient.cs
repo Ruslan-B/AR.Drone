@@ -226,7 +226,7 @@ namespace AR.Drone.Client
         public void Hover()
         {
             if (_navigationData.State.HasFlag(NavigationState.Flying))
-                Send(new ProgressiveCommand(ProgressiveMode.Progressive, 0, 0, 0, 0));
+                Send(new ProgressiveCommand(ProgressiveMode.None, 0, 0, 0, 0));
         }
 
         public void Progress(ProgressiveMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)

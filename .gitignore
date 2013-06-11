@@ -110,6 +110,7 @@ UpgradeLog*.XML
 
 # Monodevelop
 *.userprefs
+*.resources
 
 # OS X
 .DS_Store
