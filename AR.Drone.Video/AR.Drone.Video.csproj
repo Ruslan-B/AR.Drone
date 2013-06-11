@@ -55,7 +55,7 @@
       <Name>AR.Drone.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\AR.Drone.Infrastructure\AR.Drone.Infrastructure.csproj">
-      <Project>{5be68b3d-1112-464d-8c17-844e834bb3ba}</Project>
+      <Project>{5BE68B3D-1112-464D-8C17-844E834BB3BA}</Project>
       <Name>AR.Drone.Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj">

@@ -19,12 +19,9 @@ namespace AR.Drone.Infrastructure
                     break;
                 case PlatformID.Unix:
                 case PlatformID.MacOSX:
-                    string currentValue = Environment.GetEnvironmentVariable(LD_LIBRARY_PATH);
-                    if (currentValue != path && currentValue.Contains(path) == false)
-                    {
-                        string newValue = currentValue + Path.PathSeparator + path;
-                        Environment.SetEnvironmentVariable(LD_LIBRARY_PATH, newValue);
-                    }
+                    string currentValue = Environment.GetEnvironmentVariable(LD_LIBRARY_PATH) ?? string.Empty;
+                    string newValue = string.IsNullOrEmpty(currentValue) ? path : currentValue + Path.PathSeparator + path;
+                    Environment.SetEnvironmentVariable(LD_LIBRARY_PATH, newValue);
                     break;
             }
         }
