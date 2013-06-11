@@ -226,13 +226,41 @@ namespace AR.Drone.Client
         public void Hover()
         {
             if (_navigationData.State.HasFlag(NavigationState.Flying))
-                Send(new ProgressiveCommand(ProgressiveMode.None, 0, 0, 0, 0));
+                Send(new ProgressCommand(FlightMode.Hover, 0, 0, 0, 0));
         }
 
-        public void Progress(ProgressiveMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
+        public void Progress(FlightMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
         {
+            if (roll > 1 || roll < -1)
+                throw new ArgumentOutOfRangeException("roll");
+            if (pitch > 1 || pitch < -1)
+                throw new ArgumentOutOfRangeException("pitch");
+            if (yaw > 1 || yaw < -1)
+                throw new ArgumentOutOfRangeException("yaw");
+            if (gaz > 1 || gaz < -1)
+                throw new ArgumentOutOfRangeException("gaz");
+
             if (_navigationData.State.HasFlag(NavigationState.Flying))
-                Send(new ProgressiveCommand(mode, roll, pitch, yaw, gaz));
+                Send(new ProgressCommand(mode, roll, pitch, yaw, gaz));
+        }
+
+        public void ProgressWithMagneto(FlightMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0, float psi = 0, float accuracy = 0)
+        {
+            if (roll > 1 || roll < -1)
+                throw new ArgumentOutOfRangeException("roll");
+            if (pitch > 1 || pitch < -1)
+                throw new ArgumentOutOfRangeException("pitch");
+            if (yaw > 1 || yaw < -1)
+                throw new ArgumentOutOfRangeException("yaw");
+            if (gaz > 1 || gaz < -1)
+                throw new ArgumentOutOfRangeException("gaz");
+            if (psi > 1 || psi < -1)
+                throw new ArgumentOutOfRangeException("psi");
+            if (accuracy > 1 || accuracy < -1)
+                throw new ArgumentOutOfRangeException("accuracy");
+
+            if (_navigationData.State.HasFlag(NavigationState.Flying))
+                Send(new ProgressWithMagnetoCommand(mode, roll, pitch, yaw, gaz, psi, accuracy));
         }
 
         protected override void DisposeOverride()

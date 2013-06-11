@@ -210,42 +210,42 @@ namespace AR.Drone.WinApp
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, gaz: 0.25f);
+            _droneClient.Progress(FlightMode.Progressive, gaz: 0.25f);
         }
 
         private void btnDown_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, gaz: -0.25f);
+            _droneClient.Progress(FlightMode.Progressive, gaz: -0.25f);
         }
 
         private void btnTurnLeft_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, yaw: 0.25f);
+            _droneClient.Progress(FlightMode.Progressive, yaw: 0.25f);
         }
 
         private void btnTurnRight_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, yaw: -0.25f);
+            _droneClient.Progress(FlightMode.Progressive, yaw: -0.25f);
         }
 
         private void btnLeft_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: -0.05f);
+            _droneClient.Progress(FlightMode.Progressive, roll: -0.05f);
         }
 
         private void btnRight_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, roll: 0.05f);
+            _droneClient.Progress(FlightMode.Progressive, roll: 0.05f);
         }
 
         private void btnForward_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, pitch: -0.05f);
+            _droneClient.Progress(FlightMode.Progressive, pitch: -0.05f);
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            _droneClient.Progress(ProgressiveMode.CombinedYaw, pitch: 0.05f);
+            _droneClient.Progress(FlightMode.Progressive, pitch: 0.05f);
         }
 
         private void btnReadConfig_Click(object sender, EventArgs e)

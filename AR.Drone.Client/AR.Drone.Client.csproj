@@ -50,7 +50,6 @@
     <Compile Include="Commands\Device.cs" />
     <Compile Include="Commands\FlatTrimCommand.cs" />
     <Compile Include="Commands\ProgressiveCommand.cs" />
-    <Compile Include="Commands\ProgressiveMode.cs" />
     <Compile Include="Commands\RefCommand.cs" />
     <Compile Include="Commands\RefMode.cs" />
     <Compile Include="Configuration\DroneConfiguration.cs" />
@@ -88,6 +87,8 @@
     <Compile Include="Acquisition\NavdataAcquisition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Acquisition\VideoAcquisition.cs" />
+    <Compile Include="Commands\ProgressWithMagnetoCommand.cs" />
+    <Compile Include="Commands\FlightMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
