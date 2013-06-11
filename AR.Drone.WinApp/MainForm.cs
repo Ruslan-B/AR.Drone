@@ -168,6 +168,7 @@ namespace AR.Drone.WinApp
 
         private void btnFlatTrim_Click(object sender, EventArgs e)
         {
+            _droneClient.Send(_droneClient.Configuration.Control.flight_anim.Set(FlightAnimation.FlipLeft, 15).ToCommand());
             _droneClient.FlatTrim();
         }
 
