@@ -10,7 +10,7 @@ namespace AR.Drone.Client.Commands
         /// </summary>
         Hover = 0,
         /// <summary>
-        /// The progressive is an enabling bit.
+        /// The progressive is a flight motion enabling bit.
         /// </summary>
         Progressive = 1 << 0,
         /// <summary>
