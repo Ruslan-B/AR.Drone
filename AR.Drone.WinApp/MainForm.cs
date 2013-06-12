@@ -99,7 +99,7 @@ namespace AR.Drone.WinApp
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
         {
-            if (_frameNumber == _frame.Number)
+            if (_frame == null || _frameNumber == _frame.Number)
                 return;
             _frameNumber = _frame.Number;
                 
