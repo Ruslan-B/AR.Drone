@@ -229,6 +229,14 @@ namespace AR.Drone.Client
                 Send(new ProgressCommand(FlightMode.Hover, 0, 0, 0, 0));
         }
 
+        /// <summary>
+        /// This command controls the drone flight motions.
+        /// </summary>
+        /// <param name="mode">Enabling the use of progressive commands and/or the Combined Yaw mode (bitfield).</param>
+        /// <param name="roll">Drone left-right tilt - value in range [−1..1].</param>
+        /// <param name="pitch">Drone front-back tilt - value in range [−1..1].</param>
+        /// <param name="yaw">Drone angular speed - value in range [−1..1].</param>
+        /// <param name="gaz">Drone vertical speed - value in range [−1..1].</param>
         public void Progress(FlightMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0)
         {
             if (roll > 1 || roll < -1)
@@ -244,6 +252,16 @@ namespace AR.Drone.Client
                 Send(new ProgressCommand(mode, roll, pitch, yaw, gaz));
         }
 
+        /// <summary>
+        /// This command controls the drone flight motions.
+        /// </summary>
+        /// <param name="mode">Enabling the use of progressive commands and/or the Combined Yaw mode (bitfield).</param>
+        /// <param name="roll">Drone left-right tilt - value in range [−1..1].</param>
+        /// <param name="pitch">Drone front-back tilt - value in range [−1..1].</param>
+        /// <param name="yaw">Drone angular speed - value in range [−1..1].</param>
+        /// <param name="gaz">Drone vertical speed - value in range [−1..1].</param>
+        /// <param name="psi">Magneto psi - value in range [−1..1]</param>
+        /// <param name="accuracy">Magneto psi accuracy - value in range [−1..1].</param>
         public void ProgressWithMagneto(FlightMode mode, float roll = 0, float pitch = 0, float yaw = 0, float gaz = 0, float psi = 0, float accuracy = 0)
         {
             if (roll > 1 || roll < -1)
