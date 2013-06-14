@@ -29,6 +29,12 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
+            unsafe
+            {
+                bool x64 = sizeof(IntPtr) == 8;
+                Text += x64 ? " [x64]" : " [x86]";
+            }
+
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.BGR24, true, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
 
@@ -58,8 +64,8 @@ namespace AR.Drone.WinApp
 
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
-            if (_packetRecorderWorker.IsAlive)
-                _packetRecorderWorker.EnqueuePacket(packet);
+            //if (_packetRecorderWorker.IsAlive)
+            //    _packetRecorderWorker.EnqueuePacket(packet);
 
             _navigationPacket = packet;
         }
