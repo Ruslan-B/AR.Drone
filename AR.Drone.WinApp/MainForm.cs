@@ -29,11 +29,8 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
-            unsafe
-            {
-                bool x64 = sizeof(IntPtr) == 8;
-                Text += x64 ? " [x64]" : " [x86]";
-            }
+            bool is64BitProcess = IntPtr.Size == 8;
+            Text += is64BitProcess ? " [64-bit]" : " [32-bit]";
 
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.BGR24, true, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
