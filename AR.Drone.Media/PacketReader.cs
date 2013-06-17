@@ -15,7 +15,7 @@ namespace AR.Drone.Media
             return (PacketType) ReadByte();
         }
 
-        public object ReadNavigationPacket()
+        public NavigationPacket ReadNavigationPacket()
         {
             var packet = new NavigationPacket();
             packet.Timestamp = ReadInt64();
@@ -24,7 +24,7 @@ namespace AR.Drone.Media
             return packet;
         }
 
-        public object ReadVideoPacket()
+        public VideoPacket ReadVideoPacket()
         {
             var packet = new VideoPacket();
             packet.Timestamp = ReadInt64();
