@@ -36,7 +36,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryHelper.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PacketRecorder.cs" />
     <Compile Include="PacketType.cs" />

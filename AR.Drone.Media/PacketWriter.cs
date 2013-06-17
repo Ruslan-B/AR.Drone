@@ -1,17 +1,13 @@
 ﻿using System;
 using System.IO;
-using AR.Drone.Infrastructure;
 using AR.Drone.Data;
 
 namespace AR.Drone.Media
 {
-    public class PacketWriter : DisposableBase
+    public class PacketWriter : BinaryWriter
     {
-        private readonly BinaryWriter _writer;
-
-        public PacketWriter(Stream stream)
+        public PacketWriter(Stream stream) : base(stream)
         {
-            _writer = new BinaryWriter(stream);
         }
 
         public void Write(object packet)
@@ -20,17 +16,17 @@ namespace AR.Drone.Media
 
             if (packet is NavigationPacket)
             {
-                _writer.Write((byte) PacketType.Navigation);
+                Write(PacketType.Navigation);
 
                 var navigationPacket = (NavigationPacket) packet;
-                BinaryHelper.WriteNavigationPacket(_writer, navigationPacket);
+                Write(navigationPacket);
             }
             else if (packet is VideoPacket)
             {
-                _writer.Write((byte) PacketType.Video);
+                Write((byte) PacketType.Video);
 
                 var videoPacket = (VideoPacket) packet;
-                BinaryHelper.WriteVideoPacket(_writer, videoPacket);
+                Write(videoPacket);
             }
             else
             {
@@ -39,10 +35,27 @@ namespace AR.Drone.Media
             }
         }
 
-        protected override void DisposeOverride()
+        private void Write(PacketType packetType)
         {
-            _writer.Flush();
-            _writer.Dispose();
+            Write((byte) packetType);
+        }
+
+        public void Write(NavigationPacket packet)
+        {
+            Write(packet.Timestamp);
+            Write(packet.Data.Length);
+            Write(packet.Data);
+        }
+
+        public void Write(VideoPacket packet)
+        {
+            Write(packet.Timestamp);
+            Write(packet.FrameNumber);
+            Write(packet.Height);
+            Write(packet.Width);
+            Write((byte) packet.FrameType);
+            Write(packet.Data.Length);
+            Write(packet.Data);
         }
     }
 }

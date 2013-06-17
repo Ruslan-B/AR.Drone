@@ -1,30 +1,53 @@
 ﻿using System;
 using System.IO;
-using AR.Drone.Infrastructure;
+using AR.Drone.Data;
 
 namespace AR.Drone.Media
 {
-    public class PacketReader : DisposableBase
+    public class PacketReader : BinaryReader
     {
-        private readonly BinaryReader _reader;
-
-        public PacketReader(Stream stream)
+        public PacketReader(Stream stream) : base(stream)
         {
-            _reader = new BinaryReader(stream);
         }
 
-        public object Read()
+        public PacketType ReadPacketType()
+        {
+            return (PacketType) ReadByte();
+        }
+
+        public object ReadNavigationPacket()
+        {
+            var packet = new NavigationPacket();
+            packet.Timestamp = ReadInt64();
+            int dataSize = ReadInt32();
+            packet.Data = ReadBytes(dataSize);
+            return packet;
+        }
+
+        public object ReadVideoPacket()
+        {
+            var packet = new VideoPacket();
+            packet.Timestamp = ReadInt64();
+            packet.FrameNumber = ReadUInt32();
+            packet.Height = ReadUInt16();
+            packet.Width = ReadUInt16();
+            packet.FrameType = (VideoFrameType) ReadByte();
+            int dataSize = ReadInt32();
+            packet.Data = ReadBytes(dataSize);
+            return packet;
+        }
+
+        public new object Read()
         {
             try
             {
-                var packetType = (PacketType) _reader.ReadByte();
-
+                PacketType packetType = ReadPacketType();
                 switch (packetType)
                 {
                     case PacketType.Navigation:
-                        return BinaryHelper.ReadNavigationPacket(_reader);
+                        return ReadNavigationPacket();
                     case PacketType.Video:
-                        return BinaryHelper.ReadVideoPacket(_reader);
+                        return ReadVideoPacket();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -33,11 +56,6 @@ namespace AR.Drone.Media
             {
                 return null;
             }
-        }
-
-        protected override void DisposeOverride()
-        {
-            _reader.Dispose();
         }
     }
 }
