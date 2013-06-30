@@ -5,7 +5,7 @@ using AR.Drone.Client.Configuration.Sections;
 
 namespace AR.Drone.Client.Configuration
 {
-    public class DroneConfiguration : INetworkConfiguration
+    public class DroneConfiguration
     {
         public readonly ControlSection Control;
         public readonly CustomSection Custom;
@@ -23,8 +23,6 @@ namespace AR.Drone.Client.Configuration
 
         public DroneConfiguration()
         {
-            DroneHostname = "192.168.1.1";
-
             General = new GeneralSection();
             Control = new ControlSection();
             Network = new NetworkSection();
@@ -55,8 +53,6 @@ namespace AR.Drone.Client.Configuration
         {
             get { return _items; }
         }
-
-        public string DroneHostname { get; set; }
 
         private static IEnumerable<IConfigurationItem> GetItems(object section)
         {

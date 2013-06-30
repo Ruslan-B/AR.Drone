@@ -14,9 +14,9 @@ namespace AR.Drone.Client.Acquisition
         private const int NetworkBufferSize = 0x10000;
         private const int ConfigTimeout = 1000;
         private readonly Action<ConfigurationPacket> _configurationAcquired;
-        private readonly INetworkConfiguration _networkConfiguration;
+        private readonly NetworkConfiguration _networkConfiguration;
 
-        public ConfigurationAcquisition(INetworkConfiguration networkConfiguration, Action<ConfigurationPacket> configurationAcquired)
+        public ConfigurationAcquisition(NetworkConfiguration networkConfiguration, Action<ConfigurationPacket> configurationAcquired)
         {
             _networkConfiguration = networkConfiguration;
             _configurationAcquired = configurationAcquired;

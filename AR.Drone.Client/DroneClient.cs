@@ -11,9 +11,11 @@ namespace AR.Drone.Client
 {
     public class DroneClient : DisposableBase
     {
+        private static readonly string DefaultHostname = "192.168.1.1";
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly CommandSender _commandSender;
-        private readonly DroneConfiguration _configuration;
+        private readonly DroneConfiguration _droneConfiguration;
+        private readonly NetworkConfiguration _networkConfiguration;
         private readonly ConfigurationAcquisition _configurationAcquisition;
         private readonly NavdataAcquisition _navdataAcquisition;
         private readonly VideoAcquisition _videoAcquisition;
@@ -22,16 +24,22 @@ namespace AR.Drone.Client
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
 
-        public DroneClient()
+        public DroneClient(string hostname)
         {
-            _configuration = new DroneConfiguration();
+            _networkConfiguration = new NetworkConfiguration(hostname);
+            _droneConfiguration = new DroneConfiguration();
+
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
-            _commandSender = new CommandSender(_configuration, _commandQueue);
-            _navdataAcquisition = new NavdataAcquisition(_configuration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
-            _videoAcquisition = new VideoAcquisition(_configuration, OnVideoPacketAcquired);
-            _configurationAcquisition = new ConfigurationAcquisition(_configuration, OnConfigurationPacketAcquired);
+            _commandSender = new CommandSender(_networkConfiguration, _commandQueue);
+            _navdataAcquisition = new NavdataAcquisition(_networkConfiguration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
+            _videoAcquisition = new VideoAcquisition(_networkConfiguration, OnVideoPacketAcquired);
+            _configurationAcquisition = new ConfigurationAcquisition(_networkConfiguration, OnConfigurationPacketAcquired);
             _watchdog = new Watchdog(_navdataAcquisition, _commandSender, _videoAcquisition);
+        }
+
+        public DroneClient() : this (DefaultHostname)
+        {
         }
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
@@ -65,7 +73,7 @@ namespace AR.Drone.Client
 
         public DroneConfiguration Configuration
         {
-            get { return _configuration; }
+            get { return _droneConfiguration; }
         }
 
         public NavigationData NavigationData
@@ -118,10 +126,10 @@ namespace AR.Drone.Client
             if (ConfigurationPacketAcquired != null)
                 ConfigurationPacketAcquired(packet);
 
-            if (ConfigurationPacketParser.TryUpdate(_configuration, packet))
+            if (ConfigurationPacketParser.TryUpdate(_droneConfiguration, packet))
             {
                 if (ConfigurationUpdated != null)
-                    ConfigurationUpdated(_configuration);
+                    ConfigurationUpdated(_droneConfiguration);
             }
         }
 
@@ -139,7 +147,7 @@ namespace AR.Drone.Client
                     return;
                 case StateRequest.Initialization:
                     _commandQueue.Flush();
-                    ATCommand cmdNavdataDemo = _configuration.General.NavdataDemo.Set(false).ToCommand();
+                    ATCommand cmdNavdataDemo = _droneConfiguration.General.NavdataDemo.Set(false).ToCommand();
                     Send(cmdNavdataDemo);
                     Send(new ControlCommand(ControlMode.NoControlMode));
                     _stateRequest = StateRequest.Configuration;

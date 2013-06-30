@@ -76,7 +76,6 @@
     <Compile Include="Configuration\Sections\VideoChannelType.cs" />
     <Compile Include="Acquisition\Video\Native\parrot_video_encapsulation_t.cs" />
     <Compile Include="Acquisition\Video\Native\parrot_video_encapsulation_frametypes_t.cs" />
-    <Compile Include="Configuration\INetworkConfiguration.cs" />
     <Compile Include="ATCommand.cs" />
     <Compile Include="Acquisition\ConfigurationAcquisition.cs" />
     <Compile Include="Commands\ComWdgCommand.cs" />
@@ -89,6 +88,7 @@
     <Compile Include="Acquisition\VideoAcquisition.cs" />
     <Compile Include="Commands\ProgressWithMagnetoCommand.cs" />
     <Compile Include="Commands\FlightMode.cs" />
+    <Compile Include="Configuration\NetworkConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">

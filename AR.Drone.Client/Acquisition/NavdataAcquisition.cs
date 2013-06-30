@@ -14,12 +14,12 @@ namespace AR.Drone.Client.Acquisition
         public const int NavdataPort = 5554;
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
-        private readonly INetworkConfiguration _configuration;
+        private readonly NetworkConfiguration _configuration;
         private readonly Action _onAcquisitionStopped;
         private readonly Action<NavigationPacket> _packetAcquired;
         private bool _isAcquiring;
 
-        public NavdataAcquisition(INetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
+        public NavdataAcquisition(NetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
         {
             _configuration = configuration;
             _packetAcquired = packetAcquired;

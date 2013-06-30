@@ -14,10 +14,10 @@ namespace AR.Drone.Client.Acquisition
         public const int VideoPort = 5555;
         public const int FrameBufferSize = 0x100000;
         public const int NetworkStreamReadSize = 0x1000;
-        private readonly INetworkConfiguration _configuration;
+        private readonly NetworkConfiguration _configuration;
         private readonly Action<VideoPacket> _videoPacketAcquired;
 
-        public VideoAcquisition(INetworkConfiguration configuration, Action<VideoPacket> videoPacketAcquired)
+        public VideoAcquisition(NetworkConfiguration configuration, Action<VideoPacket> videoPacketAcquired)
         {
             _configuration = configuration;
             _videoPacketAcquired = videoPacketAcquired;

@@ -135,7 +135,9 @@ namespace AR.Drone.Data.Navigation.Native
                     navigationData.cks = *(navdata_cks_t*) option;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    // skip uknown options
+                    //throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
 
