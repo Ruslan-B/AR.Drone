@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using AR.Drone.Client.Commands;
-using AR.Drone.Client.Configuration;
 using AR.Drone.Infrastructure;
 
 namespace AR.Drone.Client
@@ -54,7 +53,7 @@ namespace AR.Drone.Client
                     }
                     else
                     {
-                        Thread.Sleep(1);
+                        Thread.Sleep(20);
                     }
                 }
             }

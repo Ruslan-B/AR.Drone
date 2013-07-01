@@ -88,7 +88,7 @@
     <Compile Include="Acquisition\VideoAcquisition.cs" />
     <Compile Include="Commands\ProgressWithMagnetoCommand.cs" />
     <Compile Include="Commands\FlightMode.cs" />
-    <Compile Include="Configuration\NetworkConfiguration.cs" />
+    <Compile Include="NetworkConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
