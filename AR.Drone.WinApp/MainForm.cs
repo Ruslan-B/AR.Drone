@@ -29,8 +29,7 @@ namespace AR.Drone.WinApp
         {
             InitializeComponent();
 
-            bool is64BitProcess = IntPtr.Size == 8;
-            Text += is64BitProcess ? " [64-bit]" : " [32-bit]";
+            Text += Environment.Is64BitProcess ? " [64-bit]" : " [32-bit]";
 
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.BGR24, true, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
@@ -171,7 +170,6 @@ namespace AR.Drone.WinApp
 
         private void btnFlatTrim_Click(object sender, EventArgs e)
         {
-            _droneClient.Send(_droneClient.Configuration.Control.flight_anim.Set(FlightAnimation.FlipLeft, 15).ToCommand());
             _droneClient.FlatTrim();
         }
 
