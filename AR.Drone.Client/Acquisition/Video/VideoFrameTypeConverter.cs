@@ -15,7 +15,7 @@ namespace AR.Drone.Client.Acquisition.Video
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_I_FRAME:
                     return VideoFrameType.I;
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_P_FRAME:
-                    return VideoFrameType.I;
+                    return VideoFrameType.P;
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_UNKNNOWN:
                 case parrot_video_encapsulation_frametypes_t.FRAME_TYPE_HEADERS:
                     return VideoFrameType.Unknown;
