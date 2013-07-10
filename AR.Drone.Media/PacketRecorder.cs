@@ -38,7 +38,7 @@ namespace AR.Drone.Media
                     object packet;
                     while (_packetQueue.TryDequeue(out packet))
                     {
-                        recorder.Write(packet);
+                        recorder.WritePacket(packet);
                     }
                     Thread.Sleep(1);
                 }

@@ -10,7 +10,7 @@ namespace AR.Drone.Media
         {
         }
 
-        public void Write(object packet)
+        public void WritePacket(object packet)
         {
             if (packet == null) throw new NullReferenceException();
 

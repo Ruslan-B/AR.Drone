@@ -37,7 +37,7 @@ namespace AR.Drone.Media
             return packet;
         }
 
-        public new object Read()
+        public object ReadPacket()
         {
             try
             {

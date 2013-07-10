@@ -60,8 +60,8 @@ namespace AR.Drone.WinApp
 
         private void OnNavigationPacketAcquired(NavigationPacket packet)
         {
-            //if (_packetRecorderWorker.IsAlive)
-            //    _packetRecorderWorker.EnqueuePacket(packet);
+            if (_packetRecorderWorker.IsAlive)
+                _packetRecorderWorker.EnqueuePacket(packet);
 
             _navigationPacket = packet;
         }
@@ -81,10 +81,12 @@ namespace AR.Drone.WinApp
 
         private void OnConfigurationUpdated(DroneConfiguration configuration)
         {
-            if (configuration.Video.Codec != VideoCodecType.H264_360P ||
+            if (configuration.Video.Codec != VideoCodecType.H264_360P_SLRS ||
+                configuration.Video.MaxBitrate != 100 ||
                 configuration.Video.BitrateCtrlMode != VideoBitrateControlMode.Dynamic)
             {
-                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_360P).ToCommand());
+                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_360P_SLRS).ToCommand());
+                _droneClient.Send(configuration.Video.MaxBitrate.Set(100).ToCommand());
                 _droneClient.Send(configuration.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic).ToCommand());
             }
         }
