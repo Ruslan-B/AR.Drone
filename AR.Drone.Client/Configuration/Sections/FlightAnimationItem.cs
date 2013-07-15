@@ -19,7 +19,7 @@ namespace AR.Drone.Client.Configuration.Sections
                 string[] parts = value.Split(',');
                 FlightAnimation animation;
                 int duration;
-                if (parts.Length > 1 && Enum.TryParse(parts[0], out animation) && Enum.TryParse(parts[1], out duration))
+                if (parts.Length > 1 && Enum.TryParse(parts[0], out animation) && int.TryParse(parts[1], out duration))
                 {
                     Animation = animation;
                     Duration = duration;

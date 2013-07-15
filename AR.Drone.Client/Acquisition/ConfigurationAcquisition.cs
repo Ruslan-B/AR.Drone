@@ -34,7 +34,7 @@ namespace AR.Drone.Client.Acquisition
                     int offset = 0;
                     if (tcpClient.Available == 0)
                     {
-                        Thread.Sleep(1);
+                        Thread.Sleep(10);
                     }
                     else
                     {
