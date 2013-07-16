@@ -11,7 +11,7 @@ namespace AR.Drone.Client.Commands
 
         protected override string ToAt(int sequenceNumber)
         {
-            return string.Format("AT*CALIB={0},{1},0\r", sequenceNumber, (int) _device);
+            return string.Format("AT*CALIB={0},{1}\r", sequenceNumber, (int) _device);
         }
     }
 }
