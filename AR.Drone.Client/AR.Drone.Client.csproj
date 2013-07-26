@@ -51,7 +51,6 @@
     <Compile Include="Commands\FlatTrimCommand.cs" />
     <Compile Include="Commands\ProgressiveCommand.cs" />
     <Compile Include="Commands\RefCommand.cs" />
-    <Compile Include="Commands\RefMode.cs" />
     <Compile Include="Configuration\DroneConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationPacketParser.cs" />
     <Compile Include="Configuration\IConfigurationItem.cs" />
