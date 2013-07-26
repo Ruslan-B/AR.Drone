@@ -14,12 +14,12 @@ namespace AR.Drone.Client.Commands
         /// </summary>
         Progressive = 1 << 0,
         /// <summary>
-        /// The combined yaw. Usage: FlightMode.Progressive | FlightMode.CombinedYaw
+        /// The combined yaw.
         /// </summary>
-        CombinedYaw = 1 << 2,
+        CombinedYaw = 1 << 2 | Progressive,
         /// <summary>
-        /// The absolute control. Usage: FlightMode.Progressive | FlightMode.AbsoluteControl
+        /// The absolute control.
         /// </summary>
-        AbsoluteControl = 1 << 3
+        AbsoluteControl = 1 << 3 | Progressive
     }
 }
