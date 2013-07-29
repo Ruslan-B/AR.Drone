@@ -1,7 +1,9 @@
 ## AR.Drone [![Build Status](https://travis-ci.org/Ruslan-B/AR.Drone.png)](https://travis-ci.org/Ruslan-B/AR.Drone)
 
 The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.  
-Built over original AR.Drone SDK 2.0.1 - using lastest drone firmware.
+Built over the original [AR.Drone SDK](https://projects.ardrone.org) 2.0.1 - using lastest drone firmware.
+
+If case you are looking for Windows RT/Windows Phone support please check this project [ARDrone2Windows](https://github.com/ARDrone2Windows/SDK).
 
 ## Dependencies
 
@@ -24,14 +26,14 @@ cd AR.Drone
 git submodule update --init   
 ```  
 
-- For the video support please review - *[Usage](https://github.com/Ruslan-B/FFmpeg.AutoGen#Usage)* section of the [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) project.
+- For the video support please review [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen#usage).
 
 - Build AR.Drone solution with MonoDevelop, VS2010 or VS2012.
 
 ## Usage
 
-The solution includes Winform application - AR.Drone.WinApp, it is includes minimalistic interface 
-for control and display video from AR.Drone 2.0.
+The solution includes Winform application - AR.Drone.WinApp, it provides minimalistic interface 
+for controling and displaying video from the AR.Drone 2.0.
 
 ##License
 
