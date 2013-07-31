@@ -26,9 +26,11 @@ cd AR.Drone
 git submodule update --init   
 ```  
 
-- For the video support please review: *[Usage](https://github.com/Ruslan-B/FFmpeg.AutoGen#Usage)* section of the [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) project.
+- **For the video support please review: [Usage](https://github.com/Ruslan-B/FFmpeg.AutoGen#Usage)** section of the [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) project.
 
 - Build AR.Drone solution with MonoDevelop, VS2010 or VS2012.
+
+Please note: for opening solution in VS2010 you should have *Microsoft Visual Studio 2010 Service Pack 1* installed.
 
 ## Usage
 
