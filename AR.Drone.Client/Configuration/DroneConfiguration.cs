@@ -46,35 +46,46 @@ namespace AR.Drone.Client.Configuration
             get { return _items; }
         }
 
+        public void Enqueue(ATCommand command)
+        {
+            _queue.Enqueue(command);
+        }
+
+        public void SendTo(DroneClient client)
+        {
+            ATCommand command;
+            while (_queue.TryDequeue(out command)) client.Send(command);
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public class GeneralSection : SectionBase
         {
-            public readonly dynamic ConfigVersion;
-            public readonly dynamic MotherboardVersion;
-            public readonly dynamic SoftVersion;
-            public readonly dynamic DroneSerial;
-            public readonly dynamic SoftBuildDate;
-            public readonly dynamic Motor1Soft;
-            public readonly dynamic Motor1Hard;
-            public readonly dynamic Motor1Supplier;
-            public readonly dynamic Motor2Soft;
-            public readonly dynamic Motor2Hard;
-            public readonly dynamic Motor2Supplier;
-            public readonly dynamic Motor3Soft;
-            public readonly dynamic Motor3Hard;
-            public readonly dynamic Motor3Supplier;
-            public readonly dynamic Motor4Soft;
-            public readonly dynamic Motor4Hard;
-            public readonly dynamic Motor4Supplier;
-            public readonly dynamic ARDroneName;
-            public readonly dynamic FlyingTime;
-            public readonly dynamic NavdataDemo;
-            public readonly dynamic NavdataOptions;
-            public readonly dynamic ComWatchdog;
-            public readonly dynamic Video;
-            public readonly dynamic Vision;
-            public readonly dynamic BatteryVoltageMin;
-            public readonly dynamic LocalTime;
+            public readonly ReadOnlyItem<int> ConfigVersion;
+            public readonly ReadOnlyItem<int> MotherboardVersion;
+            public readonly ReadOnlyItem<string> SoftVersion;
+            public readonly ReadOnlyItem<string> DroneSerial;
+            public readonly ReadOnlyItem<string> SoftBuildDate;
+            public readonly ReadOnlyItem<string> Motor1Soft;
+            public readonly ReadOnlyItem<string> Motor1Hard;
+            public readonly ReadOnlyItem<string> Motor1Supplier;
+            public readonly ReadOnlyItem<string> Motor2Soft;
+            public readonly ReadOnlyItem<string> Motor2Hard;
+            public readonly ReadOnlyItem<string> Motor2Supplier;
+            public readonly ReadOnlyItem<string> Motor3Soft;
+            public readonly ReadOnlyItem<string> Motor3Hard;
+            public readonly ReadOnlyItem<string> Motor3Supplier;
+            public readonly ReadOnlyItem<string> Motor4Soft;
+            public readonly ReadOnlyItem<string> Motor4Hard;
+            public readonly ReadOnlyItem<string> Motor4Supplier;
+            public readonly ActiveItem<string> ARDroneName;
+            public readonly ReadOnlyItem<int> FlyingTime;
+            public readonly ActiveItem<bool> NavdataDemo;
+            public readonly ActiveItem<int> NavdataOptions;
+            public readonly ActiveItem<int> ComWatchdog;
+            public readonly ActiveItem<bool> Video;
+            public readonly ActiveItem<bool> Vision;
+            public readonly ActiveItem<int> BatteryVoltageMin;
+            public readonly ActiveItem<int> LocalTime;
 
             public GeneralSection(DroneConfiguration configuration)
                 : base(configuration, "general")
@@ -111,40 +122,40 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class ControlSection : SectionBase
         {
-            public readonly dynamic accs_offset;
-            public readonly dynamic accs_gains;
-            public readonly dynamic gyros_offset;
-            public readonly dynamic gyros_gains;
-            public readonly dynamic gyros110_offset;
-            public readonly dynamic gyros110_gains;
-            public readonly dynamic magneto_offset;
-            public readonly dynamic magneto_radius;
-            public readonly dynamic gyro_offset_thr_x;
-            public readonly dynamic gyro_offset_thr_y;
-            public readonly dynamic gyro_offset_thr_z;
-            public readonly dynamic pwm_ref_gyros;
-            public readonly dynamic osctun_value;
-            public readonly dynamic osctun_test;
-            public readonly dynamic control_level;
-            public readonly dynamic euler_angle_max;
-            public readonly dynamic altitude_max;
-            public readonly dynamic altitude_min;
-            public readonly dynamic control_iphone_tilt;
-            public readonly dynamic control_vz_max;
-            public readonly dynamic control_yaw;
-            public readonly dynamic outdoor;
-            public readonly dynamic flight_without_shell;
-            [Obsolete] public readonly dynamic autonomous_flight;
-            public readonly dynamic manual_trim;
-            public readonly dynamic indoor_euler_angle_max;
-            public readonly dynamic indoor_control_vz_max;
-            public readonly dynamic indoor_control_yaw;
-            public readonly dynamic outdoor_euler_angle_max;
-            public readonly dynamic outdoor_control_vz_max;
-            public readonly dynamic outdoor_control_yaw;
-            public readonly dynamic flying_mode;
-            public readonly dynamic hovering_range;
-            public readonly dynamic flight_anim;
+            public readonly ReadOnlyItem<string> accs_offset;
+            public readonly ReadOnlyItem<string> accs_gains;
+            public readonly ReadOnlyItem<string> gyros_offset;
+            public readonly ReadOnlyItem<string> gyros_gains;
+            public readonly ReadOnlyItem<string> gyros110_offset;
+            public readonly ReadOnlyItem<string> gyros110_gains;
+            public readonly ReadOnlyItem<string> magneto_offset;
+            public readonly ReadOnlyItem<float> magneto_radius;
+            public readonly ReadOnlyItem<float> gyro_offset_thr_x;
+            public readonly ReadOnlyItem<float> gyro_offset_thr_y;
+            public readonly ReadOnlyItem<float> gyro_offset_thr_z;
+            public readonly ReadOnlyItem<int> pwm_ref_gyros;
+            public readonly ReadOnlyItem<int> osctun_value;
+            public readonly ReadOnlyItem<bool> osctun_test;
+            public readonly ReadOnlyItem<int> control_level;
+            public readonly ActiveItem<float> euler_angle_max;
+            public readonly ActiveItem<int> altitude_max;
+            public readonly ActiveItem<int> altitude_min;
+            public readonly ActiveItem<float> control_iphone_tilt;
+            public readonly ActiveItem<float> control_vz_max;
+            public readonly ActiveItem<float> control_yaw;
+            public readonly ActiveItem<bool> outdoor;
+            public readonly ActiveItem<bool> flight_without_shell;
+            public readonly ReadOnlyItem<bool> autonomous_flight;
+            public readonly ActiveItem<bool> manual_trim;
+            public readonly ActiveItem<float> indoor_euler_angle_max;
+            public readonly ActiveItem<float> indoor_control_vz_max;
+            public readonly ActiveItem<float> indoor_control_yaw;
+            public readonly ActiveItem<float> outdoor_euler_angle_max;
+            public readonly ActiveItem<float> outdoor_control_vz_max;
+            public readonly ActiveItem<float> outdoor_control_yaw;
+            public readonly ActiveItem<int> flying_mode;
+            public readonly ActiveItem<int> hovering_range;
+            public readonly FlightAnimationItem flight_anim;
 
             public ControlSection(DroneConfiguration configuration)
                 : base(configuration, "control")
@@ -172,7 +183,7 @@ namespace AR.Drone.Client.Configuration
                 control_yaw = new ActiveItem<float>(this, "control_yaw");
                 outdoor = new ActiveItem<bool>(this, "outdoor");
                 flight_without_shell = new ActiveItem<bool>(this, "flight_without_shell");
-                autonomous_flight = new ReadOnlyItem<bool>(this, "autonomous_flight");
+                autonomous_flight = new ReadOnlyItem<bool>(this, "autonomous_flight"); // obsolete
                 manual_trim = new ActiveItem<bool>(this, "manual_trim");
                 indoor_euler_angle_max = new ActiveItem<float>(this, "indoor_euler_angle_max");
                 indoor_control_vz_max = new ActiveItem<float>(this, "indoor_control_vz_max");
@@ -189,11 +200,11 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class NetworkSection : SectionBase
         {
-            public readonly dynamic SsidSinglePlayer;
-            public readonly dynamic SsidMultiPlayer;
-            public readonly dynamic WifiMode;
-            public readonly dynamic WifiRate;
-            public readonly dynamic OwnerMac;
+            public readonly ActiveItem<string> SsidSinglePlayer;
+            public readonly ActiveItem<string> SsidMultiPlayer;
+            public readonly ActiveItem<int> WifiMode;
+            public readonly ActiveItem<int> WifiRate;
+            public readonly ActiveItem<string> OwnerMac;
 
             public NetworkSection(DroneConfiguration configuration)
                 : base(configuration, "network")
@@ -209,9 +220,9 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class PicSection : SectionBase
         {
-            public readonly dynamic UltrasoundFreq;
-            public readonly dynamic UltrasoundWatchdog;
-            public readonly dynamic Version;
+            public readonly ActiveItem<int> UltrasoundFreq;
+            public readonly ActiveItem<int> UltrasoundWatchdog;
+            public readonly ReadOnlyItem<int> Version;
 
             public PicSection(DroneConfiguration configuration)
                 : base(configuration, "pic")
@@ -225,21 +236,21 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class VideoSection : SectionBase
         {
-            public readonly dynamic CamifFps;
-            public readonly dynamic CodecFps;
-            public readonly dynamic CamifBuffers;
-            public readonly dynamic Trackers;
-            public readonly dynamic Codec;
-            public readonly dynamic Slices;
-            public readonly dynamic LiveSocket;
-            public readonly dynamic StorageSpace;
-            public readonly dynamic Bitrate;
-            public readonly dynamic MaxBitrate;
-            public readonly dynamic BitrateCtrlMode;
-            public readonly dynamic BitrateStorage;
-            public readonly dynamic Channel;
-            public readonly dynamic OnUsb;
-            public readonly dynamic FileIndex;
+            public readonly ReadOnlyItem<int> CamifFps;
+            public readonly ActiveItem<int> CodecFps;
+            public readonly ReadOnlyItem<int> CamifBuffers;
+            public readonly ReadOnlyItem<int> Trackers;
+            public readonly ActiveItem<VideoCodecType> Codec;
+            public readonly ActiveItem<int> Slices;
+            public readonly ActiveItem<int> LiveSocket;
+            public readonly ReadOnlyItem<int> StorageSpace;
+            public readonly ActiveItem<int> Bitrate;
+            public readonly ActiveItem<int> MaxBitrate;
+            public readonly ActiveItem<VideoBitrateControlMode> BitrateCtrlMode;
+            public readonly ActiveItem<int> BitrateStorage;
+            public readonly ActiveItem<VideoChannelType> Channel;
+            public readonly ActiveItem<bool> OnUsb;
+            public readonly ActiveItem<int> FileIndex;
 
             public VideoSection(DroneConfiguration configuration)
                 : base(configuration, "video")
@@ -265,7 +276,7 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class LedsSection : SectionBase
         {
-            public readonly dynamic Animation;
+            public readonly ActiveItem<string> Animation;
 
             public LedsSection(DroneConfiguration configuration)
                 : base(configuration, "leds")
@@ -277,13 +288,13 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class DetectSection : SectionBase
         {
-            public readonly dynamic EnemyColors;
-            public readonly dynamic GroundstripeColors;
-            public readonly dynamic EnemyWithoutShell;
-            public readonly dynamic DetectType;
-            public readonly dynamic DetectionsSelectH;
-            public readonly dynamic DetectionsSelectVHsync;
-            public readonly dynamic DetectionsSelectV;
+            public readonly ActiveItem<int> EnemyColors;
+            public readonly ActiveItem<int> GroundstripeColors;
+            public readonly ActiveItem<int> EnemyWithoutShell;
+            public readonly ActiveItem<int> DetectType;
+            public readonly ActiveItem<int> DetectionsSelectH;
+            public readonly ActiveItem<int> DetectionsSelectVHsync;
+            public readonly ActiveItem<int> DetectionsSelectV;
 
             public DetectSection(DroneConfiguration configuration)
                 : base(configuration, "detect")
@@ -301,9 +312,9 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class SyslogSection : SectionBase
         {
-            public readonly dynamic Output;
-            public readonly dynamic MaxSize;
-            public readonly dynamic NbFiles;
+            public readonly ActiveItem<int> Output;
+            public readonly ActiveItem<int> MaxSize;
+            public readonly ActiveItem<int> NbFiles;
 
             public SyslogSection(DroneConfiguration configuration)
                 : base(configuration, "syslog")
@@ -317,7 +328,7 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class UserboxSection : SectionBase
         {
-            public readonly dynamic UserboxCmd;
+            public readonly ActiveItem<string> UserboxCmd;
 
             public UserboxSection(DroneConfiguration configuration)
                 : base(configuration, "userbox")
@@ -329,9 +340,9 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class GpsSection : SectionBase
         {
-            public readonly dynamic Latitude;
-            public readonly dynamic Longitude;
-            public readonly dynamic Altitude;
+            public readonly ReadOnlyItem<double> Latitude;
+            public readonly ReadOnlyItem<double> Longitude;
+            public readonly ReadOnlyItem<double> Altitude;
 
             public GpsSection(DroneConfiguration configuration)
                 : base(configuration, "gps")
@@ -345,12 +356,12 @@ namespace AR.Drone.Client.Configuration
         [StructLayout(LayoutKind.Sequential)]
         public class CustomSection : SectionBase
         {
-            public readonly dynamic ApplicationId;
-            public readonly dynamic ApplicationDescription;
-            public readonly dynamic ProfileId;
-            public readonly dynamic ProfileDescription;
-            public readonly dynamic SessionId;
-            public readonly dynamic SessionDescription;
+            public readonly ReadOnlyItem<string> ApplicationId;
+            public readonly ReadOnlyItem<string> ApplicationDescription;
+            public readonly ReadOnlyItem<string> ProfileId;
+            public readonly ReadOnlyItem<string> ProfileDescription;
+            public readonly ReadOnlyItem<string> SessionId;
+            public readonly ReadOnlyItem<string> SessionDescription;
 
             public CustomSection(DroneConfiguration configuration)
                 : base(configuration, "custom")
@@ -361,20 +372,6 @@ namespace AR.Drone.Client.Configuration
                 ProfileDescription = new ReadOnlyItem<string>(this, "custom:profile_desc");
                 SessionId = new ReadOnlyItem<string>(this, "custom:session_id");
                 SessionDescription = new ReadOnlyItem<string>(this, "custom:session_desc");
-            }
-        }
-
-        public void Enqueue(ATCommand command)
-        {
-            _queue.Enqueue(command);
-        }
-
-        public void SendTo(DroneClient client)
-        {
-            ATCommand command;
-            while (_queue.TryDequeue(out command))
-            {
-                client.Send(command);
             }
         }
     }

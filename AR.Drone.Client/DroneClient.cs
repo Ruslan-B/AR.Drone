@@ -125,7 +125,8 @@ namespace AR.Drone.Client
                 case StateRequest.Initialization:
                     _commandQueue.Flush();
                     var configuration = new DroneConfiguration();
-                    configuration.General.NavdataDemo.SetAndSend(false);
+                    configuration.General.NavdataDemo.ChangeTo(false);
+                    configuration.SendTo(this);
                     Send(new ControlCommand(ControlMode.NoControlMode));
                     _stateRequest = StateRequest.None;
                     return;

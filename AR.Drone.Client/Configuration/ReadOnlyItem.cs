@@ -11,7 +11,7 @@ namespace AR.Drone.Client.Configuration
         public ReadOnlyItem(SectionBase section, string name)
         {
             _section = section;
-            _key = section + ":" + name;
+            _key = section.Name + ":" + name;
             section.Configuration.Items.Add(_key, this);
         }
 

@@ -189,7 +189,8 @@ namespace AR.Drone.WinApp
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
             var configuration = new DroneConfiguration();
-            configuration.Video.Channel.SetAndSend(VideoChannelType.Next);
+            configuration.Video.Channel.ChangeTo(VideoChannelType.Next);
+            configuration.SendTo(_droneClient);
         }
 
         private void btnHover_Click(object sender, EventArgs e)
@@ -244,16 +245,16 @@ namespace AR.Drone.WinApp
                 {
                     if (task.Exception != null)
                     {
-                        Trace.TraceWarning("Get configuration task is faulted with exception: {0}", task.Exception.Message);
+                        Trace.TraceWarning("Get configuration task is faulted with exception: {0}", task.Exception.InnerException.Message);
                         return;
                     }
 
                     var cfg = task.Result;
                     _configuration = cfg; 
                     
-                    cfg.Video.Codec.Set(VideoCodecType.H264_360P_SLRS);
-                    cfg.Video.MaxBitrate.Set(100);
-                    cfg.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic);
+                    cfg.Video.Codec.ChangeTo(VideoCodecType.H264_360P_SLRS);
+                    cfg.Video.MaxBitrate.ChangeTo(100);
+                    cfg.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Dynamic);
                     
                     // send all changes in one pice
                     cfg.SendTo(_droneClient);
