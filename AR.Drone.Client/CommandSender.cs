@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -36,15 +37,22 @@ namespace AR.Drone.Client
                 Stopwatch swKeepAlive = Stopwatch.StartNew();
                 while (token.IsCancellationRequested == false)
                 {
-                    ATCommand command;
-                    if (_commandQueue.TryDequeue(out command))
+                    if (_commandQueue.Count > 0)
                     {
-                        byte[] payload = command.CreatePayload(sequenceNumber);
+                        using (var ms = new MemoryStream())
+                        {
+                            ATCommand command;
+                            while (_commandQueue.TryDequeue(out command))
+                            {
+                                byte[] payload = command.CreatePayload(sequenceNumber);
+                                Trace.WriteIf((command is ComWdgCommand) == false, Encoding.ASCII.GetString(payload));
+                                ms.Write(payload, 0, payload.Length);
+                                sequenceNumber++;
+                            }
 
-                        Trace.WriteIf((command is ComWdgCommand) == false, Encoding.ASCII.GetString(payload));
-
-                        udpClient.Send(payload, payload.Length);
-                        sequenceNumber++;
+                            byte[] fullPayload = ms.ToArray();
+                            udpClient.Send(fullPayload, fullPayload.Length);
+                        }
                         swKeepAlive.Restart();
                     }
                     else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
@@ -53,7 +61,7 @@ namespace AR.Drone.Client
                     }
                     else
                     {
-                        Thread.Sleep(20);
+                        Thread.Sleep(10);
                     }
                 }
             }

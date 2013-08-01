@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 using AR.Drone.Client.Acquisition;
 using AR.Drone.Data;
 using AR.Drone.Data.Navigation;
@@ -14,9 +16,7 @@ namespace AR.Drone.Client
         private static readonly string DefaultHostname = "192.168.1.1";
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly CommandSender _commandSender;
-        private readonly DroneConfiguration _droneConfiguration;
         private readonly NetworkConfiguration _networkConfiguration;
-        private readonly ConfigurationAcquisition _configurationAcquisition;
         private readonly NavdataAcquisition _navdataAcquisition;
         private readonly VideoAcquisition _videoAcquisition;
         private readonly Watchdog _watchdog;
@@ -27,14 +27,12 @@ namespace AR.Drone.Client
         public DroneClient(string hostname)
         {
             _networkConfiguration = new NetworkConfiguration(hostname);
-            _droneConfiguration = new DroneConfiguration();
-
+            
             _commandQueue = new ConcurrentQueue<ATCommand>();
 
-            _commandSender = new CommandSender(_networkConfiguration, _commandQueue);
-            _navdataAcquisition = new NavdataAcquisition(_networkConfiguration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
-            _videoAcquisition = new VideoAcquisition(_networkConfiguration, OnVideoPacketAcquired);
-            _configurationAcquisition = new ConfigurationAcquisition(_networkConfiguration, OnConfigurationPacketAcquired);
+            _commandSender = new CommandSender(NetworkConfiguration, _commandQueue);
+            _navdataAcquisition = new NavdataAcquisition(NetworkConfiguration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
+            _videoAcquisition = new VideoAcquisition(NetworkConfiguration, OnVideoPacketAcquired);
             _watchdog = new Watchdog(_navdataAcquisition, _commandSender, _videoAcquisition);
         }
 
@@ -44,13 +42,9 @@ namespace AR.Drone.Client
 
         public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
 
-        public Action<NavigationData> NavigationDataUpdated { get; set; }
+        public Action<NavigationData> NavigationDataAcquired { get; set; }
 
         public Action<VideoPacket> VideoPacketAcquired { get; set; }
-
-        public Action<ConfigurationPacket> ConfigurationPacketAcquired { get; set; }
-
-        public Action<DroneConfiguration> ConfigurationUpdated { get; set; }
 
         public bool Active
         {
@@ -71,14 +65,9 @@ namespace AR.Drone.Client
             get { return _navdataAcquisition.IsAcquiring; }
         }
 
-        public DroneConfiguration Configuration
+        public NetworkConfiguration NetworkConfiguration
         {
-            get { return _droneConfiguration; }
-        }
-
-        public NavigationData NavigationData
-        {
-            get { return _navigationData; }
+            get { return _networkConfiguration; }
         }
 
         public void Send(ATCommand command)
@@ -110,8 +99,8 @@ namespace AR.Drone.Client
 
                 ProcessTransition();
 
-                if (NavigationDataUpdated != null)
-                    NavigationDataUpdated(_navigationData);
+                if (NavigationDataAcquired != null)
+                    NavigationDataAcquired(_navigationData);
             }
         }
 
@@ -119,18 +108,6 @@ namespace AR.Drone.Client
         {
             if (VideoPacketAcquired != null)
                 VideoPacketAcquired(packet);
-        }
-
-        private void OnConfigurationPacketAcquired(ConfigurationPacket packet)
-        {
-            if (ConfigurationPacketAcquired != null)
-                ConfigurationPacketAcquired(packet);
-
-            if (ConfigurationPacketParser.TryUpdate(_droneConfiguration, packet))
-            {
-                if (ConfigurationUpdated != null)
-                    ConfigurationUpdated(_droneConfiguration);
-            }
         }
 
         private void ProcessTransition()
@@ -147,23 +124,11 @@ namespace AR.Drone.Client
                     return;
                 case StateRequest.Initialization:
                     _commandQueue.Flush();
-                    ATCommand cmdNavdataDemo = _droneConfiguration.General.NavdataDemo.Set(false).ToCommand();
-                    Send(cmdNavdataDemo);
+                    var configuration = new DroneConfiguration();
+                    configuration.General.NavdataDemo.SetAndSend(false);
                     Send(new ControlCommand(ControlMode.NoControlMode));
-                    _stateRequest = StateRequest.Configuration;
+                    _stateRequest = StateRequest.None;
                     return;
-                case StateRequest.Configuration:
-                    _configurationAcquisition.Start();
-                    if (_navigationData.State.HasFlag(NavigationState.Command))
-                    {
-                        Send(new ControlCommand(ControlMode.AckControlMode));
-                    }
-                    else
-                    {
-                        Send(new ControlCommand(ControlMode.CfgGetControlMode));
-                        _stateRequest = StateRequest.None;
-                    }
-                    break;
                 case StateRequest.Emergency:
                     if (_navigationData.State.HasFlag(NavigationState.Flying))
                         Send(new RefCommand(RefMode.Emergency));
@@ -209,9 +174,11 @@ namespace AR.Drone.Client
             _stateRequest = StateRequest.ResetEmergency;
         }
 
-        public void RequestConfiguration()
+        public Task<DroneConfiguration> GetConfigurationTask()
         {
-            _stateRequest = StateRequest.Configuration;
+            var configurationAcquisition = new ConfigurationAcquisition(this);
+            var task = configurationAcquisition.CreateTask();
+            return task;
         }
 
         public void Land()
@@ -291,7 +258,6 @@ namespace AR.Drone.Client
 
         protected override void DisposeOverride()
         {
-            _configurationAcquisition.Dispose();
             _navdataAcquisition.Dispose();
             _commandSender.Dispose();
             _videoAcquisition.Dispose();

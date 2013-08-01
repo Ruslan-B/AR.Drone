@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace AR.Drone.Data.Navigation
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct NavigationData
+    public class NavigationData
     {
         public NavigationState State;
         public float Yaw; // radians - Yaw - Z

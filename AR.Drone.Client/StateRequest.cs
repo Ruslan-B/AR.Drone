@@ -4,7 +4,6 @@
     {
         None,
         Initialization,
-        Configuration,
         Land,
         Fly,
         Emergency,

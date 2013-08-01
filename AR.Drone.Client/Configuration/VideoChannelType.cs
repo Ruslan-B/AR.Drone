@@ -1,4 +1,4 @@
-namespace AR.Drone.Client.Configuration.Sections
+namespace AR.Drone.Client.Configuration
 {
     public enum VideoChannelType
     {

@@ -6,15 +6,21 @@ namespace AR.Drone.Client.Configuration
     public class ReadOnlyItem<T> : IConfigurationItem
     {
         private readonly string _key;
-        private readonly Func<string, T> _parse;
+        private readonly SectionBase _section;
 
-        public ReadOnlyItem(string key)
+        public ReadOnlyItem(SectionBase section, string name)
         {
-            _key = key;
-            _parse = CreateParser(typeof (T));
+            _section = section;
+            _key = section + ":" + name;
+            section.Configuration.Items.Add(_key, this);
         }
 
         public T Value { get; protected set; }
+
+        public SectionBase Section
+        {
+            get { return _section; }
+        }
 
         public string Key
         {
@@ -28,7 +34,7 @@ namespace AR.Drone.Client.Configuration
 
         public virtual bool TryUpdate(string value)
         {
-            T newValue = _parse(value);
+            T newValue = Parse(value);
             if (Equals(Value, newValue) == false)
             {
                 Value = newValue;
@@ -37,7 +43,45 @@ namespace AR.Drone.Client.Configuration
             return false;
         }
 
-        private static Func<string, T> CreateParser(Type type)
+        public bool Equals(T other)
+        {
+            return EqualityComparer<T>.Default.Equals(Value, other);
+        }
+
+        protected bool Equals(ReadOnlyItem<T> other)
+        {
+            return string.Equals(_key, other._key) && Equals(Value, other.Value);
+        }
+
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is T) return Equals((T) other);
+            if (other.GetType() != GetType()) return false;
+            return Equals((ReadOnlyItem<T>) other);
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<T>.Default.GetHashCode(Value);
+        }
+
+        public static bool operator ==(ReadOnlyItem<T> left, T right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ReadOnlyItem<T> left, T right)
+        {
+            return !(left == right);
+        }
+
+        #region Static
+
+        private static readonly Func<string, T> Parse = CreateParse(typeof (T));
+
+        private static Func<string, T> CreateParse(Type type)
         {
             if (type == typeof (string))
                 return v => (T) (object) v;
@@ -60,38 +104,6 @@ namespace AR.Drone.Client.Configuration
             throw new NotSupportedException();
         }
 
-        public bool Equals(T other)
-        {
-            return EqualityComparer<T>.Default.Equals(Value, other);
-        }
-
-        protected bool Equals(ReadOnlyItem<T> other)
-        {
-            return string.Equals(_key, other._key) && Equals(Value, other.Value);
-        }
-
-        public override bool Equals(object other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            if (other is T) return Equals((T)other);
-            if (other.GetType() != GetType()) return false;
-            return Equals((ReadOnlyItem<T>)other);
-        }
-
-        public override int GetHashCode()
-        {
-            return EqualityComparer<T>.Default.GetHashCode(Value);
-        }
-
-        public static bool operator ==(ReadOnlyItem<T> left, T right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ReadOnlyItem<T> left, T right)
-        {
-            return !(left == right);
-        }
+        #endregion
     }
 }

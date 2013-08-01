@@ -37,6 +37,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -54,29 +55,18 @@
     <Compile Include="Configuration\DroneConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationPacketParser.cs" />
     <Compile Include="Configuration\IConfigurationItem.cs" />
-    <Compile Include="Configuration\Sections\ControlSection.cs" />
-    <Compile Include="Configuration\CommandHelper.cs" />
-    <Compile Include="Configuration\Sections\CustomSection.cs" />
-    <Compile Include="Configuration\Sections\DetectSection.cs" />
-    <Compile Include="Configuration\Sections\FlightAnimation.cs" />
-    <Compile Include="Configuration\Sections\FlightAnimationItem.cs" />
-    <Compile Include="Configuration\Sections\GeneralSection.cs" />
+    <Compile Include="Configuration\SectionBase.cs" />
+    <Compile Include="Configuration\FlightAnimation.cs" />
+    <Compile Include="Configuration\FlightAnimationItem.cs" />
     <Compile Include="Configuration\ReadOnlyItem.cs" />
-    <Compile Include="Configuration\ReadWriteItem.cs" />
-    <Compile Include="Configuration\Sections\GpsSection.cs" />
-    <Compile Include="Configuration\Sections\LedsSection.cs" />
-    <Compile Include="Configuration\Sections\NetworkSection.cs" />
-    <Compile Include="Configuration\Sections\PicSection.cs" />
-    <Compile Include="Configuration\Sections\SyslogSection.cs" />
-    <Compile Include="Configuration\Sections\UserboxSection.cs" />
-    <Compile Include="Configuration\Sections\VideoBitrateControlMode.cs" />
-    <Compile Include="Configuration\Sections\VideoCodecType.cs" />
-    <Compile Include="Configuration\Sections\VideoSection.cs" />
-    <Compile Include="Configuration\Sections\VideoChannelType.cs" />
+    <Compile Include="Configuration\ActiveItem.cs" />
+    <Compile Include="Configuration\VideoBitrateControlMode.cs" />
+    <Compile Include="Configuration\VideoCodecType.cs" />
+    <Compile Include="Configuration\VideoChannelType.cs" />
     <Compile Include="Acquisition\Video\Native\parrot_video_encapsulation_t.cs" />
     <Compile Include="Acquisition\Video\Native\parrot_video_encapsulation_frametypes_t.cs" />
     <Compile Include="ATCommand.cs" />
-    <Compile Include="Acquisition\ConfigurationAcquisition.cs" />
+    <Compile Include="Configuration\ConfigurationAcquisition.cs" />
     <Compile Include="Commands\ComWdgCommand.cs" />
     <Compile Include="StateRequest.cs" />
     <Compile Include="Watchdog.cs" />

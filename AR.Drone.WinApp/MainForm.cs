@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AR.Drone.Client;
 using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
-using AR.Drone.Client.Configuration.Sections;
 using AR.Drone.Data;
+using AR.Drone.Data.Navigation;
 using AR.Drone.Data.Navigation.Native;
 using AR.Drone.Media;
 using AR.Drone.Video;
@@ -24,6 +25,8 @@ namespace AR.Drone.WinApp
         private VideoFrame _frame;
         private Bitmap _frameBitmap;
         private NavigationPacket _navigationPacket;
+        private NavigationData _navigationData;
+        private DroneConfiguration _configuration;
 
         public MainForm()
         {
@@ -42,7 +45,7 @@ namespace AR.Drone.WinApp
             _droneClient = new DroneClient();
             _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
             _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
-            _droneClient.ConfigurationUpdated += OnConfigurationUpdated;
+            _droneClient.NavigationDataAcquired += data => _navigationData = data;
             _droneClient.Active = true;
 
             tmrStateUpdate.Enabled = true;
@@ -79,18 +82,6 @@ namespace AR.Drone.WinApp
             _frame = frame;
         }
 
-        private void OnConfigurationUpdated(DroneConfiguration configuration)
-        {
-            if (configuration.Video.Codec != VideoCodecType.H264_360P_SLRS ||
-                configuration.Video.MaxBitrate != 100 ||
-                configuration.Video.BitrateCtrlMode != VideoBitrateControlMode.Dynamic)
-            {
-                _droneClient.Send(configuration.Video.Codec.Set(VideoCodecType.H264_360P_SLRS).ToCommand());
-                _droneClient.Send(configuration.Video.MaxBitrate.Set(100).ToCommand());
-                _droneClient.Send(configuration.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic).ToCommand());
-            }
-        }
-
         private void btnStart_Click(object sender, EventArgs e)
         {
             _droneClient.Active = true;
@@ -123,10 +114,10 @@ namespace AR.Drone.WinApp
             node.Text = string.Format("Client Active: {0}", _droneClient.Active);
 
             node = tvInfo.Nodes.GetOrCreate("Navigation Data");
-            DumpBranch(node.Nodes, _droneClient.NavigationData);
+            if (_navigationData != null) DumpBranch(node.Nodes, _navigationData);
 
             node = tvInfo.Nodes.GetOrCreate("Configuration");
-            DumpBranch(node.Nodes, _droneClient.Configuration);
+            if (_configuration != null) DumpBranch(node.Nodes, _configuration);
 
             TreeNode vativeNode = tvInfo.Nodes.GetOrCreate("Native");
 
@@ -197,13 +188,8 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            DroneConfiguration configuration = _droneClient.Configuration;
-            ATCommand command = configuration.Video.Channel.Set(VideoChannelType.Next).ToCommand();
-            _droneClient.Send(command);
-        }
-
-        private void Test(Expression<Action<DroneConfiguration>> x)
-        {
+            var configuration = new DroneConfiguration();
+            configuration.Video.Channel.SetAndSend(VideoChannelType.Next);
         }
 
         private void btnHover_Click(object sender, EventArgs e)
@@ -253,7 +239,26 @@ namespace AR.Drone.WinApp
 
         private void btnReadConfig_Click(object sender, EventArgs e)
         {
-            _droneClient.RequestConfiguration();
+            var configurationTask = _droneClient.GetConfigurationTask();
+            configurationTask.ContinueWith(delegate(Task<DroneConfiguration> task)
+                {
+                    if (task.Exception != null)
+                    {
+                        Trace.TraceWarning("Get configuration task is faulted with exception: {0}", task.Exception.Message);
+                        return;
+                    }
+
+                    var cfg = task.Result;
+                    _configuration = cfg; 
+                    
+                    cfg.Video.Codec.Set(VideoCodecType.H264_360P_SLRS);
+                    cfg.Video.MaxBitrate.Set(100);
+                    cfg.Video.BitrateCtrlMode.Set(VideoBitrateControlMode.Dynamic);
+                    
+                    // send all changes in one pice
+                    cfg.SendTo(_droneClient);
+                });
+            configurationTask.Start();
         }
     }
 }
