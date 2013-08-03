@@ -269,6 +269,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 533);
             this.Controls.Add(this.btnReadConfig);
+            //btnSendConfig
+            this.Controls.Add(this.btnReadConfig);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tvInfo);
             this.Controls.Add(this.btnHover);
@@ -319,6 +321,7 @@
         private System.Windows.Forms.Timer tmrVideoUpdate;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnReadConfig;
+        private System.Windows.Forms.Button btnSendConfig;
     }
 }
 

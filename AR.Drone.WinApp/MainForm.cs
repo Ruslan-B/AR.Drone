@@ -249,17 +249,21 @@ namespace AR.Drone.WinApp
                         return;
                     }
 
-                    var cfg = task.Result;
-                    _configuration = cfg; 
-                    
-                    cfg.Video.Codec.ChangeTo(VideoCodecType.H264_360P_SLRS);
-                    cfg.Video.MaxBitrate.ChangeTo(100);
-                    cfg.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Dynamic);
-                    
-                    // send all changes in one pice
-                    cfg.SendTo(_droneClient);
+                    _configuration = task.Result;
                 });
             configurationTask.Start();
+        }
+
+        private void btnSendConfig_Click(object sender, EventArgs e)
+        {
+            var configuration = new DroneConfiguration();
+
+            configuration.Video.Codec.ChangeTo(VideoCodecType.H264_720P);
+            configuration.Video.MaxBitrate.ChangeTo(1100);
+            configuration.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Dynamic);
+
+            // send all changes in one pice
+            configuration.SendTo(_droneClient);
         }
     }
 }

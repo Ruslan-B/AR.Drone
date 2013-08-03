@@ -34,10 +34,10 @@ namespace AR.Drone.Client.Configuration
 
         public virtual bool TryUpdate(string value)
         {
-            T newValue = Parse(value);
-            if (Equals(Value, newValue) == false)
+            object result;
+            if (TryParse(value, out result)) 
             {
-                Value = newValue;
+                Value = (T) result;
                 return true;
             }
             return false;
@@ -79,27 +79,62 @@ namespace AR.Drone.Client.Configuration
 
         #region Static
 
-        private static readonly Func<string, T> Parse = CreateParse(typeof (T));
+        delegate bool TryParseDelegate(string sim, out object result);
 
-        private static Func<string, T> CreateParse(Type type)
+        private static readonly TryParseDelegate TryParse = CreateTryParse();
+
+        private static TryParseDelegate CreateTryParse()
         {
-            if (type == typeof (string))
-                return v => (T) (object) v;
+            Type type = typeof(T);
+            if (type == typeof(string))
+                return delegate (string s, out object result) 
+                {
+                    result = s;
+                    return true;
+                };
 
-            if (type == typeof (int))
-                return v => (T) (object) int.Parse(v);
+            if (type == typeof (int)) 
+                return delegate(string s, out object result) 
+                { 
+                    int temp;
+                    bool success = int.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
 
             if (type == typeof (bool))
-                return v => (T) (object) bool.Parse(v);
+                return delegate(string s, out object result) 
+            { 
+                bool temp;
+                bool success = bool.TryParse(s.ToLower(), out temp); 
+                result = temp;
+                return success;
+            };
 
             if (type == typeof (float))
-                return v => (T) (object) float.Parse(v);
+                return delegate(string s, out object result) 
+                { 
+                    float temp;
+                    bool success = float.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
 
             if (type == typeof (double))
-                return v => (T) (object) double.Parse(v);
+                return delegate(string s, out object result) 
+                { 
+                    double temp;
+                    bool success = double.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
 
             if (type.IsEnum)
-                return v => (T) Enum.Parse(type, v);
+                return delegate(string s, out object result) 
+                { 
+                    result = Enum.Parse(type, s, true); 
+                    return true;
+                };
 
             throw new NotSupportedException();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace AR.Drone.Client.Configuration
 
         private void OnNavigationData(NavigationData data)
         {
-            if (!_initialized) return;
+            if (_initialized) return;
 
             if (data.State.HasFlag(NavigationState.Command))
             {
@@ -60,6 +61,7 @@ namespace AR.Drone.Client.Configuration
                         else
                         {
                             offset += stream.Read(buffer, offset, buffer.Length);
+                            swConfigTimeout.Restart();
 
                             // config eof check
                             if (offset > 0 && buffer[offset - 1] == 0x00)
@@ -76,11 +78,13 @@ namespace AR.Drone.Client.Configuration
                                 {
                                     return configuration;
                                 }
-                                throw new Exception("Invalid configuration packet.");
+                                
+                                throw new InvalidDataException();
                             }
                         }
                     }
-                    throw new Exception("Timeout");
+
+                    throw new TimeoutException();
                 }
                 finally
                 {
@@ -97,7 +101,7 @@ namespace AR.Drone.Client.Configuration
 
         public Task<DroneConfiguration> CreateTask(CancellationToken cancellationToken)
         {
-            return new Task<DroneConfiguration>(() => GetConfiguration(cancellationToken), cancellationToken);
+            return new Task<DroneConfiguration>(() => GetConfiguration(cancellationToken), cancellationToken, TaskCreationOptions.LongRunning);
         }
     }
 }

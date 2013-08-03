@@ -333,7 +333,7 @@ namespace AR.Drone.Client.Configuration
             public UserboxSection(DroneConfiguration configuration)
                 : base(configuration, "userbox")
             {
-                UserboxCmd = new ActiveItem<string>(this, "userbox:userbox_cmd");
+                UserboxCmd = new ActiveItem<string>(this, "userbox_cmd");
             }
         }
 
@@ -366,12 +366,12 @@ namespace AR.Drone.Client.Configuration
             public CustomSection(DroneConfiguration configuration)
                 : base(configuration, "custom")
             {
-                ApplicationId = new ReadOnlyItem<string>(this, "custom:application_id");
-                ApplicationDescription = new ReadOnlyItem<string>(this, "custom:application_desc");
-                ProfileId = new ReadOnlyItem<string>(this, "custom:profile_id");
-                ProfileDescription = new ReadOnlyItem<string>(this, "custom:profile_desc");
-                SessionId = new ReadOnlyItem<string>(this, "custom:session_id");
-                SessionDescription = new ReadOnlyItem<string>(this, "custom:session_desc");
+                ApplicationId = new ReadOnlyItem<string>(this, "application_id");
+                ApplicationDescription = new ReadOnlyItem<string>(this, "application_desc");
+                ProfileId = new ReadOnlyItem<string>(this, "profile_id");
+                ProfileDescription = new ReadOnlyItem<string>(this, "profile_desc");
+                SessionId = new ReadOnlyItem<string>(this, "session_id");
+                SessionDescription = new ReadOnlyItem<string>(this, "session_desc");
             }
         }
     }
