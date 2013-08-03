@@ -16,10 +16,10 @@ namespace AR.Drone.Client.Commands
         /// <summary>
         /// The combined yaw.
         /// </summary>
-        CombinedYaw = 1 << 2 | Progressive,
+        CombinedYaw = 1 << 1,
         /// <summary>
         /// The absolute control.
         /// </summary>
-        AbsoluteControl = 1 << 3 | Progressive
+        AbsoluteControl = 1 << 2
     }
 }
