@@ -3,7 +3,6 @@
     internal enum StateRequest
     {
         None,
-        //Initialization,
         Land,
         Fly,
         Emergency,

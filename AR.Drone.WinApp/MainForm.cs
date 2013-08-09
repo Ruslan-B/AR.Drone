@@ -188,7 +188,7 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            var configuration = new DroneConfiguration();
+            var configuration = _configuration ?? new DroneConfiguration();
             configuration.Video.Channel.ChangeTo(VideoChannelType.Next);
             configuration.SendTo(_droneClient);
         }
@@ -256,11 +256,11 @@ namespace AR.Drone.WinApp
 
         private void btnSendConfig_Click(object sender, EventArgs e)
         {
-            var configuration = new DroneConfiguration();
+            DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
 
-            configuration.Video.Codec.ChangeTo(VideoCodecType.H264_720P);
-            configuration.Video.MaxBitrate.ChangeTo(1100);
-            configuration.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Dynamic);
+            configuration.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Manual);
+            //configuration.Video.Codec.ChangeTo(VideoCodecType.H264_720P);
+            //configuration.Video.MaxBitrate.ChangeTo(1100);
 
             // send all changes in one pice
             configuration.SendTo(_droneClient);

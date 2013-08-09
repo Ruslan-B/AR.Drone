@@ -106,7 +106,7 @@ namespace AR.Drone.Client.Configuration
                 return delegate(string s, out object result) 
             { 
                 bool temp;
-                bool success = bool.TryParse(s.ToLower(), out temp); 
+                bool success = bool.TryParse(s, out temp); 
                 result = temp;
                 return success;
             };

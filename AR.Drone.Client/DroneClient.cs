@@ -18,7 +18,6 @@ namespace AR.Drone.Client
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
-        //private bool _initializationRequested;
 
         private readonly CommandSender _commandSender;
         private readonly NetworkConfiguration _networkConfiguration;
@@ -64,6 +63,11 @@ namespace AR.Drone.Client
             get { return _networkConfiguration; }
         }
 
+        public NavigationData NavigationData
+        {
+            get { return _navigationData; }
+        }
+
         public void Send(ATCommand command)
         {
             _commandQueue.Enqueue(command);
@@ -77,7 +81,6 @@ namespace AR.Drone.Client
 
         private void OnNavdataAcquisitionStopped()
         {
-            //_initializationRequested = false;
             _videoAcquisition.Stop();
         }
 
@@ -110,12 +113,6 @@ namespace AR.Drone.Client
 
         private void ProcessStateTransitions(NavigationState state)
         {
-//            if (_initializationRequested == false)
-//            {
-//                _initializationRequested = true;
-//                _stateRequest = StateRequest.Initialization;
-//            }
-
             if (state.HasFlag(NavigationState.Bootstrap))
             {
                 _commandQueue.Flush();
@@ -127,16 +124,13 @@ namespace AR.Drone.Client
 
             if (state.HasFlag(NavigationState.Watchdog))
             {
-                Trace.TraceWarning("Communication Watchdog.");
+                Trace.TraceWarning("Communication Watchdog!");
             }
 
             switch (_stateRequest)
             {
                 case StateRequest.None:
                     return;
-//                case StateRequest.Initialization:
-//                    _stateRequest = StateRequest.None;
-//                    return;
                 case StateRequest.Emergency:
                     if (state.HasFlag(NavigationState.Flying))
                         Send(new RefCommand(RefMode.Emergency));
@@ -159,8 +153,7 @@ namespace AR.Drone.Client
                 case StateRequest.Fly:
                     if (state.HasFlag(NavigationState.Landed) &&
                         state.HasFlag(NavigationState.Takeoff) == false &&
-                        state.HasFlag(NavigationState.Emergency) == false &&
-                        _navigationData.Battery.Low == false)
+                        state.HasFlag(NavigationState.Emergency))
                     {
                         Send(new RefCommand(RefMode.Takeoff));
                     }

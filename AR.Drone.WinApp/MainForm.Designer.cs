@@ -51,6 +51,7 @@
             this.tmrVideoUpdate = new System.Windows.Forms.Timer(this.components);
             this.btnReset = new System.Windows.Forms.Button();
             this.btnReadConfig = new System.Windows.Forms.Button();
+            this.btnSendConfig = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -263,6 +264,16 @@
             this.btnReadConfig.UseVisualStyleBackColor = true;
             this.btnReadConfig.Click += new System.EventHandler(this.btnReadConfig_Click);
             // 
+            // btnSendConfig
+            // 
+            this.btnSendConfig.Location = new System.Drawing.Point(254, 12);
+            this.btnSendConfig.Name = "btnSendConfig";
+            this.btnSendConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSendConfig.TabIndex = 21;
+            this.btnSendConfig.Text = "Send Config";
+            this.btnSendConfig.UseVisualStyleBackColor = true;
+            this.btnSendConfig.Click += new System.EventHandler(this.btnSendConfig_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,6 +281,7 @@
             this.ClientSize = new System.Drawing.Size(964, 533);
             this.Controls.Add(this.btnReadConfig);
             //btnSendConfig
+            this.Controls.Add(this.btnSendConfig);
             this.Controls.Add(this.btnReadConfig);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tvInfo);
