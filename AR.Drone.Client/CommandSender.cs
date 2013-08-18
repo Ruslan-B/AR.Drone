@@ -13,7 +13,7 @@ namespace AR.Drone.Client
     public class CommandSender : WorkerBase
     {
         public const int CommandPort = 5556;
-        public const int KeepAliveTimeout = 50;
+        public const int KeepAliveTimeout = 40;
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private readonly NetworkConfiguration _configuration;
 
@@ -34,9 +34,17 @@ namespace AR.Drone.Client
                 byte[] firstMessage = BitConverter.GetBytes(1);
                 udpClient.Send(firstMessage, firstMessage.Length);
 
+                _commandQueue.Enqueue(new ComWdgCommand());
                 Stopwatch swKeepAlive = Stopwatch.StartNew();
+
                 while (token.IsCancellationRequested == false)
                 {
+                    if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
+                    {
+                        _commandQueue.Enqueue(new ComWdgCommand());
+                        swKeepAlive.Restart();
+                    }
+
                     if (_commandQueue.Count > 0)
                     {
                         using (var ms = new MemoryStream())
@@ -53,16 +61,9 @@ namespace AR.Drone.Client
                             byte[] fullPayload = ms.ToArray();
                             udpClient.Send(fullPayload, fullPayload.Length);
                         }
-                        swKeepAlive.Restart();
                     }
-                    else if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
-                    {
-                        _commandQueue.Enqueue(new ComWdgCommand());
-                    }
-                    else
-                    {
-                        Thread.Sleep(10);
-                    }
+
+                    Thread.Sleep(10);
                 }
             }
         }
