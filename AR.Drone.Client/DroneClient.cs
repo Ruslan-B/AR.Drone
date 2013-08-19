@@ -139,7 +139,7 @@ namespace AR.Drone.Client
                 case StateRequest.Fly:
                     if (state.HasFlag(NavigationState.Landed) &&
                         state.HasFlag(NavigationState.Takeoff) == false &&
-                        state.HasFlag(NavigationState.Emergency))
+                        state.HasFlag(NavigationState.Emergency) == false)
                     {
                         Send(new RefCommand(RefMode.Takeoff));
                     }
