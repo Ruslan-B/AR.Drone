@@ -57,7 +57,6 @@ namespace AR.Drone.Client.Configuration
             while (_queue.TryDequeue(out command)) client.Send(command);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class GeneralSection : SectionBase
         {
             public readonly ReadOnlyItem<int> ConfigVersion;
@@ -119,7 +118,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class ControlSection : SectionBase
         {
             public readonly ReadOnlyItem<string> accs_offset;
@@ -197,7 +195,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class NetworkSection : SectionBase
         {
             public readonly ActiveItem<string> SsidSinglePlayer;
@@ -217,7 +214,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class PicSection : SectionBase
         {
             public readonly ActiveItem<int> UltrasoundFreq;
@@ -233,7 +229,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class VideoSection : SectionBase
         {
             public readonly ReadOnlyItem<int> CamifFps;
@@ -273,7 +268,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class LedsSection : SectionBase
         {
             public readonly ActiveItem<string> Animation;
@@ -285,7 +279,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class DetectSection : SectionBase
         {
             public readonly ActiveItem<int> EnemyColors;
@@ -309,7 +302,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class SyslogSection : SectionBase
         {
             public readonly ActiveItem<int> Output;
@@ -325,7 +317,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class UserboxSection : SectionBase
         {
             public readonly ActiveItem<string> UserboxCmd;
@@ -337,7 +328,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class GpsSection : SectionBase
         {
             public readonly ReadOnlyItem<double> Latitude;
@@ -353,7 +343,6 @@ namespace AR.Drone.Client.Configuration
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         public class CustomSection : SectionBase
         {
             public readonly ReadOnlyItem<string> ApplicationId;
