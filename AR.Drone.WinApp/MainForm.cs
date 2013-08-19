@@ -46,8 +46,7 @@ namespace AR.Drone.WinApp
             _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
             _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
             _droneClient.NavigationDataAcquired += data => _navigationData = data;
-            _droneClient.Active = true;
-
+            
             tmrStateUpdate.Enabled = true;
             tmrVideoUpdate.Enabled = true;
         }
@@ -84,12 +83,12 @@ namespace AR.Drone.WinApp
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            _droneClient.Active = true;
+            _droneClient.Start();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            _droneClient.Active = false;
+            _droneClient.Stop();
         }
 
         private void tmrVideoUpdate_Tick(object sender, EventArgs e)
@@ -111,7 +110,7 @@ namespace AR.Drone.WinApp
             tvInfo.BeginUpdate();
 
             TreeNode node = tvInfo.Nodes.GetOrCreate("ClientActive");
-            node.Text = string.Format("Client Active: {0}", _droneClient.Active);
+            node.Text = string.Format("Client Active: {0}", _droneClient.IsActive);
 
             node = tvInfo.Nodes.GetOrCreate("Navigation Data");
             if (_navigationData != null) DumpBranch(node.Nodes, _navigationData);

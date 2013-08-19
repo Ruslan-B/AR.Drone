@@ -67,7 +67,6 @@
     <Compile Include="ATCommand.cs" />
     <Compile Include="Commands\ComWdgCommand.cs" />
     <Compile Include="StateRequest.cs" />
-    <Compile Include="Watchdog.cs" />
     <Compile Include="CommandSender.cs" />
     <Compile Include="DroneClient.cs" />
     <Compile Include="Acquisition\NavdataAcquisition.cs" />
