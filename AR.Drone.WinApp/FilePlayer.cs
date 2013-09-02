@@ -26,7 +26,7 @@ namespace AR.Drone.WinApp
             using (var stream = new FileStream(_path, FileMode.Open))
             using (var reader = new PacketReader(stream))
             {
-                while (token.IsCancellationRequested == false)
+                while (stream.Position < stream.Length && token.IsCancellationRequested == false)
                 {
                     PacketType packetType = reader.ReadPacketType();
                     switch (packetType)
