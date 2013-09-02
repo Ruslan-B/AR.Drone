@@ -27,6 +27,6 @@ namespace AR.Drone.Infrastructure
         }
 
         [DllImport("kernel32", SetLastError = true)]
-        private static extern bool SetDllDirectory(string lpPathName);
+        public static extern bool SetDllDirectory(string lpPathName);
     }
 }

@@ -13,6 +13,8 @@ namespace AR.Drone.Infrastructure
             get { return _cancellationTokenSource != null; }
         }
 
+        public event Action<Object, Exception> UnhandledException;
+
         public void Start()
         {
             if (_cancellationTokenSource != null)
@@ -24,8 +26,7 @@ namespace AR.Drone.Infrastructure
 
                 _cancellationTokenSource = new CancellationTokenSource();
 
-                var thread = new Thread(RunLoop);
-                thread.Name = GetType().Name;
+                var thread = new Thread(RunLoop) {Name = GetType().Name};
                 thread.Start();
             }
         }
@@ -41,6 +42,11 @@ namespace AR.Drone.Infrastructure
 
                 _cancellationTokenSource.Cancel();
             }
+        }
+
+        public void Join()
+        {
+            while (IsAlive) Thread.Sleep(1);
         }
 
         private void RunLoop()
@@ -75,6 +81,14 @@ namespace AR.Drone.Infrastructure
         {
             Trace.TraceError("{0} - Exception: {1}", GetType(), exception.Message);
             Trace.TraceError(exception.StackTrace);
+
+            OnUnhandledException(exception);
+        }
+
+        protected virtual void OnUnhandledException(Exception exception)
+        {
+            if (UnhandledException != null)
+                UnhandledException(this, exception);
         }
 
         protected override void DisposeOverride()
