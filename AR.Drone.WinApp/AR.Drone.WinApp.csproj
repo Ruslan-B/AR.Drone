@@ -25,11 +25,6 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnvironmentVariables>
-      <EnvironmentVariables>
-        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
-      </EnvironmentVariables>
-    </EnvironmentVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -40,11 +35,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnvironmentVariables>
-      <EnvironmentVariables>
-        <Variable name="LD_LIBRARY_PATH" value="/opt/local/lib" />
-      </EnvironmentVariables>
-    </EnvironmentVariables>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
