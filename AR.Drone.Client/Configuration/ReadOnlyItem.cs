@@ -6,15 +6,21 @@ namespace AR.Drone.Client.Configuration
     public class ReadOnlyItem<T> : IConfigurationItem
     {
         private readonly string _key;
-        private readonly Func<string, T> _parse;
+        private readonly SectionBase _section;
 
-        public ReadOnlyItem(string key)
+        public ReadOnlyItem(SectionBase section, string name)
         {
-            _key = key;
-            _parse = CreateParser(typeof (T));
+            _section = section;
+            _key = section.Name + ":" + name;
+            section.Configuration.Items.Add(_key, this);
         }
 
         public T Value { get; protected set; }
+
+        public SectionBase Section
+        {
+            get { return _section; }
+        }
 
         public string Key
         {
@@ -28,36 +34,13 @@ namespace AR.Drone.Client.Configuration
 
         public virtual bool TryUpdate(string value)
         {
-            T newValue = _parse(value);
-            if (Equals(Value, newValue) == false)
+            object result;
+            if (TryParse(value, out result)) 
             {
-                Value = newValue;
+                Value = (T) result;
                 return true;
             }
             return false;
-        }
-
-        private static Func<string, T> CreateParser(Type type)
-        {
-            if (type == typeof (string))
-                return v => (T) (object) v;
-
-            if (type == typeof (int))
-                return v => (T) (object) int.Parse(v);
-
-            if (type == typeof (bool))
-                return v => (T) (object) bool.Parse(v);
-
-            if (type == typeof (float))
-                return v => (T) (object) float.Parse(v);
-
-            if (type == typeof (double))
-                return v => (T) (object) double.Parse(v);
-
-            if (type.IsEnum)
-                return v => (T) Enum.Parse(type, v);
-
-            throw new NotSupportedException();
         }
 
         public bool Equals(T other)
@@ -74,9 +57,9 @@ namespace AR.Drone.Client.Configuration
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is T) return Equals((T)other);
+            if (other is T) return Equals((T) other);
             if (other.GetType() != GetType()) return false;
-            return Equals((ReadOnlyItem<T>)other);
+            return Equals((ReadOnlyItem<T>) other);
         }
 
         public override int GetHashCode()
@@ -93,5 +76,69 @@ namespace AR.Drone.Client.Configuration
         {
             return !(left == right);
         }
+
+        #region Static
+
+        delegate bool TryParseDelegate(string sim, out object result);
+
+        private static readonly TryParseDelegate TryParse = CreateTryParse();
+
+        private static TryParseDelegate CreateTryParse()
+        {
+            Type type = typeof(T);
+            if (type == typeof(string))
+                return delegate (string s, out object result) 
+                {
+                    result = s;
+                    return true;
+                };
+
+            if (type == typeof (int)) 
+                return delegate(string s, out object result) 
+                { 
+                    int temp;
+                    bool success = int.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
+
+            if (type == typeof (bool))
+                return delegate(string s, out object result) 
+            { 
+                bool temp;
+                bool success = bool.TryParse(s, out temp); 
+                result = temp;
+                return success;
+            };
+
+            if (type == typeof (float))
+                return delegate(string s, out object result) 
+                { 
+                    float temp;
+                    bool success = float.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
+
+            if (type == typeof (double))
+                return delegate(string s, out object result) 
+                { 
+                    double temp;
+                    bool success = double.TryParse(s, out temp); 
+                    result = temp;
+                    return success;
+                };
+
+            if (type.IsEnum)
+                return delegate(string s, out object result) 
+                { 
+                    result = Enum.Parse(type, s, true); 
+                    return true;
+                };
+
+            throw new NotSupportedException();
+        }
+
+        #endregion
     }
 }

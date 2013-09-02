@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using AR.Drone.Client.Acquisition;
 using AR.Drone.Data;
 using AR.Drone.Data.Navigation;
@@ -9,87 +12,62 @@ using AR.Drone.Client.Configuration;
 
 namespace AR.Drone.Client
 {
-    public class DroneClient : DisposableBase
+    public class DroneClient : WorkerBase
     {
         private static readonly string DefaultHostname = "192.168.1.1";
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
-        private readonly CommandSender _commandSender;
-        private readonly DroneConfiguration _droneConfiguration;
-        private readonly NetworkConfiguration _networkConfiguration;
-        private readonly ConfigurationAcquisition _configurationAcquisition;
-        private readonly NavdataAcquisition _navdataAcquisition;
-        private readonly VideoAcquisition _videoAcquisition;
-        private readonly Watchdog _watchdog;
-        private bool _initializationRequested;
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
+
+        private readonly CommandSender _commandSender;
+        private readonly NetworkConfiguration _networkConfiguration;
+        private readonly NavdataAcquisition _navdataAcquisition;
+        private readonly VideoAcquisition _videoAcquisition;
 
         public DroneClient(string hostname)
         {
             _networkConfiguration = new NetworkConfiguration(hostname);
-            _droneConfiguration = new DroneConfiguration();
-
             _commandQueue = new ConcurrentQueue<ATCommand>();
+            _navigationData = new NavigationData();
 
-            _commandSender = new CommandSender(_networkConfiguration, _commandQueue);
-            _navdataAcquisition = new NavdataAcquisition(_networkConfiguration, OnNavdataPacketAcquired, OnNavdataAcquisitionStopped);
-            _videoAcquisition = new VideoAcquisition(_networkConfiguration, OnVideoPacketAcquired);
-            _configurationAcquisition = new ConfigurationAcquisition(_networkConfiguration, OnConfigurationPacketAcquired);
-            _watchdog = new Watchdog(_navdataAcquisition, _commandSender, _videoAcquisition);
+            _commandSender = new CommandSender(NetworkConfiguration, _commandQueue);
+            _navdataAcquisition = new NavdataAcquisition(NetworkConfiguration, OnNavdataPacketAcquired, OnNavdataAcquisitionStarted, OnNavdataAcquisitionStopped);
+            _videoAcquisition = new VideoAcquisition(NetworkConfiguration, OnVideoPacketAcquired);
         }
 
         public DroneClient() : this (DefaultHostname)
         {
         }
 
-        public Action<NavigationPacket> NavigationPacketAcquired { get; set; }
-
-        public Action<NavigationData> NavigationDataUpdated { get; set; }
-
-        public Action<VideoPacket> VideoPacketAcquired { get; set; }
-
-        public Action<ConfigurationPacket> ConfigurationPacketAcquired { get; set; }
-
-        public Action<DroneConfiguration> ConfigurationUpdated { get; set; }
-
-        public bool Active
+        /// <summary>
+        /// Watchdog.
+        /// </summary>
+        /// <param name="token">Cancellation token.</param>
+        protected override void Loop(CancellationToken token)
         {
-            get { return _watchdog.IsAlive; }
-            set
+            while (token.IsCancellationRequested == false)
             {
-                if (value)
-                    _watchdog.Start();
-                else
-                {
-                    _watchdog.Stop();
-                }
+                if (_navdataAcquisition.IsAlive == false) _navdataAcquisition.Start();
+                Thread.Sleep(10);
             }
+
+            if (_navdataAcquisition.IsAlive) _navdataAcquisition.Stop();
+            if (_commandSender.IsAlive) _commandSender.Stop();
+            if (_videoAcquisition.IsAlive) _videoAcquisition.Stop();
         }
 
-        public bool IsConnected
-        {
-            get { return _navdataAcquisition.IsAcquiring; }
-        }
+        #region Private
 
-        public DroneConfiguration Configuration
+        private void OnNavdataAcquisitionStarted()
         {
-            get { return _droneConfiguration; }
-        }
-
-        public NavigationData NavigationData
-        {
-            get { return _navigationData; }
-        }
-
-        public void Send(ATCommand command)
-        {
-            _commandQueue.Enqueue(command);
+            if (_commandSender.IsAlive == false) _commandSender.Start();
+            if (_videoAcquisition.IsAlive == false) _videoAcquisition.Start();
         }
 
         private void OnNavdataAcquisitionStopped()
         {
-            _initializationRequested = false;
-            _videoAcquisition.Stop();
+            if (_commandSender.IsAlive) _commandSender.Stop();
+            if (_videoAcquisition.IsAlive) _videoAcquisition.Stop();
         }
 
         private void OnNavdataPacketAcquired(NavigationPacket packet)
@@ -105,67 +83,42 @@ namespace AR.Drone.Client
             NavigationData navigationData;
             if (NavigationPacketParser.TryParse(ref packet, out navigationData))
             {
+                OnNavigationDataAcquired(navigationData);
+
                 _navigationData = navigationData;
 
-
-                ProcessTransition();
-
-                if (NavigationDataUpdated != null)
-                    NavigationDataUpdated(_navigationData);
+                ProcessStateTransitions(navigationData.State);
             }
         }
 
-        private void OnVideoPacketAcquired(VideoPacket packet)
+        private void OnNavigationDataAcquired(NavigationData navigationData)
         {
-            if (VideoPacketAcquired != null)
-                VideoPacketAcquired(packet);
+            if (NavigationDataAcquired != null)
+                NavigationDataAcquired(navigationData);
         }
 
-        private void OnConfigurationPacketAcquired(ConfigurationPacket packet)
+        private void ProcessStateTransitions(NavigationState state)
         {
-            if (ConfigurationPacketAcquired != null)
-                ConfigurationPacketAcquired(packet);
-
-            if (ConfigurationPacketParser.TryUpdate(_droneConfiguration, packet))
+            if (state.HasFlag(NavigationState.Bootstrap))
             {
-                if (ConfigurationUpdated != null)
-                    ConfigurationUpdated(_droneConfiguration);
+                _commandQueue.Flush();
+                var configuration = new DroneConfiguration();
+                configuration.General.NavdataDemo.ChangeTo(false);
+                configuration.SendTo(this);
+                Send(new ControlCommand(ControlMode.NoControlMode));
             }
-        }
 
-        private void ProcessTransition()
-        {
-            if (_initializationRequested == false)
+            if (state.HasFlag(NavigationState.Watchdog))
             {
-                _initializationRequested = true;
-                _stateRequest = StateRequest.Initialization;
+                Trace.TraceWarning("Communication Watchdog!");
             }
 
             switch (_stateRequest)
             {
                 case StateRequest.None:
                     return;
-                case StateRequest.Initialization:
-                    _commandQueue.Flush();
-                    ATCommand cmdNavdataDemo = _droneConfiguration.General.NavdataDemo.Set(false).ToCommand();
-                    Send(cmdNavdataDemo);
-                    Send(new ControlCommand(ControlMode.NoControlMode));
-                    _stateRequest = StateRequest.Configuration;
-                    return;
-                case StateRequest.Configuration:
-                    _configurationAcquisition.Start();
-                    if (_navigationData.State.HasFlag(NavigationState.Command))
-                    {
-                        Send(new ControlCommand(ControlMode.AckControlMode));
-                    }
-                    else
-                    {
-                        Send(new ControlCommand(ControlMode.CfgGetControlMode));
-                        _stateRequest = StateRequest.None;
-                    }
-                    break;
                 case StateRequest.Emergency:
-                    if (_navigationData.State.HasFlag(NavigationState.Flying))
+                    if (state.HasFlag(NavigationState.Flying))
                         Send(new RefCommand(RefMode.Emergency));
                     else
                         _stateRequest = StateRequest.None;
@@ -175,8 +128,8 @@ namespace AR.Drone.Client
                     _stateRequest = StateRequest.None;
                     break;
                 case StateRequest.Land:
-                    if (_navigationData.State.HasFlag(NavigationState.Flying) &&
-                        _navigationData.State.HasFlag(NavigationState.Landing) == false)
+                    if (state.HasFlag(NavigationState.Flying) &&
+                        state.HasFlag(NavigationState.Landing) == false)
                     {
                         Send(new RefCommand(RefMode.Land));
                     }
@@ -184,10 +137,9 @@ namespace AR.Drone.Client
                         _stateRequest = StateRequest.None;
                     break;
                 case StateRequest.Fly:
-                    if (_navigationData.State.HasFlag(NavigationState.Landed) &&
-                        _navigationData.State.HasFlag(NavigationState.Takeoff) == false &&
-                        _navigationData.State.HasFlag(NavigationState.Emergency) == false &&
-                        _navigationData.Battery.Low == false)
+                    if (state.HasFlag(NavigationState.Landed) &&
+                        state.HasFlag(NavigationState.Takeoff) == false &&
+                        state.HasFlag(NavigationState.Emergency) == false)
                     {
                         Send(new RefCommand(RefMode.Takeoff));
                     }
@@ -199,6 +151,62 @@ namespace AR.Drone.Client
             }
         }
 
+        private void OnVideoPacketAcquired(VideoPacket packet)
+        {
+            if (VideoPacketAcquired != null)
+                VideoPacketAcquired(packet);
+        }
+
+        #endregion
+
+        #region Events
+
+        public event Action<NavigationPacket> NavigationPacketAcquired;
+
+        public event Action<NavigationData> NavigationDataAcquired;
+
+        public event Action<VideoPacket> VideoPacketAcquired;
+
+        #endregion
+
+        #region Properties
+
+        public bool IsActive
+        {
+            get { return IsAlive; }
+        }
+
+        public bool IsConnected
+        {
+            get { return _navdataAcquisition.IsAcquiring; }
+        }
+
+        public NetworkConfiguration NetworkConfiguration
+        {
+            get { return _networkConfiguration; }
+        }
+
+        public NavigationData NavigationData
+        {
+            get { return _navigationData; }
+        }
+
+        #endregion
+
+        #region Api
+
+        public Task<DroneConfiguration> GetConfigurationTask()
+        {
+            var configurationAcquisition = new ConfigurationAcquisition(this);
+            var task = configurationAcquisition.CreateTask();
+            return task;
+        }
+
+        public void Send(ATCommand command)
+        {
+            _commandQueue.Enqueue(command);
+        }
+        
         public void Emergency()
         {
             _stateRequest = StateRequest.Emergency;
@@ -209,14 +217,10 @@ namespace AR.Drone.Client
             _stateRequest = StateRequest.ResetEmergency;
         }
 
-        public void RequestConfiguration()
-        {
-            _stateRequest = StateRequest.Configuration;
-        }
-
         public void Land()
         {
-            _stateRequest = StateRequest.Land;
+            if (_navigationData.State.HasFlag(NavigationState.Flying))
+                _stateRequest = StateRequest.Land;
         }
 
         public void Takeoff()
@@ -289,13 +293,15 @@ namespace AR.Drone.Client
                 Send(new ProgressWithMagnetoCommand(mode, roll, pitch, yaw, gaz, psi, accuracy));
         }
 
+        #endregion
+
         protected override void DisposeOverride()
         {
-            _configurationAcquisition.Dispose();
+            base.DisposeOverride();
+
             _navdataAcquisition.Dispose();
             _commandSender.Dispose();
             _videoAcquisition.Dispose();
-            _watchdog.Dispose();
         }
     }
 }

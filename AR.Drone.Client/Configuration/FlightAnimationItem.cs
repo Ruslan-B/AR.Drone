@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace AR.Drone.Client.Configuration.Sections
+namespace AR.Drone.Client.Configuration
 {
-    public class FlightAnimationItem : ReadWriteItem<string>
+    public class FlightAnimationItem : ActiveItem<string>
     {
-        public FlightAnimationItem(string key) : base(key)
+        public FlightAnimationItem(SectionBase section, string key) : base(section, key)
         {
         }
 

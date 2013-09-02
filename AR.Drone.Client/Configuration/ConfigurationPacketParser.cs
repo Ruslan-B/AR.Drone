@@ -29,6 +29,10 @@ namespace AR.Drone.Client.Configuration
                             if (item.TryUpdate(value))
                             {
                                 updated = true;
+                            } 
+                            else 
+                            {
+                                Trace.TraceWarning("Configuration key {0} update failed. Original line: {1}", key, line);
                             }
                         }
                         else

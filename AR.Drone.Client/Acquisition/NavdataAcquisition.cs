@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using AR.Drone.Infrastructure;
-using AR.Drone.Client.Configuration;
 using AR.Drone.Data;
 
 namespace AR.Drone.Client.Acquisition
@@ -14,15 +13,19 @@ namespace AR.Drone.Client.Acquisition
         public const int NavdataPort = 5554;
         public const int KeepAliveTimeout = 200;
         public const int NavdataTimeout = 2000;
+
         private readonly NetworkConfiguration _configuration;
-        private readonly Action _onAcquisitionStopped;
         private readonly Action<NavigationPacket> _packetAcquired;
+        private readonly Action _onAcquisitionStarted;
+        private readonly Action _onAcquisitionStopped;
+        
         private bool _isAcquiring;
 
-        public NavdataAcquisition(NetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStopped)
+        public NavdataAcquisition(NetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStarted, Action onAcquisitionStopped)
         {
             _configuration = configuration;
             _packetAcquired = packetAcquired;
+            _onAcquisitionStarted = onAcquisitionStarted;
             _onAcquisitionStopped = onAcquisitionStopped;
         }
 
@@ -58,10 +61,13 @@ namespace AR.Drone.Client.Acquisition
                                     Timestamp = DateTime.UtcNow.Ticks,
                                     Data = data
                                 };
-                            _packetAcquired(packet);
+                            
+                            swNavdataTimeout.Restart();
 
                             _isAcquiring = true;
-                            swNavdataTimeout.Restart();
+                            _onAcquisitionStarted();
+
+                            _packetAcquired(packet);
                         }
 
                         if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)

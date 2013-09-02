@@ -51,6 +51,10 @@
             this.tmrVideoUpdate = new System.Windows.Forms.Timer(this.components);
             this.btnReset = new System.Windows.Forms.Button();
             this.btnReadConfig = new System.Windows.Forms.Button();
+            this.btnSendConfig = new System.Windows.Forms.Button();
+            this.btnStartRecording = new System.Windows.Forms.Button();
+            this.btnStopRecording = new System.Windows.Forms.Button();
+            this.btnReplay = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -255,19 +259,63 @@
             // 
             // btnReadConfig
             // 
-            this.btnReadConfig.Location = new System.Drawing.Point(174, 12);
+            this.btnReadConfig.Location = new System.Drawing.Point(563, 442);
             this.btnReadConfig.Name = "btnReadConfig";
-            this.btnReadConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnReadConfig.Size = new System.Drawing.Size(89, 23);
             this.btnReadConfig.TabIndex = 20;
             this.btnReadConfig.Text = "Read Config";
             this.btnReadConfig.UseVisualStyleBackColor = true;
             this.btnReadConfig.Click += new System.EventHandler(this.btnReadConfig_Click);
+            // 
+            // btnSendConfig
+            // 
+            this.btnSendConfig.Location = new System.Drawing.Point(563, 471);
+            this.btnSendConfig.Name = "btnSendConfig";
+            this.btnSendConfig.Size = new System.Drawing.Size(89, 23);
+            this.btnSendConfig.TabIndex = 21;
+            this.btnSendConfig.Text = "Send Config";
+            this.btnSendConfig.UseVisualStyleBackColor = true;
+            this.btnSendConfig.Click += new System.EventHandler(this.btnSendConfig_Click);
+            // 
+            // btnStartRecording
+            // 
+            this.btnStartRecording.Location = new System.Drawing.Point(174, 12);
+            this.btnStartRecording.Name = "btnStartRecording";
+            this.btnStartRecording.Size = new System.Drawing.Size(75, 23);
+            this.btnStartRecording.TabIndex = 22;
+            this.btnStartRecording.Text = "Start Rec.";
+            this.btnStartRecording.UseVisualStyleBackColor = true;
+            this.btnStartRecording.Click += new System.EventHandler(this.btnStartRecording_Click);
+            // 
+            // btnStopRecording
+            // 
+            this.btnStopRecording.Location = new System.Drawing.Point(255, 12);
+            this.btnStopRecording.Name = "btnStopRecording";
+            this.btnStopRecording.Size = new System.Drawing.Size(75, 23);
+            this.btnStopRecording.TabIndex = 23;
+            this.btnStopRecording.Text = "Stop Rec.";
+            this.btnStopRecording.UseVisualStyleBackColor = true;
+            this.btnStopRecording.Click += new System.EventHandler(this.btnStopRecording_Click);
+            // 
+            // btnReplay
+            // 
+            this.btnReplay.Location = new System.Drawing.Point(336, 12);
+            this.btnReplay.Name = "btnReplay";
+            this.btnReplay.Size = new System.Drawing.Size(75, 23);
+            this.btnReplay.TabIndex = 24;
+            this.btnReplay.Text = "Replay";
+            this.btnReplay.UseVisualStyleBackColor = true;
+            this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 533);
+            this.Controls.Add(this.btnReplay);
+            this.Controls.Add(this.btnStopRecording);
+            this.Controls.Add(this.btnStartRecording);
+            this.Controls.Add(this.btnSendConfig);
             this.Controls.Add(this.btnReadConfig);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.tvInfo);
@@ -319,6 +367,10 @@
         private System.Windows.Forms.Timer tmrVideoUpdate;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnReadConfig;
+        private System.Windows.Forms.Button btnSendConfig;
+        private System.Windows.Forms.Button btnStartRecording;
+        private System.Windows.Forms.Button btnStopRecording;
+        private System.Windows.Forms.Button btnReplay;
     }
 }
 

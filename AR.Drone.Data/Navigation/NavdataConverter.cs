@@ -51,10 +51,16 @@ namespace AR.Drone.Data.Navigation
 
         private static void UpdateStateUsing(def_ardrone_state_mask_t ardroneState, ref NavigationState state)
         {
+            if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_NAVDATA_BOOTSTRAP))
+                state |= NavigationState.Bootstrap;
+
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_FLY_MASK))
                 state |= NavigationState.Flying;
             else
                 state |= NavigationState.Landed;
+
+            if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_WIND_MASK))
+                state |= NavigationState.Wind;
 
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_EMERGENCY_MASK))
                 state |= NavigationState.Emergency;
@@ -64,6 +70,9 @@ namespace AR.Drone.Data.Navigation
 
             if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_CONTROL_MASK))
                 state |= NavigationState.Control;
+
+            if (ardroneState.HasFlag(def_ardrone_state_mask_t.ARDRONE_COM_WATCHDOG_MASK))
+                state |= NavigationState.Watchdog;
         }
 
         private static void UpdateStateUsing(CTRL_STATES ctrlStates, ref NavigationState state)
