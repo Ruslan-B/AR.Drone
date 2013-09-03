@@ -11,8 +11,8 @@ If case you are looking for Windows RT/Windows Phone support please check this p
 
 ## Status
 
-All major features are supported - video, configuration and control.  
-This library is still under heavy development, 
+This library is stable now. All major features are supported - video, configuration and control.  
+All experimental features moved to [dedicated](https://github.com/Ruslan-B/AR.Drone/tree/Experimental) branch. Please note that this branch under heavy development, 
 so please don't be suprised if you find some functionality missing or undocumented.  
 
 ## Build
