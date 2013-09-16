@@ -8,6 +8,22 @@ namespace AR.Drone.Client.Configuration
     [StructLayout(LayoutKind.Sequential)]
     public class DroneConfiguration
     {
+        public static readonly string DefaultApplicationId = "default";
+        public static readonly string DefaultUserId = "default";
+
+        public static string NewSessionId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
+        private readonly string _applicationId;
+        private readonly string _userId;
+        private readonly string _sessionId;
+
+        private readonly Dictionary<string, IConfigurationItem> _items;
+        private readonly ConcurrentQueue<ATCommand> _queue;
+
+
         public readonly GeneralSection General;
         public readonly ControlSection Control;
         public readonly NetworkSection Network;
@@ -20,14 +36,15 @@ namespace AR.Drone.Client.Configuration
         public readonly GpsSection Gps;
         public readonly CustomSection Custom;
 
-        private readonly Dictionary<string, IConfigurationItem> _items;
-        private readonly ConcurrentQueue<ATCommand> _queue;
-
-        public DroneConfiguration()
+        public DroneConfiguration(string applicationId, string userId, string sessionId)
         {
+            _applicationId = applicationId;
+            _userId = userId;
+            _sessionId = sessionId;
+
             _items = new Dictionary<string, IConfigurationItem>();
             _queue = new ConcurrentQueue<ATCommand>();
-            
+
             General = new GeneralSection(this);
             Control = new ControlSection(this);
             Network = new NetworkSection(this);
@@ -40,7 +57,22 @@ namespace AR.Drone.Client.Configuration
             Gps = new GpsSection(this);
             Custom = new CustomSection(this);
         }
+        
+        public DroneConfiguration(string application, string user)
+            : this(application, user, NewSessionId())
+        {
+        }
 
+        public DroneConfiguration(string application)
+            : this(application, DefaultUserId, NewSessionId())
+        {
+        }
+
+        public DroneConfiguration()
+            : this(DefaultApplicationId, DefaultUserId, NewSessionId())
+        {
+        }
+        
         public Dictionary<string, IConfigurationItem> Items
         {
             get { return _items; }
@@ -59,62 +91,155 @@ namespace AR.Drone.Client.Configuration
 
         public class GeneralSection : SectionBase
         {
-            public readonly ReadOnlyItem<int> ConfigVersion;
-            public readonly ReadOnlyItem<int> MotherboardVersion;
-            public readonly ReadOnlyItem<string> SoftVersion;
-            public readonly ReadOnlyItem<string> DroneSerial;
-            public readonly ReadOnlyItem<string> SoftBuildDate;
-            public readonly ReadOnlyItem<string> Motor1Soft;
-            public readonly ReadOnlyItem<string> Motor1Hard;
-            public readonly ReadOnlyItem<string> Motor1Supplier;
-            public readonly ReadOnlyItem<string> Motor2Soft;
-            public readonly ReadOnlyItem<string> Motor2Hard;
-            public readonly ReadOnlyItem<string> Motor2Supplier;
-            public readonly ReadOnlyItem<string> Motor3Soft;
-            public readonly ReadOnlyItem<string> Motor3Hard;
-            public readonly ReadOnlyItem<string> Motor3Supplier;
-            public readonly ReadOnlyItem<string> Motor4Soft;
-            public readonly ReadOnlyItem<string> Motor4Hard;
-            public readonly ReadOnlyItem<string> Motor4Supplier;
-            public readonly ActiveItem<string> ARDroneName;
-            public readonly ReadOnlyItem<int> FlyingTime;
-            public readonly ActiveItem<bool> NavdataDemo;
-            public readonly ActiveItem<int> NavdataOptions;
-            public readonly ActiveItem<int> ComWatchdog;
-            public readonly ActiveItem<bool> Video;
-            public readonly ActiveItem<bool> Vision;
-            public readonly ActiveItem<int> BatteryVoltageMin;
-            public readonly ActiveItem<int> LocalTime;
+            private readonly ActiveItem<bool> _navdataDemo;
+            private readonly ActiveItem<int> _navdataOptions;
+            private readonly ActiveItem<int> _comWatchdog;
+            private readonly ActiveItem<bool> _video;
+            private readonly ActiveItem<bool> _vision;
+            private readonly ActiveItem<int> _batteryVoltageMin;
+            private readonly ActiveItem<int> _localTime;
 
             public GeneralSection(DroneConfiguration configuration)
                 : base(configuration, "general")
             {
-                ConfigVersion = new ReadOnlyItem<int>(this, "num_version_config");
-                MotherboardVersion = new ReadOnlyItem<int>(this, "num_version_mb");
-                SoftVersion = new ReadOnlyItem<string>(this, "num_version_soft");
-                DroneSerial = new ReadOnlyItem<string>(this, "drone_serial");
-                SoftBuildDate = new ReadOnlyItem<string>(this, "soft_build_date");
-                Motor1Soft = new ReadOnlyItem<string>(this, "motor1_soft");
-                Motor1Hard = new ReadOnlyItem<string>(this, "motor1_hard");
-                Motor1Supplier = new ReadOnlyItem<string>(this, "motor1_supplier");
-                Motor2Soft = new ReadOnlyItem<string>(this, "motor2_soft");
-                Motor2Hard = new ReadOnlyItem<string>(this, "motor2_hard");
-                Motor2Supplier = new ReadOnlyItem<string>(this, "motor2_supplier");
-                Motor3Soft = new ReadOnlyItem<string>(this, "motor3_soft");
-                Motor3Hard = new ReadOnlyItem<string>(this, "motor3_hard");
-                Motor3Supplier = new ReadOnlyItem<string>(this, "motor3_supplier");
-                Motor4Soft = new ReadOnlyItem<string>(this, "motor4_soft");
-                Motor4Hard = new ReadOnlyItem<string>(this, "motor4_hard");
-                Motor4Supplier = new ReadOnlyItem<string>(this, "motor4_supplier");
-                ARDroneName = new ActiveItem<string>(this, "ardrone_name");
-                FlyingTime = new ReadOnlyItem<int>(this, "flying_time");
-                NavdataDemo = new ActiveItem<bool>(this, "navdata_demo");
-                NavdataOptions = new ActiveItem<int>(this, "navdata_options");
-                ComWatchdog = new ActiveItem<int>(this, "com_watchdog");
-                Video = new ActiveItem<bool>(this, "video_enable");
-                Vision = new ActiveItem<bool>(this, "vision_enable");
-                BatteryVoltageMin = new ActiveItem<int>(this, "vbat_min");
-                LocalTime = new ActiveItem<int>(this, "localtime");
+                _navdataDemo = new ActiveItem<bool>(this, "navdata_demo");
+                _navdataOptions = new ActiveItem<int>(this, "navdata_options");
+                _comWatchdog = new ActiveItem<int>(this, "com_watchdog");
+                _video = new ActiveItem<bool>(this, "video_enable");
+                _vision = new ActiveItem<bool>(this, "vision_enable");
+                _batteryVoltageMin = new ActiveItem<int>(this, "vbat_min");
+                _localTime = new ActiveItem<int>(this, "localtime");
+            }
+
+            public int ConfigVersion
+            {
+                get { return GetInt32("num_version_config"); }
+            }
+
+            public int MotherboardVersion
+            {
+                get { return GetInt32("num_version_mb"); }
+            }
+
+            public string SoftVersion
+            {
+                get { return GetString("num_version_soft"); }
+            }
+
+            public string DroneSerial
+            {
+                get { return GetString("drone_serial"); }
+            }
+
+            public string SoftBuildDate
+            {
+                get { return GetString("soft_build_date"); }
+            }
+
+            public string Motor1Soft
+            {
+                get { return GetString("motor1_soft"); }
+            }
+
+            public string Motor1Hard
+            {
+                get { return GetString("motor1_hard"); }
+            }
+
+            public string Motor1Supplier
+            {
+                get { return GetString("motor1_supplier"); }
+            }
+
+            public string Motor2Soft
+            {
+                get { return GetString("motor2_soft"); }
+            }
+
+            public string Motor2Hard
+            {
+                get { return GetString("motor2_hard"); }
+            }
+
+            public string Motor2Supplier
+            {
+                get { return GetString("motor2_supplier"); }
+            }
+
+            public string Motor3Soft
+            {
+                get { return GetString("motor3_soft"); }
+            }
+
+            public string Motor3Hard
+            {
+                get { return GetString("motor3_hard"); }
+            }
+
+            public string Motor3Supplier
+            {
+                get { return GetString("motor3_supplier"); }
+            }
+
+            public string Motor4Soft
+            {
+                get { return GetString("motor4_soft"); }
+            }
+
+            public string Motor4Hard
+            {
+                get { return GetString("motor4_hard"); }
+            }
+
+            public string Motor4Supplier
+            {
+                get { return GetString("motor4_supplier"); }
+            }
+
+            public string ArDroneName
+            {
+                get { return GetString("ardrone_name"); }
+                set { Set("ardrone_name", value); }
+            }
+
+            public int FlyingTime
+            {
+                get { return GetInt32("flying_time"); }
+            }
+
+            public ActiveItem<bool> NavdataDemo
+            {
+                get { return _navdataDemo; }
+            }
+
+            public ActiveItem<int> NavdataOptions
+            {
+                get { return _navdataOptions; }
+            }
+
+            public ActiveItem<int> ComWatchdog
+            {
+                get { return _comWatchdog; }
+            }
+
+            public ActiveItem<bool> Video
+            {
+                get { return _video; }
+            }
+
+            public ActiveItem<bool> Vision
+            {
+                get { return _vision; }
+            }
+
+            public ActiveItem<int> BatteryVoltageMin
+            {
+                get { return _batteryVoltageMin; }
+            }
+
+            public ActiveItem<int> LocalTime
+            {
+                get { return _localTime; }
             }
         }
 
