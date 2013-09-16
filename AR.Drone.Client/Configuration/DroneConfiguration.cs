@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using AR.Drone.Client.Commands;
@@ -8,25 +9,14 @@ namespace AR.Drone.Client.Configuration
 {
     public class DroneConfiguration
     {
-        private static readonly string DefaultApplicationId = "default";
-        private static readonly string DefaultUserId = "default";
-
-        private static string NewSessionId()
-        {
-            return Guid.NewGuid().ToString("N").Substring(0, 8);
-        }
-
         private static readonly Regex _reKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
 
-
-        private readonly string _applicationId;
-        private readonly string _userId;
-        private readonly string _sessionId;
+        private static readonly string DefaultApplicationId = "00000000";
+        private static readonly string DefaultProfileId = "00000000";
+        private static readonly string DefaultSessionId = "00000000";
 
         private readonly Dictionary<string, string> _items;
-        private readonly HashSet<string> _changed;
-
-
+        private readonly ConcurrentQueue<string> _changed;
         public readonly GeneralSection General;
         public readonly ControlSection Control;
         public readonly NetworkSection Network;
@@ -39,14 +29,10 @@ namespace AR.Drone.Client.Configuration
         public readonly GpsSection Gps;
         public readonly CustomSection Custom;
 
-        public DroneConfiguration(string applicationId, string userId, string sessionId)
+        public DroneConfiguration()
         {
-            _applicationId = applicationId;
-            _userId = userId;
-            _sessionId = sessionId;
-
             _items = new Dictionary<string, string>();
-            _changed = new HashSet<string>();
+            _changed = new ConcurrentQueue<string>();
 
             General = new GeneralSection(this);
             Control = new ControlSection(this);
@@ -60,40 +46,29 @@ namespace AR.Drone.Client.Configuration
             Gps = new GpsSection(this);
             Custom = new CustomSection(this);
         }
-        
-        public DroneConfiguration(string application, string user)
-            : this(application, user, NewSessionId())
-        {
-        }
 
-        public DroneConfiguration(string application)
-            : this(application, DefaultUserId, NewSessionId())
-        {
-        }
-
-        public DroneConfiguration()
-            : this(DefaultApplicationId, DefaultUserId, NewSessionId())
-        {
-        }
-        
         protected internal Dictionary<string, string> Items
         {
             get { return _items; }
         }
 
-        protected internal HashSet<string> Changed
+        protected internal ConcurrentQueue<string> Changed
         {
             get { return _changed; }
         }
 
         public void SendChanges(DroneClient client)
         {
-            foreach(var key in _changed) 
+            string key;
+            while (_changed.TryDequeue(out key))
             {
-                client.Send(new ConfigIdsCommand(_sessionId, _userId, _applicationId));
+                if (Custom.SessionId != null && Custom.ProfileId != null && Custom.ApplicationId != null
+                    && (Custom.SessionId != DefaultSessionId || Custom.ProfileId != DefaultProfileId || Custom.ApplicationId != DefaultApplicationId))
+                {
+                    client.Send(new ConfigIdsCommand(Custom.SessionId, Custom.ProfileId, Custom.ApplicationId));
+                }
                 client.Send(new ConfigCommand(key, _items[key]));
             }
-            _changed.Clear();
         }
 
         public static DroneConfiguration Parse(string input)
@@ -101,13 +76,18 @@ namespace AR.Drone.Client.Configuration
             DroneConfiguration configuration = new DroneConfiguration();
 
             MatchCollection matches = _reKeyValue.Matches(input);
-            foreach(Match match in matches)
+            foreach (Match match in matches)
             {
                 string key = match.Groups["key"].Value;
                 string value = match.Groups["value"].Value;
                 configuration._items.Add(key, value);
             }
             return configuration;
+        }
+
+        public static string NewSessionId()
+        {
+            return Guid.NewGuid().ToString("N");
         }
     }
 }

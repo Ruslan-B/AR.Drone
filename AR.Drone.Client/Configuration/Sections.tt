@@ -138,12 +138,12 @@ namespace AR.Drone.Client.Configuration
 	ES();
 
 	BS("CustomSection", "custom");
-	RO("ApplicationId", "application_id", "String");
-	RO("ApplicationDescription", "application_desc", "String");
-	RO("ProfileId", "profile_id", "String");
-	RO("ProfileDescription", "profile_desc", "String");
-	RO("SessionId", "session_id", "String");
-	RO("SessionDescription", "session_desc", "String");
+	RW("ApplicationId", "application_id", "String");
+	RW("ApplicationDescription", "application_desc", "String");
+	RW("ProfileId", "profile_id", "String");
+	RW("ProfileDescription", "profile_desc", "String");
+	RW("SessionId", "session_id", "String");
+	RW("SessionDescription", "session_desc", "String");
 	ES();
 #>
 }

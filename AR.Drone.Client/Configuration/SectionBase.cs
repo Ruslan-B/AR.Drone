@@ -85,12 +85,12 @@ namespace AR.Drone.Client.Configuration
             if(_configuration.Items.ContainsKey(key) == false)
             {
                 _configuration.Items.Add(key, value);
-                _configuration.Changed.Add(key);
+                _configuration.Changed.Enqueue(key);
             } 
             else 
             {
                 _configuration.Items[key] = value;
-                _configuration.Changed.Add(key);
+                _configuration.Changed.Enqueue(key);
             }
         }
 

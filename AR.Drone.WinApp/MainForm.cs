@@ -284,6 +284,10 @@ namespace AR.Drone.WinApp
         {
             DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
 
+            configuration.Custom.SessionId = DroneConfiguration.NewSessionId();
+            configuration.Custom.ProfileId = "Default";
+            configuration.Custom.ApplicationId = "AR.Drone.WinApp";
+
             configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Manual;
             configuration.Video.Codec = VideoCodecType.H264_720P;
             configuration.Video.MaxBitrate = 1100;
