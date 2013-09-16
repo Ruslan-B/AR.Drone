@@ -66,20 +66,9 @@ namespace AR.Drone.Client.Configuration
                             // config eof check
                             if (offset > 0 && buffer[offset - 1] == 0x00)
                             {
-                                var data = new byte[offset];
-                                Array.Copy(buffer, data, offset);
-                                var packet = new ConfigurationPacket
-                                    {
-                                        Timestamp = DateTime.UtcNow.Ticks,
-                                        Data = data
-                                    };
-                                var configuration = new DroneConfiguration();
-                                if (ConfigurationPacketParser.TryUpdate(configuration, packet))
-                                {
-                                    return configuration;
-                                }
-                                
-                                throw new InvalidDataException();
+                                string s = System.Text.Encoding.UTF8.GetString(buffer, 0, offset);
+
+                                return DroneConfiguration.Parse(s);
                             }
                         }
                     }

@@ -51,14 +51,8 @@
     <Compile Include="Commands\FlatTrimCommand.cs" />
     <Compile Include="Commands\ProgressiveCommand.cs" />
     <Compile Include="Commands\RefCommand.cs" />
-    <Compile Include="Configuration\DroneConfiguration.cs" />
-    <Compile Include="Configuration\ConfigurationPacketParser.cs" />
-    <Compile Include="Configuration\IConfigurationItem.cs" />
     <Compile Include="Configuration\SectionBase.cs" />
     <Compile Include="Configuration\FlightAnimation.cs" />
-    <Compile Include="Configuration\FlightAnimationItem.cs" />
-    <Compile Include="Configuration\ReadOnlyItem.cs" />
-    <Compile Include="Configuration\ActiveItem.cs" />
     <Compile Include="Configuration\VideoBitrateControlMode.cs" />
     <Compile Include="Configuration\VideoCodecType.cs" />
     <Compile Include="Configuration\VideoChannelType.cs" />
@@ -76,6 +70,11 @@
     <Compile Include="Commands\FlightMode.cs" />
     <Compile Include="NetworkConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationAcquisition.cs" />
+    <Compile Include="Configuration\DroneConfiguration.cs" />
+    <Compile Include="Configuration\Sections.cs">
+      <DependentUpon>Sections.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\FlightAnimationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
@@ -96,4 +95,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <None Include="Configuration\Sections.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Sections.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 
 namespace AR.Drone.Video
 {
-    [StructLayout(LayoutKind.Sequential)]
     public class VideoFrame
     {
         public long Timestamp;

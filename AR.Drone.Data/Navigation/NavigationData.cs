@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 
 namespace AR.Drone.Data.Navigation
 {
-    [StructLayout(LayoutKind.Sequential)]
     public class NavigationData
     {
         public NavigationState State;

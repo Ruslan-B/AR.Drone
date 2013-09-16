@@ -151,24 +151,38 @@ namespace AR.Drone.WinApp
 
         private void DumpBranch(TreeNodeCollection nodes, object o)
         {
-            Type type = o.GetType();
-            FieldInfo[] fields = type.GetFields();
-            foreach (FieldInfo fieldInfo in fields)
+            Type objectType = o.GetType();
+            foreach (FieldInfo fieldInfo in objectType.GetFields())
             {
                 TreeNode node = nodes.GetOrCreate(fieldInfo.Name);
-                object fieldValue = fieldInfo.GetValue(o);
+                object value = fieldInfo.GetValue(o);
 
-                if (fieldValue == null)
+                if (value == null)
                     node.Text = node.Name + ": null";
-                else if (fieldValue is IConfigurationItem)
-                    node.Text = node.Name + ": " + ((IConfigurationItem) fieldValue).Value;
                 else
                 {
-                    Type fieldType = fieldInfo.FieldType;
-                    if (fieldType.Namespace.StartsWith("System") || fieldType.IsEnum)
-                        node.Text = node.Name + ": " + fieldValue;
+                    Type valueType = fieldInfo.FieldType;
+                    if (valueType.Namespace.StartsWith("System") || valueType.IsEnum)
+                        node.Text = node.Name + ": " + value;
                     else
-                        DumpBranch(node.Nodes, fieldValue);
+                        DumpBranch(node.Nodes, value);
+                }
+            }
+
+            foreach (PropertyInfo propertyInfo in objectType.GetProperties())
+            {
+                TreeNode node = nodes.GetOrCreate(propertyInfo.Name);
+                object value = propertyInfo.GetValue(o, null);
+
+                if (value == null)
+                    node.Text = node.Name + ": null";
+                else
+                {
+                    Type valueType = propertyInfo.PropertyType;
+                    if (valueType.Namespace.StartsWith("System") || valueType.IsEnum)
+                        node.Text = node.Name + ": " + value;
+                    else
+                        DumpBranch(node.Nodes, value);
                 }
             }
         }
@@ -201,8 +215,8 @@ namespace AR.Drone.WinApp
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
             DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
-            configuration.Video.Channel.ChangeTo(VideoChannelType.Next);
-            configuration.SendTo(_droneClient);
+            configuration.Video.Channel = VideoChannelType.Next;
+            configuration.SendChanges(_droneClient);
         }
 
         private void btnHover_Click(object sender, EventArgs e)
@@ -270,12 +284,12 @@ namespace AR.Drone.WinApp
         {
             DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
 
-            configuration.Video.BitrateCtrlMode.ChangeTo(VideoBitrateControlMode.Manual);
-            //configuration.Video.Codec.ChangeTo(VideoCodecType.H264_720P);
-            //configuration.Video.MaxBitrate.ChangeTo(1100);
+            configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Manual;
+            configuration.Video.Codec = VideoCodecType.H264_720P;
+            configuration.Video.MaxBitrate = 1100;
 
             // send all changes in one pice
-            configuration.SendTo(_droneClient);
+            configuration.SendChanges(_droneClient);
         }
 
         private void StopRecording()

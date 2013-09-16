@@ -38,10 +38,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ConversionHelper.cs" />
     <Compile Include="Navigation\NavigationData.cs" />
     <Compile Include="Navigation\NavigationState.cs" />
-    <Compile Include="ConfigurationPacket.cs" />
     <Compile Include="NavigationPacket.cs" />
     <Compile Include="Navigation\Native\CTRL_STATES.cs" />
     <Compile Include="Navigation\Native\def_ardrone_state_mask_t.cs" />
@@ -89,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VideoFrameType.cs" />
     <Compile Include="VideoPacket.cs" />
+    <Compile Include="ConversionHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -103,8 +103,8 @@ namespace AR.Drone.Client
             {
                 _commandQueue.Flush();
                 var configuration = new DroneConfiguration();
-                configuration.General.NavdataDemo.ChangeTo(false);
-                configuration.SendTo(this);
+                configuration.General.NavdataDemo = false;
+                configuration.SendChanges(this);
                 Send(new ControlCommand(ControlMode.NoControlMode));
             }
 

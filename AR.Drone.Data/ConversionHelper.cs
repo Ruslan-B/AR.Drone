@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AR.Drone.Data.Helpers
+namespace AR.Drone.Data
 {
     public class ConversionHelper
     {

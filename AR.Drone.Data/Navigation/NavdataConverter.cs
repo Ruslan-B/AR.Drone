@@ -1,5 +1,4 @@
 ﻿using System;
-using AR.Drone.Data.Helpers;
 using AR.Drone.Data.Navigation.Native;
 
 namespace AR.Drone.Data.Navigation
