@@ -9,7 +9,7 @@ namespace AR.Drone.Client.Commands
         public ConfigIdsCommand(string sessionId, string profileId, string applicationId)
         {
             _sessionId = sessionId;
-            _profileId = _profileId;
+            _profileId = profileId;
             _applicationId = applicationId;
         }
 

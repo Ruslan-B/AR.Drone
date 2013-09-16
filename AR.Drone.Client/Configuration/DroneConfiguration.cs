@@ -87,7 +87,7 @@ namespace AR.Drone.Client.Configuration
 
         public static string NewSessionId()
         {
-            return Guid.NewGuid().ToString("N");
+            return Guid.NewGuid().ToString("N").Substring(0,8);
         }
     }
 }
