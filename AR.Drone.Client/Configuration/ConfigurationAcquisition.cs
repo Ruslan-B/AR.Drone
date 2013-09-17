@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using AR.Drone.Client.Commands;
-using AR.Drone.Data;
 using AR.Drone.Data.Navigation;
 
 namespace AR.Drone.Client.Configuration
