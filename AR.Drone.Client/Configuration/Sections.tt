@@ -1,188 +1,185 @@
-﻿<#@ template language="C#v3.5" #>
-
+﻿<#@ template language="C#" #>
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace AR.Drone.Client.Configuration
 {
 <#
-	BS("GeneralSection", "general");
-	RO("ConfigVersion", "num_version_config", "Int32");
-    RO("MotherboardVersion", "num_version_mb", "Int32");
-    RO("SoftVersion", "num_version_soft", "String");
-    RO("DroneSerial", "drone_serial", "String");
-    RO("SoftBuildDate", "soft_build_date", "String");
-    RO("Motor1Soft", "motor1_soft", "String");
-    RO("Motor1Hard", "motor1_hard", "String");
-    RO("Motor1Supplier", "motor1_supplier", "String");
-    RO("Motor2Soft", "motor2_soft", "String");
-    RO("Motor2Hard", "motor2_hard", "String");
-    RO("Motor2Supplier", "motor2_supplier", "String");
-    RO("Motor3Soft", "motor3_soft", "String");
-    RO("Motor3Hard", "motor3_hard", "String");
-    RO("Motor3Supplier", "motor3_supplier", "String");
-    RO("Motor4Soft", "motor4_soft", "String");
-    RO("Motor4Hard", "motor4_hard", "String");
-    RO("Motor4Supplier", "motor4_supplier", "String");
-    RW("ARDroneName", "ardrone_name", "String");
-    RO("FlyingTime", "flying_time", "Int32");
-    RW("NavdataDemo", "navdata_demo", "Boolean");
-    RW("NavdataOptions", "navdata_options", "Int32");
-    RW("ComWatchdog", "com_watchdog", "Int32");
-    RW("Video", "video_enable", "Boolean");
-    RW("Vision", "vision_enable", "Boolean");
-    RW("BatteryVoltageMin", "vbat_min", "Int32");
-    RW("LocalTime", "localtime", "Int32");
-    ES();
+	BSC("GeneralSection", "general");
+	ROV("ConfigurationVersion", "num_version_config", "Int32");
+    ROV("HardwareVersion", "num_version_mb", "Int32");
+    ROV("FirmwareVersion", "num_version_soft", "String");
+    ROV("DroneSerial", "drone_serial", "String");
+    ROV("FirmwareBuildDate", "soft_build_date", "String");
+    ROV("Motor1Soft", "motor1_soft", "String");
+    ROV("Motor1Hard", "motor1_hard", "String");
+    ROV("Motor1Supplier", "motor1_supplier", "String");
+    ROV("Motor2Soft", "motor2_soft", "String");
+    ROV("Motor2Hard", "motor2_hard", "String");
+    ROV("Motor2Supplier", "motor2_supplier", "String");
+    ROV("Motor3Soft", "motor3_soft", "String");
+    ROV("Motor3Hard", "motor3_hard", "String");
+    ROV("Motor3Supplier", "motor3_supplier", "String");
+    ROV("Motor4Soft", "motor4_soft", "String");
+    ROV("Motor4Hard", "motor4_hard", "String");
+    ROV("Motor4Supplier", "motor4_supplier", "String");
+    RWV("ARDroneName", "ardrone_name", "String");
+    ROV("FlyingTime", "flying_time", "Int32");
+    RWV("NavdataDemo", "navdata_demo", "Boolean");
+    RWE("NavdataOptions", "navdata_options", "NavdataOptions");
+    RWV("ComWatchdog", "com_watchdog", "Int32");
+    RWV("Video", "video_enable", "Boolean");
+    RWV("Vision", "vision_enable", "Boolean");
+    RWV("BatteryVoltageMin", "vbat_min", "Int32");
+    RWV("LocalTime", "localtime", "Int32");
+    ESC();
     
-    BS("ControlSection", "control");
-	RO("accs_offset", "accs_offset", "String");
-	RO("accs_gains", "accs_gains", "String");
-	RO("gyros_offset", "gyros_offset", "String");
-	RO("gyros_gains", "gyros_gains", "String");
-	RO("gyros110_offset", "gyros110_offset", "String");
-	RO("gyros110_gains", "gyros110_gains", "String");
-	RO("magneto_offset", "magneto_offset", "String");
-	RO("magneto_radius", "magneto_radius", "Single");
-	RO("gyro_offset_thr_x", "gyro_offset_thr_x", "Single");
-	RO("gyro_offset_thr_y", "gyro_offset_thr_y", "Single");
-	RO("gyro_offset_thr_z", "gyro_offset_thr_z", "Single");
-	RO("pwm_ref_gyros", "pwm_ref_gyros", "Int32");
-	RO("osctun_value", "osctun_value", "Int32");
-	RO("osctun_test", "osctun_test", "Boolean");
-	RW("control_level", "control_level", "Int32");
-	RW("euler_angle_max", "euler_angle_max", "Single");
-	RW("altitude_max", "altitude_max", "Int32");
-	RW("altitude_min", "altitude_min", "Int32");
-	RW("control_iphone_tilt", "control_iphone_tilt", "Single");
-	RW("control_vz_max", "control_vz_max", "Single");
-	RW("control_yaw", "control_yaw", "Single");
-	RW("outdoor", "outdoor", "Boolean");
-	RW("flight_without_shell", "flight_without_shell", "Boolean");
-	RO("autonomous_flight", "autonomous_flight", "Boolean"); // obsolete
-	RW("manual_trim", "manual_trim", "Boolean");
-	RW("indoor_euler_angle_max", "indoor_euler_angle_max", "Single");
-	RW("indoor_control_vz_max", "indoor_control_vz_max", "Single");
-	RW("indoor_control_yaw", "indoor_control_yaw", "Single");
-	RW("outdoor_euler_angle_max", "outdoor_euler_angle_max", "Single");
-	RW("outdoor_control_vz_max", "outdoor_control_vz_max", "Single");
-	RW("outdoor_control_yaw", "outdoor_control_yaw", "Single");
-	RW("flying_mode", "flying_mode", "Int32");
-	RW("hovering_range", "hovering_range", "Int32");
-	// TODO !!!
-	//RW("flight_anim", "flight_anim", "FlightAnimationItem");
-    ES();
+    BSC("ControlSection", "control");
+	ROV("AccsOffset", "accs_offset", "String");
+	ROV("AccsGains", "accs_gains", "String");
+	ROV("GyrosOffset", "gyros_offset", "String");
+	ROV("GyrosGains", "gyros_gains", "String");
+	ROV("Gyros110Offset", "gyros110_offset", "String");
+	ROV("Gyros110Gains", "gyros110_gains", "String");
+	ROV("MagnetoOffset", "magneto_offset", "String");
+	ROV("MagnetoRadius", "magneto_radius", "Single");
+	ROV("GyroOffsetThrX", "gyro_offset_thr_x", "Single");
+	ROV("GyroOffsetThrY", "gyro_offset_thr_y", "Single");
+	ROV("GyroOffsetThrZ", "gyro_offset_thr_z", "Single");
+	ROV("PwmRefGyros", "pwm_ref_gyros", "Int32");
+	ROV("OsctunValue", "osctun_value", "Int32");
+	ROV("OsctunTest", "osctun_test", "Boolean");
+	RWV("ControlLevel", "control_level", "Int32");
+	RWV("EulerAngleMax", "euler_angle_max", "Single");
+	RWV("AltitudeMax", "altitude_max", "Int32");
+	RWV("AltitudeMin", "altitude_min", "Int32");
+	RWV("ControliPhoneTilt", "control_iphone_tilt", "Single");
+	RWV("ControlVzMax", "control_vz_max", "Single");
+	RWV("ControlYaw", "control_yaw", "Single");
+	RWV("Outdoor", "outdoor", "Boolean");
+	RWV("FlightWithoutShell", "flight_without_shell", "Boolean");
+	ROV("AutonomousFlight", "autonomous_flight", "Boolean"); // obsolete
+	RWV("ManualTrim", "manual_trim", "Boolean");
+	RWV("IndoorEulerAngleMax", "indoor_euler_angle_max", "Single");
+	RWV("IndoorControlVzMax", "indoor_control_vz_max", "Single");
+	RWV("IndoorControlYaw", "indoor_control_yaw", "Single");
+	RWV("OutdoorEulerAngleMax", "outdoor_euler_angle_max", "Single");
+	RWV("OutdoorControlVzMax", "outdoor_control_vz_max", "Single");
+	RWV("OutdoorControlYaw", "outdoor_control_yaw", "Single");
+	RWV("FlyingMode", "flying_mode", "Int32");
+	RWV("HoveringRange", "hovering_range", "Int32");
+	RWV("FlightAnimation", "flight_anim", "FlightAnimation");
+    ESC();
     
-	BS("NetworkSection", "network");
-	RW("SsidSinglePlayer", "ssid_single_player", "String");
-	RW("SsidMultiPlayer", "ssid_multi_player", "String");
-	RW("WifiMode", "wifi_mode", "Int32");
-	RW("WifiRate", "wifi_rate", "Int32");
-	RW("OwnerMac", "owner_mac", "String");
-	ES();
+	BSC("NetworkSection", "network");
+	RWV("SsidSinglePlayer", "ssid_single_player", "String");
+	RWV("SsidMultiPlayer", "ssid_multi_player", "String");
+	RWV("WifiMode", "wifi_mode", "Int32");
+	RWV("WifiRate", "wifi_rate", "Int32");
+	RWV("OwnerMac", "owner_mac", "String");
+	ESC();
 
-	BS("PicSection", "pic");
-	RW("UltrasoundFreq", "ultrasound_freq", "Int32");
-	RW("UltrasoundWatchdog", "ultrasound_watchdog", "Int32");
-	RO("Version", "pic_version", "Int32");
-	ES();
+	BSC("PicSection", "pic");
+	RWV("UltrasoundFreq", "ultrasound_freq", "Int32");
+	RWV("UltrasoundWatchdog", "ultrasound_watchdog", "Int32");
+	ROV("Version", "pic_version", "Int32");
+	ESC();
 
-	BS("VideoSection", "video");
-	RO("CamifFps", "camif_fps", "Int32");
-	RW("CodecFps", "codec_fps", "Int32");
-	RO("CamifBuffers", "camif_buffers", "Int32");
-	RO("Trackers", "num_trackers", "Int32");
+	BSC("VideoSection", "video");
+	ROV("CamifFps", "camif_fps", "Int32");
+	RWV("CodecFps", "codec_fps", "Int32");
+	ROV("CamifBuffers", "camif_buffers", "Int32");
+	ROV("Trackers", "num_trackers", "Int32");
 	RWE("Codec", "video_codec", "VideoCodecType");
-	RW("Slices", "video_slices", "Int32");
-	RW("LiveSocket", "video_live_socket", "Int32");
-	RO("StorageSpace", "video_storage_space", "Int32");
-	RW("Bitrate", "bitrate", "Int32");
-	RW("MaxBitrate", "max_bitrate", "Int32");
+	RWV("Slices", "video_slices", "Int32");
+	RWV("LiveSocket", "video_live_socket", "Int32");
+	ROV("StorageSpace", "video_storage_space", "Int32");
+	RWV("Bitrate", "bitrate", "Int32");
+	RWV("MaxBitrate", "max_bitrate", "Int32");
 	RWE("BitrateCtrlMode", "bitrate_ctrl_mode", "VideoBitrateControlMode");
-	RW("BitrateStorage", "bitrate_storage", "Int32");
+	RWV("BitrateStorage", "bitrate_storage", "Int32");
 	RWE("Channel", "video_channel", "VideoChannelType");
-	RW("OnUsb", "video_on_usb", "Boolean");
-	RW("FileIndex", "video_file_index", "Int32");
-	ES();
+	RWV("OnUsb", "video_on_usb", "Boolean");
+	RWV("FileIndex", "video_file_index", "Int32");
+	ESC();
 
-	BS("LedsSection", "leds");
-	RW("Animation", "leds_anim", "String");
-	ES();
+	BSC("LedsSection", "leds");
+	RWV("Animation", "leds_anim", "String");
+	ESC();
 
-	BS("DetectSection", "detect");
-	RW("EnemyColors", "enemy_colors", "Int32");
-	RW("GroundstripeColors", "groundstripe_colors", "Int32");
-	RW("EnemyWithoutShell", "enemy_without_shell", "Int32");
-	RW("DetectType", "detect_type", "Int32");
-	RW("DetectionsSelectH", "detections_select_h", "Int32");
-	RW("DetectionsSelectVHsync", "detections_select_v_hsync", "Int32");
-	RW("DetectionsSelectV", "detections_select_v", "Int32");
-	ES();
+	BSC("DetectSection", "detect");
+	RWV("EnemyColors", "enemy_colors", "Int32");
+	RWV("GroundstripeColors", "groundstripe_colors", "Int32");
+	RWV("EnemyWithoutShell", "enemy_without_shell", "Int32");
+	RWV("Type", "detect_type", "Int32");
+	RWV("DetectionsSelectH", "detections_select_h", "Int32");
+	RWV("DetectionsSelectVHsync", "detections_select_v_hsync", "Int32");
+	RWV("DetectionsSelectV", "detections_select_v", "Int32");
+	ESC();
 
-	BS("SyslogSection", "syslog");
-	RW("Output", "output", "Int32");
-	RW("MaxSize", "max_size", "Int32");
-	RW("NbFiles", "nb_files", "Int32");
-	ES();
+	BSC("SyslogSection", "syslog");
+	RWV("Output", "output", "Int32");
+	RWV("MaxSize", "max_size", "Int32");
+	RWV("NbFiles", "nb_files", "Int32");
+	ESC();
 
-	BS("UserboxSection", "userbox");
-	RW("UserboxCmd", "userbox_cmd", "String");
-	ES();
+	BSC("UserboxSection", "userbox");
+	RWV("Cmd", "userbox_cmd", "String");
+	ESC();
 
-	BS("GpsSection", "gps");
-	RO("Latitude", "latitude", "Double");
-	RO("Longitude", "longitude", "Double");
-	RO("Altitude", "altitude", "Double");
-	ES();
+	BSC("GpsSection", "gps");
+	ROV("Latitude", "latitude", "Double");
+	ROV("Longitude", "longitude", "Double");
+	ROV("Altitude", "altitude", "Double");
+	ESC();
 
-	BS("CustomSection", "custom");
-	RW("ApplicationId", "application_id", "String");
-	RW("ApplicationDescription", "application_desc", "String");
-	RW("ProfileId", "profile_id", "String");
-	RW("ProfileDescription", "profile_desc", "String");
-	RW("SessionId", "session_id", "String");
-	RW("SessionDescription", "session_desc", "String");
-	ES();
+	BSC("CustomSection", "custom");
+	RWV("ApplicationId", "application_id", "String");
+	RWV("ApplicationDescription", "application_desc", "String");
+	RWV("ProfileId", "profile_id", "String");
+	RWV("ProfileDescription", "profile_desc", "String");
+	RWV("SessionId", "session_id", "String");
+	RWV("SessionDescription", "session_desc", "String");
+	ESC();
 #>
 }
 <#+
-	private void BS(string className, string sectionName)
+	private const string Indent = "    ";
+	
+	private void BSC(string className, string sectionName)
 	{
 		this.WriteLine(string.Empty);
-		this.PushIndent("\t");
+		this.PushIndent(Indent);
 		this.WriteLine("public class " + className + " : SectionBase");
 		this.WriteLine("{");
-		this.PushIndent("\t");
+		this.PushIndent(Indent);
 		
-		this.WriteLine("public {0}(DroneConfiguration configuration) : base(configuration, \"{1}\") {{}}", className, sectionName);
+		this.WriteLine("public {0}(DroneConfiguration configuration) : base(configuration, \"{1}\") {{ }}", className, sectionName);
 	}
 	
-	private void ES()
+	private void ESC()
 	{
 		this.PopIndent();
 		this.WriteLine("}");
 		this.PopIndent();
 	}
 	
-	private void RO(string propertyName, string keyName, string typeName)
+	private void ROV(string propertyName, string keyName, string typeName)
 	{
 		this.WriteLine(string.Empty);
 		this.WriteLine("public {0} {1}", typeName, propertyName);
 		this.WriteLine("{");
-		this.PushIndent("\t");
+		this.PushIndent(Indent);
 		this.WriteLine("get {{ return Get{0}(\"{1}\"); }}", typeName, keyName);
 		this.PopIndent();
 		this.WriteLine("}");
 	}
 	
-	private void RW(string propertyName, string keyName, string typeName)
+	private void RWV(string propertyName, string keyName, string typeName)
 	{
 		this.WriteLine(string.Empty);
 		this.WriteLine("public {0} {1}", typeName, propertyName);
 		this.WriteLine("{");
-		this.PushIndent("\t");
+		this.PushIndent(Indent);
 		this.WriteLine("get {{ return Get{0}(\"{1}\"); }}", typeName, keyName);
 		this.WriteLine("set {{ Set(\"{0}\", value); }}", keyName);
 		this.PopIndent();
@@ -194,7 +191,7 @@ namespace AR.Drone.Client.Configuration
 		this.WriteLine(string.Empty);
 		this.WriteLine("public {0} {1}", typeName, propertyName);
 		this.WriteLine("{");
-		this.PushIndent("\t");
+		this.PushIndent(Indent);
 		this.WriteLine("get {{ return GetEnum<{0}>(\"{1}\"); }}", typeName, keyName);
 		this.WriteLine("set {{ SetEnum<{0}>(\"{1}\", value); }}", typeName, keyName);
 		this.PopIndent();

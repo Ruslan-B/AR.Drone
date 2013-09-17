@@ -30,7 +30,6 @@ namespace AR.Drone.Video
                 _avPacket.size = packet.Data.Length;
                 if (_videoDecoder.TryDecode(ref _avPacket, ref _avFrame))
                 {
-
                     if (_videoConverter == null) _videoConverter = new VideoConverter(_pixelFormat.ToAVPixelFormat());
 
                     byte[] data = _videoConverter.ConvertFrame(ref _avFrame);

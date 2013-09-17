@@ -18,10 +18,11 @@ namespace AR.Drone.Client.Acquisition
         private readonly Action<NavigationPacket> _packetAcquired;
         private readonly Action _onAcquisitionStarted;
         private readonly Action _onAcquisitionStopped;
-        
+
         private bool _isAcquiring;
 
-        public NavdataAcquisition(NetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStarted, Action onAcquisitionStopped)
+        public NavdataAcquisition(NetworkConfiguration configuration, Action<NavigationPacket> packetAcquired, Action onAcquisitionStarted,
+                                  Action onAcquisitionStopped)
         {
             _configuration = configuration;
             _packetAcquired = packetAcquired;
@@ -61,7 +62,7 @@ namespace AR.Drone.Client.Acquisition
                                     Timestamp = DateTime.UtcNow.Ticks,
                                     Data = data
                                 };
-                            
+
                             swNavdataTimeout.Restart();
 
                             _isAcquiring = true;

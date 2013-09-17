@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace AR.Drone.Client.Configuration
 {
     public class FlightAnimation
@@ -14,7 +13,7 @@ namespace AR.Drone.Client.Configuration
             var animation = new FlightAnimation();
             FlightAnimationType type;
             int duration;
-            if (parts.Length > 1 && Enum.TryParse<FlightAnimationType>(parts[0], out type) && int.TryParse(parts[1], out duration))
+            if (parts.Length > 1 && Enum.TryParse(parts[0], out type) && int.TryParse(parts[1], out duration))
             {
                 animation.Type = type;
                 animation.Duration = duration;

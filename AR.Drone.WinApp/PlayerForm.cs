@@ -29,7 +29,7 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker.UnhandledException += UnhandledException;
         }
 
-        void UnhandledException(object sender, Exception exception)
+        private void UnhandledException(object sender, Exception exception)
         {
             MessageBox.Show(exception.ToString(), "Unhandled Exception (Ctrl+C)", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }

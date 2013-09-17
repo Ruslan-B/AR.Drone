@@ -4,7 +4,6 @@ using System.Threading;
 using AR.Drone.Client.Acquisition.Video;
 using AR.Drone.Infrastructure;
 using AR.Drone.Client.Acquisition.Video.Native;
-using AR.Drone.Client.Configuration;
 using AR.Drone.Data;
 
 namespace AR.Drone.Client.Acquisition
@@ -49,22 +48,22 @@ namespace AR.Drone.Client.Acquisition
                         if (packetData == null)
                         {
                             // lookup for a frame start
-                            int maxSearchIndex = offset - sizeof(parrot_video_encapsulation_t);
+                            int maxSearchIndex = offset - sizeof (parrot_video_encapsulation_t);
                             for (int i = 0; i < maxSearchIndex; i++)
                             {
                                 if (buffer[i] == 'P' && buffer[i + 1] == 'a' && buffer[i + 2] == 'V' && buffer[i + 3] == 'E')
                                 {
-                                    parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*)(pBuffer + i);
+                                    parrot_video_encapsulation_t pve = *(parrot_video_encapsulation_t*) (pBuffer + i);
                                     packetData = new byte[pve.payload_size];
                                     packet = new VideoPacket
-                                    {
-                                        Timestamp = DateTime.UtcNow.Ticks,
-                                        FrameNumber = pve.frame_number,
-                                        Width = pve.display_width,
-                                        Height = pve.display_height,
-                                        FrameType = VideoFrameTypeConverter.Convert(pve.frame_type),
-                                        Data = packetData
-                                    };
+                                        {
+                                            Timestamp = DateTime.UtcNow.Ticks,
+                                            FrameNumber = pve.frame_number,
+                                            Width = pve.display_width,
+                                            Height = pve.display_height,
+                                            FrameType = VideoFrameTypeConverter.Convert(pve.frame_type),
+                                            Data = packetData
+                                        };
                                     frameStart = i + pve.header_size;
                                     frameEnd = frameStart + packet.Data.Length;
                                     break;

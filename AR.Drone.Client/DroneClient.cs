@@ -14,7 +14,7 @@ namespace AR.Drone.Client
 {
     public class DroneClient : WorkerBase
     {
-        private static readonly string DefaultHostname = "192.168.1.1";
+        private const string DefaultHostname = "192.168.1.1";
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
@@ -35,7 +35,7 @@ namespace AR.Drone.Client
             _videoAcquisition = new VideoAcquisition(NetworkConfiguration, OnVideoPacketAcquired);
         }
 
-        public DroneClient() : this (DefaultHostname)
+        public DroneClient() : this(DefaultHostname)
         {
         }
 
@@ -206,7 +206,7 @@ namespace AR.Drone.Client
         {
             _commandQueue.Enqueue(command);
         }
-        
+
         public void Emergency()
         {
             _stateRequest = StateRequest.Emergency;

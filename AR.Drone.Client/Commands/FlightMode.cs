@@ -9,14 +9,17 @@ namespace AR.Drone.Client.Commands
         /// The hover.
         /// </summary>
         Hover = 0,
+
         /// <summary>
         /// The progressive is a flight motion enabling bit.
         /// </summary>
         Progressive = 1 << 0,
+
         /// <summary>
         /// The combined yaw.
         /// </summary>
         CombinedYaw = 1 << 1,
+
         /// <summary>
         /// The absolute control.
         /// </summary>

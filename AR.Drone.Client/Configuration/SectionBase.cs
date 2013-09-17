@@ -20,13 +20,13 @@ namespace AR.Drone.Client.Configuration
         }
 
         protected String GetString(string index)
-        { 
+        {
             string value;
             if (_configuration.Items.TryGetValue(FullKey(index), out value))
             {
                 return value;
             }
-            return default(String); 
+            return default(String);
         }
 
         protected Int32 GetInt32(string index)
@@ -69,12 +69,22 @@ namespace AR.Drone.Client.Configuration
             return default(Boolean);
         }
 
+        protected FlightAnimation GetFlightAnimation(string index)
+        {
+            string value;
+            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            {
+                return FlightAnimation.Parse(value);
+            }
+            return default(FlightAnimation);
+        }
+
         protected T GetEnum<T>(string index)
         {
             string value;
             if (_configuration.Items.TryGetValue(FullKey(index), out value))
             {
-                return (T)Enum.Parse(typeof(T), value);
+                return (T) Enum.Parse(typeof (T), value);
             }
             return default(T);
         }
@@ -82,12 +92,12 @@ namespace AR.Drone.Client.Configuration
         protected void Set(string index, string value)
         {
             string key = FullKey(index);
-            if(_configuration.Items.ContainsKey(key) == false)
+            if (_configuration.Items.ContainsKey(key) == false)
             {
                 _configuration.Items.Add(key, value);
                 _configuration.Changed.Enqueue(key);
-            } 
-            else 
+            }
+            else
             {
                 _configuration.Items[key] = value;
                 _configuration.Changed.Enqueue(key);
@@ -107,6 +117,11 @@ namespace AR.Drone.Client.Configuration
         protected void Set(string index, Boolean value)
         {
             Set(index, value.ToString().ToUpper());
+        }
+
+        protected void Set(string index, FlightAnimation value)
+        {
+            Set(index, value.ToString());
         }
 
         protected void SetEnum<T>(string index, Enum value)

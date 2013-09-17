@@ -51,6 +51,7 @@
     <Compile Include="Commands\FlatTrimCommand.cs" />
     <Compile Include="Commands\ProgressiveCommand.cs" />
     <Compile Include="Commands\RefCommand.cs" />
+    <Compile Include="Configuration\NavdataOptions.cs" />
     <Compile Include="Configuration\SectionBase.cs" />
     <Compile Include="Configuration\FlightAnimation.cs" />
     <Compile Include="Configuration\VideoBitrateControlMode.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Configuration\DroneConfiguration.cs" />
     <Compile Include="Configuration\Sections.cs">
       <DependentUpon>Sections.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Configuration\FlightAnimationType.cs" />
   </ItemGroup>
@@ -86,7 +89,9 @@
       <Name>AR.Drone.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using AR.Drone.Client.Commands;
 
@@ -9,11 +8,11 @@ namespace AR.Drone.Client.Configuration
 {
     public class DroneConfiguration
     {
-        private static readonly Regex _reKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
+        private const string DefaultApplicationId = "00000000";
+        private const string DefaultProfileId = "00000000";
+        private const string DefaultSessionId = "00000000";
 
-        private static readonly string DefaultApplicationId = "00000000";
-        private static readonly string DefaultProfileId = "00000000";
-        private static readonly string DefaultSessionId = "00000000";
+        private static readonly Regex ReKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
 
         private readonly Dictionary<string, string> _items;
         private readonly ConcurrentQueue<string> _changed;
@@ -47,7 +46,7 @@ namespace AR.Drone.Client.Configuration
             Custom = new CustomSection(this);
         }
 
-        protected internal Dictionary<string, string> Items
+        public Dictionary<string, string> Items
         {
             get { return _items; }
         }
@@ -62,20 +61,21 @@ namespace AR.Drone.Client.Configuration
             string key;
             while (_changed.TryDequeue(out key))
             {
-                if (Custom.SessionId != null && Custom.ProfileId != null && Custom.ApplicationId != null
-                    && (Custom.SessionId != DefaultSessionId || Custom.ProfileId != DefaultProfileId || Custom.ApplicationId != DefaultApplicationId))
+                if (Custom.SessionId != null && Custom.ProfileId != null && Custom.ApplicationId != null)
                 {
                     client.Send(new ConfigIdsCommand(Custom.SessionId, Custom.ProfileId, Custom.ApplicationId));
                 }
+
                 client.Send(new ConfigCommand(key, _items[key]));
+                client.Send(new ControlCommand(ControlMode.AckControlMode));
             }
         }
 
         public static DroneConfiguration Parse(string input)
         {
-            DroneConfiguration configuration = new DroneConfiguration();
+            var configuration = new DroneConfiguration();
 
-            MatchCollection matches = _reKeyValue.Matches(input);
+            MatchCollection matches = ReKeyValue.Matches(input);
             foreach (Match match in matches)
             {
                 string key = match.Groups["key"].Value;
