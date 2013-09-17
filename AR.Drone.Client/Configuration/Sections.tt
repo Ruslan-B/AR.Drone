@@ -123,7 +123,7 @@ namespace AR.Drone.Client.Configuration
 	ESC();
 
 	BSC("UserboxSection", "userbox");
-	RWV("Cmd", "userbox_cmd", "String");
+	RWV("Command", "userbox_cmd", "UserboxCommand");
 	ESC();
 
 	BSC("GpsSection", "gps");

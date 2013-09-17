@@ -573,9 +573,9 @@ namespace AR.Drone.Client.Configuration
     {
         public UserboxSection(DroneConfiguration configuration) : base(configuration, "userbox") { }
 
-        public String Cmd
+        public UserboxCommand Command
         {
-            get { return GetString("userbox_cmd"); }
+            get { return GetUserboxCommand("userbox_cmd"); }
             set { Set("userbox_cmd", value); }
         }
     }

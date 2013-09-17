@@ -78,6 +78,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Configuration\FlightAnimationType.cs" />
+    <Compile Include="Configuration\UserboxCommand.cs" />
+    <Compile Include="Configuration\UserboxCommandType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
