@@ -214,7 +214,7 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
+            DroneConfiguration configuration = new DroneConfiguration();
             configuration.Video.Channel = VideoChannelType.Next;
             configuration.SendChanges(_droneClient);
         }
@@ -284,15 +284,29 @@ namespace AR.Drone.WinApp
         {
             DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
 
-            configuration.Custom.ApplicationId = DroneConfiguration.NewSessionId();
-            configuration.Custom.ProfileId = DroneConfiguration.NewSessionId();
-            configuration.Custom.SessionId = DroneConfiguration.NewSessionId();
+            if (string.IsNullOrEmpty(configuration.Custom.SessionId))
+            {
+                // set new session, application and profile
 
-            configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Manual;
-            configuration.Video.Codec = VideoCodecType.H264_720P;
-            configuration.Video.MaxBitrate = 1100;
+                configuration.Custom.SessionId = DroneConfiguration.NewId();
+                configuration.SendChanges(_droneClient);
+                System.Threading.Thread.Sleep(200);
 
-            // send all changes in one pice
+                configuration.Custom.ApplicationId = DroneConfiguration.NewId();
+                configuration.SendChanges(_droneClient);
+                System.Threading.Thread.Sleep(200);
+
+                configuration.Custom.ProfileId = DroneConfiguration.NewId();
+                configuration.SendChanges(_droneClient);
+                System.Threading.Thread.Sleep(200);
+            }
+
+            configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
+            configuration.Video.Codec = VideoCodecType.H264_360P;
+            configuration.Video.Bitrate = 1000;
+            configuration.Video.MaxBitrate = 2000;
+
+            //send all changes in one pice
             configuration.SendChanges(_droneClient);
         }
 

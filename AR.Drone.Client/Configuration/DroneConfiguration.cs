@@ -8,10 +8,6 @@ namespace AR.Drone.Client.Configuration
 {
     public class DroneConfiguration
     {
-        private const string DefaultApplicationId = "00000000";
-        private const string DefaultProfileId = "00000000";
-        private const string DefaultSessionId = "00000000";
-
         private static readonly Regex ReKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
 
         private readonly Dictionary<string, string> _items;
@@ -58,6 +54,8 @@ namespace AR.Drone.Client.Configuration
 
         public void SendChanges(DroneClient client)
         {
+            client.Send(new ControlCommand(ControlMode.AckControlMode));
+
             string key;
             while (_changed.TryDequeue(out key))
             {
@@ -67,7 +65,6 @@ namespace AR.Drone.Client.Configuration
                 }
 
                 client.Send(new ConfigCommand(key, _items[key]));
-                client.Send(new ControlCommand(ControlMode.AckControlMode));
             }
         }
 
@@ -85,7 +82,7 @@ namespace AR.Drone.Client.Configuration
             return configuration;
         }
 
-        public static string NewSessionId()
+        public static string NewId()
         {
             return Guid.NewGuid().ToString("N").Substring(0,8);
         }

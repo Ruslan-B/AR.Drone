@@ -105,6 +105,7 @@ namespace AR.Drone.Client
                 var configuration = new DroneConfiguration();
                 configuration.General.NavdataDemo = false;
                 configuration.SendChanges(this);
+                Send(new ControlCommand(ControlMode.NoControlMode));
             }
 
             if (state.HasFlag(NavigationState.Watchdog))
