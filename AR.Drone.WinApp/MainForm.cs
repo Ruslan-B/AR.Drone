@@ -313,11 +313,9 @@ namespace AR.Drone.WinApp
                 configuration.Video.MaxBitrate = 2000;
 
                 // record video to usb
-                //configuration.General.NavdataDemo = false;
-                // this codec is mandatory for recording video on usb
-                //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
-                //configuration.General.NavdataOptions = NavdataOptions.Demo | NavdataOptions.VideoStream | NavdataOptions.HDVideoStream;
                 //configuration.Video.OnUsb = true;
+                // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
+                //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
                 // start
                 //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
                 // stop
