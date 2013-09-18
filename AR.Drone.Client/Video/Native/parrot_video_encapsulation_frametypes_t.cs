@@ -1,4 +1,4 @@
-namespace AR.Drone.Client.Acquisition.Video.Native
+namespace AR.Drone.Client.Video.Native
 {
     public enum parrot_video_encapsulation_frametypes_t
     {

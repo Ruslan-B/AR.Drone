@@ -6,7 +6,7 @@ using System.Threading;
 using AR.Drone.Infrastructure;
 using AR.Drone.Data;
 
-namespace AR.Drone.Client.Acquisition
+namespace AR.Drone.Client.Navigation
 {
     public class NavdataAcquisition : WorkerBase
     {

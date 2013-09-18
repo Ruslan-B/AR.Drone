@@ -1,8 +1,8 @@
 ﻿using System;
-using AR.Drone.Client.Acquisition.Video.Native;
+using AR.Drone.Client.Video.Native;
 using AR.Drone.Data;
 
-namespace AR.Drone.Client.Acquisition.Video
+namespace AR.Drone.Client.Video
 {
     public static class VideoFrameTypeConverter
     {

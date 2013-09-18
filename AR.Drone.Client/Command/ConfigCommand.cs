@@ -1,9 +1,6 @@
-using System;
-using AR.Drone.Data;
-
-namespace AR.Drone.Client.Commands
+namespace AR.Drone.Client.Command
 {
-    public class ConfigCommand : ATCommand
+    public class ConfigCommand : AtCommand
     {
         private readonly string _key;
         private readonly string _value;

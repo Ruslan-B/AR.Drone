@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using AR.Drone.Client.Commands;
 
 namespace AR.Drone.Client.Configuration
 {
-    public class DroneConfiguration
+    public class Settings
     {
         private static readonly Regex ReKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
 
@@ -24,7 +23,7 @@ namespace AR.Drone.Client.Configuration
         public readonly GpsSection Gps;
         public readonly CustomSection Custom;
 
-        public DroneConfiguration()
+        public Settings()
         {
             _items = new Dictionary<string, string>();
             _changes = new ConcurrentQueue<KeyValuePair<string,string>>();
@@ -52,9 +51,9 @@ namespace AR.Drone.Client.Configuration
             get { return _changes; }
         }
 
-        public static DroneConfiguration Parse(string input)
+        public static Settings Parse(string input)
         {
-            var configuration = new DroneConfiguration();
+            var configuration = new Settings();
 
             MatchCollection matches = ReKeyValue.Matches(input);
             foreach (Match match in matches)

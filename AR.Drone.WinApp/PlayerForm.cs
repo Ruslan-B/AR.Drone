@@ -29,11 +29,6 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker.UnhandledException += UnhandledException;
         }
 
-        private void UnhandledException(object sender, Exception exception)
-        {
-            MessageBox.Show(exception.ToString(), "Unhandled Exception (Ctrl+C)", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
         public string FileName
         {
             get { return _fileName; }
@@ -42,6 +37,11 @@ namespace AR.Drone.WinApp
                 _fileName = value;
                 Text = Path.GetFileName(_fileName);
             }
+        }
+
+        private void UnhandledException(object sender, Exception exception)
+        {
+            MessageBox.Show(exception.ToString(), "Unhandled Exception (Ctrl+C)", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void StartPlaying()

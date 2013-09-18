@@ -1,8 +1,5 @@
-using System;
-
 namespace AR.Drone.Client.Configuration
 {
-
     public enum UserboxCommandType
     {
         Stop = 0,

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using AR.Drone.Client.Commands;
+using AR.Drone.Client.Command;
 using AR.Drone.Data.Navigation;
 
 namespace AR.Drone.Client.Configuration
@@ -28,12 +28,12 @@ namespace AR.Drone.Client.Configuration
 
             if (data.State.HasFlag(NavigationState.Command) == false)
             {
-                _client.Send(new ControlCommand(ControlMode.CfgGetControlMode));
+                _client.Send(ControlCommand.CfgGetControlMode);
                 _initialized = true;
             }
         }
 
-        public DroneConfiguration GetConfiguration(CancellationToken token)
+        public Settings GetConfiguration(CancellationToken token)
         {
             using (var tcpClient = new TcpClient(_client.NetworkConfiguration.DroneHostname, ControlPort))
             using (NetworkStream stream = tcpClient.GetStream())
@@ -62,7 +62,7 @@ namespace AR.Drone.Client.Configuration
                             {
                                 string s = System.Text.Encoding.UTF8.GetString(buffer, 0, offset);
 
-                                return DroneConfiguration.Parse(s);
+                                return Settings.Parse(s);
                             }
                         }
                     }
@@ -75,16 +75,16 @@ namespace AR.Drone.Client.Configuration
                 }
         }
 
-        public Task<DroneConfiguration> CreateTask()
+        public Task<Settings> CreateTask()
         {
             var tokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = tokenSource.Token;
             return CreateTask(cancellationToken);
         }
 
-        public Task<DroneConfiguration> CreateTask(CancellationToken cancellationToken)
+        public Task<Settings> CreateTask(CancellationToken cancellationToken)
         {
-            return new Task<DroneConfiguration>(() => GetConfiguration(cancellationToken), cancellationToken, TaskCreationOptions.LongRunning);
+            return new Task<Settings>(() => GetConfiguration(cancellationToken), cancellationToken, TaskCreationOptions.LongRunning);
         }
     }
 }

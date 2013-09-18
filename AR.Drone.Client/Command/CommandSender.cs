@@ -5,21 +5,19 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using AR.Drone.Client.Commands;
 using AR.Drone.Infrastructure;
 
-namespace AR.Drone.Client
+namespace AR.Drone.Client.Command
 {
     public class CommandSender : WorkerBase
     {
         public const int CommandPort = 5556;
         public const int KeepAliveTimeout = 20;
-        private static readonly ComWdgCommand ComWdgCommand = new ComWdgCommand();
-                
-        private readonly ConcurrentQueue<ATCommand> _commandQueue;
+
+        private readonly ConcurrentQueue<AtCommand> _commandQueue;
         private readonly NetworkConfiguration _configuration;
 
-        public CommandSender(NetworkConfiguration configuration, ConcurrentQueue<ATCommand> commandQueue)
+        public CommandSender(NetworkConfiguration configuration, ConcurrentQueue<AtCommand> commandQueue)
         {
             _configuration = configuration;
             _commandQueue = commandQueue;
@@ -36,14 +34,14 @@ namespace AR.Drone.Client
                 byte[] firstMessage = BitConverter.GetBytes(1);
                 udpClient.Send(firstMessage, firstMessage.Length);
 
-                _commandQueue.Enqueue(ComWdgCommand);
+                _commandQueue.Enqueue(ComWdgCommand.Default);
                 Stopwatch swKeepAlive = Stopwatch.StartNew();
 
                 while (token.IsCancellationRequested == false)
                 {
                     if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
                     {
-                        _commandQueue.Enqueue(ComWdgCommand);
+                        _commandQueue.Enqueue(ComWdgCommand.Default);
                         swKeepAlive.Restart();
                     }
 
@@ -51,7 +49,7 @@ namespace AR.Drone.Client
                     {
                         using (var ms = new MemoryStream())
                         {
-                            ATCommand command;
+                            AtCommand command;
                             while (_commandQueue.TryDequeue(out command))
                             {
                                 byte[] payload = command.CreatePayload(sequenceNumber);

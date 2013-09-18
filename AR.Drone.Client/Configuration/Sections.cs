@@ -5,7 +5,9 @@ namespace AR.Drone.Client.Configuration
 
     public class GeneralSection : SectionBase
     {
-        public GeneralSection(DroneConfiguration configuration) : base(configuration, "general") { }
+        public GeneralSection(Settings settings) : base(settings, "general")
+        {
+        }
 
         public Int32 ConfigurationVersion
         {
@@ -148,7 +150,9 @@ namespace AR.Drone.Client.Configuration
 
     public class ControlSection : SectionBase
     {
-        public ControlSection(DroneConfiguration configuration) : base(configuration, "control") { }
+        public ControlSection(Settings settings) : base(settings, "control")
+        {
+        }
 
         public String AccsOffset
         {
@@ -342,7 +346,9 @@ namespace AR.Drone.Client.Configuration
 
     public class NetworkSection : SectionBase
     {
-        public NetworkSection(DroneConfiguration configuration) : base(configuration, "network") { }
+        public NetworkSection(Settings settings) : base(settings, "network")
+        {
+        }
 
         public String SsidSinglePlayer
         {
@@ -377,7 +383,9 @@ namespace AR.Drone.Client.Configuration
 
     public class PicSection : SectionBase
     {
-        public PicSection(DroneConfiguration configuration) : base(configuration, "pic") { }
+        public PicSection(Settings settings) : base(settings, "pic")
+        {
+        }
 
         public Int32 UltrasoundFreq
         {
@@ -399,7 +407,9 @@ namespace AR.Drone.Client.Configuration
 
     public class VideoSection : SectionBase
     {
-        public VideoSection(DroneConfiguration configuration) : base(configuration, "video") { }
+        public VideoSection(Settings settings) : base(settings, "video")
+        {
+        }
 
         public Int32 CamifFps
         {
@@ -490,7 +500,9 @@ namespace AR.Drone.Client.Configuration
 
     public class LedsSection : SectionBase
     {
-        public LedsSection(DroneConfiguration configuration) : base(configuration, "leds") { }
+        public LedsSection(Settings settings) : base(settings, "leds")
+        {
+        }
 
         public String Animation
         {
@@ -501,7 +513,9 @@ namespace AR.Drone.Client.Configuration
 
     public class DetectSection : SectionBase
     {
-        public DetectSection(DroneConfiguration configuration) : base(configuration, "detect") { }
+        public DetectSection(Settings settings) : base(settings, "detect")
+        {
+        }
 
         public Int32 EnemyColors
         {
@@ -548,7 +562,9 @@ namespace AR.Drone.Client.Configuration
 
     public class SyslogSection : SectionBase
     {
-        public SyslogSection(DroneConfiguration configuration) : base(configuration, "syslog") { }
+        public SyslogSection(Settings settings) : base(settings, "syslog")
+        {
+        }
 
         public Int32 Output
         {
@@ -571,7 +587,9 @@ namespace AR.Drone.Client.Configuration
 
     public class UserboxSection : SectionBase
     {
-        public UserboxSection(DroneConfiguration configuration) : base(configuration, "userbox") { }
+        public UserboxSection(Settings settings) : base(settings, "userbox")
+        {
+        }
 
         public UserboxCommand Command
         {
@@ -582,7 +600,9 @@ namespace AR.Drone.Client.Configuration
 
     public class GpsSection : SectionBase
     {
-        public GpsSection(DroneConfiguration configuration) : base(configuration, "gps") { }
+        public GpsSection(Settings settings) : base(settings, "gps")
+        {
+        }
 
         public Double Latitude
         {
@@ -602,7 +622,9 @@ namespace AR.Drone.Client.Configuration
 
     public class CustomSection : SectionBase
     {
-        public CustomSection(DroneConfiguration configuration) : base(configuration, "custom") { }
+        public CustomSection(Settings settings) : base(settings, "custom")
+        {
+        }
 
         public String ApplicationId
         {

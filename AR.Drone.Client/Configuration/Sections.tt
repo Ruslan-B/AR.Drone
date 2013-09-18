@@ -153,7 +153,9 @@ namespace AR.Drone.Client.Configuration
 		this.WriteLine("{");
 		this.PushIndent(Indent);
 		
-		this.WriteLine("public {0}(DroneConfiguration configuration) : base(configuration, \"{1}\") {{ }}", className, sectionName);
+		this.WriteLine("public {0}(Settings settings) : base(settings, \"{1}\")", className, sectionName);
+		this.WriteLine("{");
+		this.WriteLine("}");
 	}
 	
 	private void ESC()

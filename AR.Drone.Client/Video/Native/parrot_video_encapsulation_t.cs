@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace AR.Drone.Client.Acquisition.Video.Native
+namespace AR.Drone.Client.Video.Native
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
     public unsafe struct parrot_video_encapsulation_t

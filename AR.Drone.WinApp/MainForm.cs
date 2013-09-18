@@ -4,15 +4,15 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AR.Drone.Client;
-using AR.Drone.Client.Commands;
+using AR.Drone.Client.Command;
 using AR.Drone.Client.Configuration;
 using AR.Drone.Data;
 using AR.Drone.Data.Navigation;
 using AR.Drone.Data.Navigation.Native;
-using AR.Drone.Infrastructure;
 using AR.Drone.Media;
 using AR.Drone.Video;
 
@@ -20,10 +20,13 @@ namespace AR.Drone.WinApp
 {
     public partial class MainForm : Form
     {
+        private const string ARDroneTrackFileExt = ".ardrone";
+        private const string ARDroneTrackFilesFilter = "AR.Drone track files (*.ardrone)|*.ardrone";
+
         private readonly DroneClient _droneClient;
         private readonly List<PlayerForm> _playerForms;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
-        private DroneConfiguration _configuration;
+        private Settings _configuration;
         private VideoFrame _frame;
         private Bitmap _frameBitmap;
         private uint _frameNumber;
@@ -151,39 +154,35 @@ namespace AR.Drone.WinApp
 
         private void DumpBranch(TreeNodeCollection nodes, object o)
         {
-            Type objectType = o.GetType();
-            foreach (FieldInfo fieldInfo in objectType.GetFields())
+            Type type = o.GetType();
+         
+            foreach (FieldInfo fieldInfo in type.GetFields())
             {
                 TreeNode node = nodes.GetOrCreate(fieldInfo.Name);
                 object value = fieldInfo.GetValue(o);
 
-                if (value == null)
-                    node.Text = node.Name + ": null";
-                else
-                {
-                    Type valueType = fieldInfo.FieldType;
-                    if (valueType.Namespace.StartsWith("System") || valueType.IsEnum)
-                        node.Text = node.Name + ": " + value;
-                    else
-                        DumpBranch(node.Nodes, value);
-                }
+                DumpValue(fieldInfo.FieldType, node, value);
             }
 
-            foreach (PropertyInfo propertyInfo in objectType.GetProperties())
+            foreach (PropertyInfo propertyInfo in type.GetProperties())
             {
                 TreeNode node = nodes.GetOrCreate(propertyInfo.Name);
                 object value = propertyInfo.GetValue(o, null);
 
-                if (value == null)
-                    node.Text = node.Name + ": null";
+                DumpValue(propertyInfo.PropertyType, node, value);
+            }
+        }
+
+        private void DumpValue(Type type, TreeNode node, object value)
+        {
+            if (value == null)
+                node.Text = node.Name + ": null";
+            else
+            {
+                if (type.Namespace.StartsWith("System") || type.IsEnum)
+                    node.Text = node.Name + ": " + value;
                 else
-                {
-                    Type valueType = propertyInfo.PropertyType;
-                    if (valueType.Namespace.StartsWith("System") || valueType.IsEnum)
-                        node.Text = node.Name + ": " + value;
-                    else
-                        DumpBranch(node.Nodes, value);
-                }
+                    DumpBranch(node.Nodes, value);
             }
         }
 
@@ -214,7 +213,7 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            DroneConfiguration configuration = new DroneConfiguration();
+            var configuration = new Settings();
             configuration.Video.Channel = VideoChannelType.Next;
             _droneClient.Send(configuration);
         }
@@ -266,8 +265,8 @@ namespace AR.Drone.WinApp
 
         private void btnReadConfig_Click(object sender, EventArgs e)
         {
-            Task<DroneConfiguration> configurationTask = _droneClient.GetConfigurationTask();
-            configurationTask.ContinueWith(delegate(Task<DroneConfiguration> task)
+            Task<Settings> configurationTask = _droneClient.GetConfigurationTask();
+            configurationTask.ContinueWith(delegate(Task<Settings> task)
                 {
                     if (task.Exception != null)
                     {
@@ -282,49 +281,48 @@ namespace AR.Drone.WinApp
 
         private void btnSendConfig_Click(object sender, EventArgs e)
         {
-
-            Task sendConfigTask = new Task(() => 
-            {
-                if (_configuration == null) _configuration = new DroneConfiguration();
-                DroneConfiguration configuration = _configuration;
-
-                if (string.IsNullOrEmpty(configuration.Custom.SessionId) || 
-                    configuration.Custom.SessionId == "00000000")
+            var sendConfigTask = new Task(() =>
                 {
-                    // set new session, application and profile
-                    configuration.Custom.SessionId = DroneConfiguration.NewId();
+                    if (_configuration == null) _configuration = new Settings();
+                    Settings configuration = _configuration;
+
+                    if (string.IsNullOrEmpty(configuration.Custom.SessionId) ||
+                        configuration.Custom.SessionId == "00000000")
+                    {
+                        // set new session, application and profile
+                        configuration.Custom.SessionId = Settings.NewId();
+                        _droneClient.Send(configuration);
+                        Thread.Sleep(500);
+
+                        configuration.Custom.ProfileId = Settings.NewId();
+                        _droneClient.Send(configuration);
+                        Thread.Sleep(500);
+
+                        configuration.Custom.ApplicationId = Settings.NewId();
+                        _droneClient.Send(configuration);
+                        Thread.Sleep(500);
+                    }
+
+                    configuration.General.NavdataDemo = false;
+                    configuration.General.NavdataOptions = NavdataOptions.All;
+
+                    configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
+                    configuration.Video.Bitrate = 1000;
+                    configuration.Video.MaxBitrate = 2000;
+
+                    // record video to usb
+                    //configuration.Video.OnUsb = true;
+                    // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
+                    //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
+                    // start
+                    //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
+                    // stop
+                    //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Stop);
+
+
+                    //send all changes in one pice
                     _droneClient.Send(configuration);
-                    System.Threading.Thread.Sleep(500);
-
-                    configuration.Custom.ProfileId = DroneConfiguration.NewId();
-                    _droneClient.Send(configuration);
-                    System.Threading.Thread.Sleep(500);
-
-                    configuration.Custom.ApplicationId = DroneConfiguration.NewId();
-                    _droneClient.Send(configuration);
-                    System.Threading.Thread.Sleep(500);
-                }
-
-                configuration.General.NavdataDemo = false;
-                configuration.General.NavdataOptions = NavdataOptions.All;
-
-                configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
-                configuration.Video.Bitrate = 1000;
-                configuration.Video.MaxBitrate = 2000;
-
-                // record video to usb
-                //configuration.Video.OnUsb = true;
-                // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
-                //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
-                // start
-                //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
-                // stop
-                //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Stop);
-
-
-                //send all changes in one pice
-                _droneClient.Send(configuration);
-            });
+                });
             sendConfigTask.Start();
         }
 
@@ -345,9 +343,9 @@ namespace AR.Drone.WinApp
 
         private void btnStartRecording_Click(object sender, EventArgs e)
         {
-            string path = string.Format("flight_{0:yyyy_MM_dd_HH_mm}.ardrone", DateTime.Now);
+            string path = string.Format("flight_{0:yyyy_MM_dd_HH_mm}" + ARDroneTrackFileExt, DateTime.Now);
 
-            using (var dialog = new SaveFileDialog {DefaultExt = ".ardrone", Filter = "AR.Drone track files (*.ardrone)|*.ardrone", FileName = path})
+            using (var dialog = new SaveFileDialog {DefaultExt = ARDroneTrackFileExt, Filter = ARDroneTrackFilesFilter, FileName = path})
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -367,7 +365,7 @@ namespace AR.Drone.WinApp
 
         private void btnReplay_Click(object sender, EventArgs e)
         {
-            using (var dialog = new OpenFileDialog {DefaultExt = ".ardrone", Filter = "AR.Drone track files (*.ardrone)|*.ardrone"})
+            using (var dialog = new OpenFileDialog {DefaultExt = ARDroneTrackFileExt, Filter = ARDroneTrackFilesFilter})
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
-using AR.Drone.Client.Acquisition.Video;
+using AR.Drone.Client.Video.Native;
 using AR.Drone.Infrastructure;
-using AR.Drone.Client.Acquisition.Video.Native;
 using AR.Drone.Data;
 
-namespace AR.Drone.Client.Acquisition
+namespace AR.Drone.Client.Video
 {
     public class VideoAcquisition : WorkerBase
     {

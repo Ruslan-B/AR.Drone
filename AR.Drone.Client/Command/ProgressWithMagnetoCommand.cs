@@ -1,8 +1,8 @@
 using AR.Drone.Data;
 
-namespace AR.Drone.Client.Commands
+namespace AR.Drone.Client.Command
 {
-    public class ProgressWithMagnetoCommand : ATCommand
+    public class ProgressWithMagnetoCommand : AtCommand
     {
         private readonly FlightMode _mode;
         private readonly float _roll;

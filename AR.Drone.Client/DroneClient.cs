@@ -4,11 +4,12 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using AR.Drone.Client.Acquisition;
+using AR.Drone.Client.Command;
+using AR.Drone.Client.Navigation;
+using AR.Drone.Client.Video;
 using AR.Drone.Data;
 using AR.Drone.Data.Navigation;
 using AR.Drone.Infrastructure;
-using AR.Drone.Client.Commands;
 using AR.Drone.Client.Configuration;
 
 namespace AR.Drone.Client
@@ -16,7 +17,7 @@ namespace AR.Drone.Client
     public class DroneClient : WorkerBase
     {
         private const string DefaultHostname = "192.168.1.1";
-        private readonly ConcurrentQueue<ATCommand> _commandQueue;
+        private readonly ConcurrentQueue<AtCommand> _commandQueue;
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
 
@@ -28,7 +29,7 @@ namespace AR.Drone.Client
         public DroneClient(string hostname)
         {
             _networkConfiguration = new NetworkConfiguration(hostname);
-            _commandQueue = new ConcurrentQueue<ATCommand>();
+            _commandQueue = new ConcurrentQueue<AtCommand>();
             _navigationData = new NavigationData();
 
             _commandSender = new CommandSender(NetworkConfiguration, _commandQueue);
@@ -103,14 +104,14 @@ namespace AR.Drone.Client
             if (state.HasFlag(NavigationState.Bootstrap))
             {
                 _commandQueue.Flush();
-                var configuration = new DroneConfiguration();
-                configuration.General.NavdataDemo = false;
-                Send(configuration);
+                var settings = new Settings();
+                settings.General.NavdataDemo = false;
+                Send(settings);
             }
 
             if (state.HasFlag(NavigationState.Command))
             {
-                Send(new ControlCommand(ControlMode.AckControlMode));
+                Send(ControlCommand.AckControlMode);
             }
 
             if (state.HasFlag(NavigationState.Watchdog))
@@ -124,19 +125,19 @@ namespace AR.Drone.Client
                     return;
                 case StateRequest.Emergency:
                     if (state.HasFlag(NavigationState.Flying))
-                        Send(new RefCommand(RefMode.Emergency));
+                        Send(RefCommand.Emergency);
                     else
                         _stateRequest = StateRequest.None;
                     break;
                 case StateRequest.ResetEmergency:
-                    Send(new RefCommand(RefMode.Emergency));
+                    Send(RefCommand.Emergency);
                     _stateRequest = StateRequest.None;
                     break;
                 case StateRequest.Land:
                     if (state.HasFlag(NavigationState.Flying) &&
                         state.HasFlag(NavigationState.Landing) == false)
                     {
-                        Send(new RefCommand(RefMode.Land));
+                        Send(RefCommand.Land);
                     }
                     else
                         _stateRequest = StateRequest.None;
@@ -146,7 +147,7 @@ namespace AR.Drone.Client
                         state.HasFlag(NavigationState.Takeoff) == false &&
                         state.HasFlag(NavigationState.Emergency) == false)
                     {
-                        Send(new RefCommand(RefMode.Takeoff));
+                        Send(RefCommand.Takeoff);
                     }
                     else
                         _stateRequest = StateRequest.None;
@@ -200,27 +201,27 @@ namespace AR.Drone.Client
 
         #region Api
 
-        public Task<DroneConfiguration> GetConfigurationTask()
+        public Task<Settings> GetConfigurationTask()
         {
             var configurationAcquisition = new ConfigurationAcquisition(this);
             var task = configurationAcquisition.CreateTask();
             return task;
         }
 
-        public void Send(ATCommand command)
+        public void Send(AtCommand command)
         {
             _commandQueue.Enqueue(command);
         }
 
-        public void Send(DroneConfiguration configuration)
+        public void Send(Settings settings)
         {
             KeyValuePair<string, string> item;
-            while (configuration.Changes.TryDequeue(out item))
+            while (settings.Changes.TryDequeue(out item))
             {
-                if (string.IsNullOrEmpty(configuration.Custom.SessionId) == false &&
-                    string.IsNullOrEmpty(configuration.Custom.ProfileId) == false &&
-                    string.IsNullOrEmpty(configuration.Custom.ApplicationId) == false)
-                    Send(new ConfigIdsCommand(configuration.Custom.SessionId, configuration.Custom.ProfileId, configuration.Custom.ApplicationId));
+                if (string.IsNullOrEmpty(settings.Custom.SessionId) == false &&
+                    string.IsNullOrEmpty(settings.Custom.ProfileId) == false &&
+                    string.IsNullOrEmpty(settings.Custom.ApplicationId) == false)
+                    Send(new ConfigIdsCommand(settings.Custom.SessionId, settings.Custom.ProfileId, settings.Custom.ApplicationId));
 
                 Send(new ConfigCommand(item.Key, item.Value));
             }
@@ -251,7 +252,7 @@ namespace AR.Drone.Client
         public void FlatTrim()
         {
             if (_navigationData.State.HasFlag(NavigationState.Landed))
-                Send(new FlatTrimCommand());
+                Send(FlatTrimCommand.Default);
         }
 
         public void Hover()

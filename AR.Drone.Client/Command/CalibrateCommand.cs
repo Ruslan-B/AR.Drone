@@ -1,10 +1,12 @@
-namespace AR.Drone.Client.Commands
+namespace AR.Drone.Client.Command
 {
-    public class CalibrateCommand : ATCommand
+    public class CalibrateCommand : AtCommand
     {
+        public static CalibrateCommand Magnetometer = new CalibrateCommand(Device.Magnetometer);
+
         private readonly Device _device;
 
-        public CalibrateCommand(Device device)
+        private CalibrateCommand(Device device)
         {
             _device = device;
         }

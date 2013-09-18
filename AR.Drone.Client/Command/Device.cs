@@ -1,4 +1,4 @@
-namespace AR.Drone.Client.Commands
+namespace AR.Drone.Client.Command
 {
     public enum Device
     {

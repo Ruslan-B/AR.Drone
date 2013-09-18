@@ -1,6 +1,6 @@
-namespace AR.Drone.Client.Commands
+namespace AR.Drone.Client.Command
 {
-    public class ConfigIdsCommand : ATCommand
+    public class ConfigIdsCommand : AtCommand
     {
         private readonly string _sessionId;
         private readonly string _profileId;

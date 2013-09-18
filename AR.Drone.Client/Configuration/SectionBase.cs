@@ -6,12 +6,12 @@ namespace AR.Drone.Client.Configuration
 {
     public class SectionBase
     {
-        private readonly DroneConfiguration _configuration;
+        private readonly Settings _settings;
         private readonly string _name;
 
-        public SectionBase(DroneConfiguration configuration, string name)
+        public SectionBase(Settings settings, string name)
         {
-            _configuration = configuration;
+            _settings = settings;
             _name = name;
         }
 
@@ -23,7 +23,7 @@ namespace AR.Drone.Client.Configuration
         protected String GetString(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return value;
             }
@@ -33,7 +33,7 @@ namespace AR.Drone.Client.Configuration
         protected Int32 GetInt32(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return Int32.Parse(value);
             }
@@ -43,7 +43,7 @@ namespace AR.Drone.Client.Configuration
         protected Single GetSingle(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return Single.Parse(value);
             }
@@ -53,7 +53,7 @@ namespace AR.Drone.Client.Configuration
         protected Double GetDouble(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return Double.Parse(value);
             }
@@ -63,7 +63,7 @@ namespace AR.Drone.Client.Configuration
         protected Boolean GetBoolean(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return Boolean.Parse(value);
             }
@@ -73,7 +73,7 @@ namespace AR.Drone.Client.Configuration
         protected FlightAnimation GetFlightAnimation(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return FlightAnimation.Parse(value);
             }
@@ -83,7 +83,7 @@ namespace AR.Drone.Client.Configuration
         protected UserboxCommand GetUserboxCommand(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return UserboxCommand.Parse(value);
             }
@@ -93,7 +93,7 @@ namespace AR.Drone.Client.Configuration
         protected T GetEnum<T>(string index)
         {
             string value;
-            if (_configuration.Items.TryGetValue(FullKey(index), out value))
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
                 return (T) Enum.Parse(typeof (T), value);
             }
@@ -103,15 +103,15 @@ namespace AR.Drone.Client.Configuration
         protected void Set(string index, string value)
         {
             string key = FullKey(index);
-            if (_configuration.Items.ContainsKey(key) == false)
+            if (_settings.Items.ContainsKey(key) == false)
             {
-                _configuration.Items.Add(key, value);
+                _settings.Items.Add(key, value);
             }
             else
             {
-                _configuration.Items[key] = value;
+                _settings.Items[key] = value;
             }
-            _configuration.Changes.Enqueue(new KeyValuePair<string, string>(key, value));
+            _settings.Changes.Enqueue(new KeyValuePair<string, string>(key, value));
         }
 
         protected void Set(string index, Int32 value)
