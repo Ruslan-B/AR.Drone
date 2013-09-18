@@ -214,9 +214,9 @@ namespace AR.Drone.WinApp
 
         private void btnSwitchCam_Click(object sender, EventArgs e)
         {
-            DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
+            DroneConfiguration configuration = new DroneConfiguration();
             configuration.Video.Channel = VideoChannelType.Next;
-            configuration.SendChanges(_droneClient);
+            _droneClient.Send(configuration);
         }
 
         private void btnHover_Click(object sender, EventArgs e)
@@ -282,18 +282,50 @@ namespace AR.Drone.WinApp
 
         private void btnSendConfig_Click(object sender, EventArgs e)
         {
-            DroneConfiguration configuration = _configuration ?? new DroneConfiguration();
 
-            configuration.Custom.ApplicationId = DroneConfiguration.NewSessionId();
-            configuration.Custom.ProfileId = DroneConfiguration.NewSessionId();
-            configuration.Custom.SessionId = DroneConfiguration.NewSessionId();
+            Task sendConfigTask = new Task(() => 
+            {
+                if (_configuration == null) _configuration = new DroneConfiguration();
+                DroneConfiguration configuration = _configuration;
 
-            configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Manual;
-            configuration.Video.Codec = VideoCodecType.H264_720P;
-            configuration.Video.MaxBitrate = 1100;
+                if (string.IsNullOrEmpty(configuration.Custom.SessionId) || 
+                    configuration.Custom.SessionId == "00000000")
+                {
+                    // set new session, application and profile
+                    configuration.Custom.SessionId = DroneConfiguration.NewId();
+                    _droneClient.Send(configuration);
+                    System.Threading.Thread.Sleep(500);
 
-            // send all changes in one pice
-            configuration.SendChanges(_droneClient);
+                    configuration.Custom.ProfileId = DroneConfiguration.NewId();
+                    _droneClient.Send(configuration);
+                    System.Threading.Thread.Sleep(500);
+
+                    configuration.Custom.ApplicationId = DroneConfiguration.NewId();
+                    _droneClient.Send(configuration);
+                    System.Threading.Thread.Sleep(500);
+                }
+
+                configuration.General.NavdataDemo = false;
+                configuration.General.NavdataOptions = NavdataOptions.All;
+
+                configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
+                configuration.Video.Bitrate = 1000;
+                configuration.Video.MaxBitrate = 2000;
+
+                // record video to usb
+                //configuration.Video.OnUsb = true;
+                // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
+                //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
+                // start
+                //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
+                // stop
+                //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Stop);
+
+
+                //send all changes in one pice
+                _droneClient.Send(configuration);
+            });
+            sendConfigTask.Start();
         }
 
         private void StopRecording()

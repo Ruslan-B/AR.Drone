@@ -34,6 +34,7 @@ namespace AR.Drone.Client.Configuration
         HDVideoStream = 1 << 25,
         WiFi = 1 << 26,
         Zimmu3000 = 1 << 27,
-        Nums = 1 << 28
+        Nums = 1 << 28,
+        All = (1 << 29) - 1
     }
 }

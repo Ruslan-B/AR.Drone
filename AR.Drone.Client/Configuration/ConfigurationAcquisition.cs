@@ -26,11 +26,7 @@ namespace AR.Drone.Client.Configuration
         {
             if (_initialized) return;
 
-            if (data.State.HasFlag(NavigationState.Command))
-            {
-                _client.Send(new ControlCommand(ControlMode.AckControlMode));
-            }
-            else
+            if (data.State.HasFlag(NavigationState.Command) == false)
             {
                 _client.Send(new ControlCommand(ControlMode.CfgGetControlMode));
                 _initialized = true;
@@ -54,7 +50,7 @@ namespace AR.Drone.Client.Configuration
                         int offset = 0;
                         if (tcpClient.Available == 0)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(20);
                         }
                         else
                         {

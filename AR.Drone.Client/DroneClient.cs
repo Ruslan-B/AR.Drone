@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
@@ -104,7 +105,12 @@ namespace AR.Drone.Client
                 _commandQueue.Flush();
                 var configuration = new DroneConfiguration();
                 configuration.General.NavdataDemo = false;
-                configuration.SendChanges(this);
+                Send(configuration);
+            }
+
+            if (state.HasFlag(NavigationState.Command))
+            {
+                Send(new ControlCommand(ControlMode.AckControlMode));
             }
 
             if (state.HasFlag(NavigationState.Watchdog))
@@ -204,6 +210,20 @@ namespace AR.Drone.Client
         public void Send(ATCommand command)
         {
             _commandQueue.Enqueue(command);
+        }
+
+        public void Send(DroneConfiguration configuration)
+        {
+            KeyValuePair<string, string> item;
+            while (configuration.Changes.TryDequeue(out item))
+            {
+                if (string.IsNullOrEmpty(configuration.Custom.SessionId) == false &&
+                    string.IsNullOrEmpty(configuration.Custom.ProfileId) == false &&
+                    string.IsNullOrEmpty(configuration.Custom.ApplicationId) == false)
+                    Send(new ConfigIdsCommand(configuration.Custom.SessionId, configuration.Custom.ProfileId, configuration.Custom.ApplicationId));
+
+                Send(new ConfigCommand(item.Key, item.Value));
+            }
         }
 
         public void Emergency()
