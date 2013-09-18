@@ -60,7 +60,7 @@
     <Compile Include="Configuration\VideoChannelType.cs" />
     <Compile Include="Video\Native\parrot_video_encapsulation_t.cs" />
     <Compile Include="Video\Native\parrot_video_encapsulation_frametypes_t.cs" />
-    <Compile Include="Command\AtCommand_.cs" />
+    <Compile Include="Command\AtCommand.cs" />
     <Compile Include="Command\ComWdgCommand.cs" />
     <Compile Include="StateRequest.cs" />
     <Compile Include="Command\CommandSender.cs" />
