@@ -292,15 +292,15 @@ namespace AR.Drone.WinApp
                         // set new session, application and profile
                         configuration.Custom.SessionId = Settings.NewId();
                         _droneClient.Send(configuration);
-                        Thread.Sleep(500);
+                        _droneClient.WaitForCommandAck();
 
                         configuration.Custom.ProfileId = Settings.NewId();
                         _droneClient.Send(configuration);
-                        Thread.Sleep(500);
+                        _droneClient.WaitForCommandAck();
 
                         configuration.Custom.ApplicationId = Settings.NewId();
                         _droneClient.Send(configuration);
-                        Thread.Sleep(500);
+                        _droneClient.WaitForCommandAck();
                     }
 
                     configuration.General.NavdataDemo = false;

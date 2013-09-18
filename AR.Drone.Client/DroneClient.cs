@@ -167,10 +167,22 @@ namespace AR.Drone.Client
 
         #region Events
 
+        /// <summary>
+        /// Event queue for all listeners interested in NavigationPacketAcquired events.
+        /// This event will be dispatched on NavdataAcquisition thread.
+        /// </summary>
         public event Action<NavigationPacket> NavigationPacketAcquired;
 
+        /// <summary>
+        /// Event queue for all listeners interested in NavigationDataAcquired events. 
+        /// This event will be dispatched on NavdataAcquisition thread.
+        /// </summary>
         public event Action<NavigationData> NavigationDataAcquired;
 
+        /// <summary>
+        /// Event queue for all listeners interested in VideoPacketAcquired events.
+        /// This event will be dispatched on VideoAcquisition thread.
+        /// </summary>
         public event Action<VideoPacket> VideoPacketAcquired;
 
         #endregion
@@ -225,6 +237,11 @@ namespace AR.Drone.Client
 
                 Send(new ConfigCommand(item.Key, item.Value));
             }
+        }
+
+        public void WaitForCommandAck()
+        {
+            while (_navigationData.State.HasFlag(NavigationState.Command)) Thread.Sleep(1);
         }
 
         public void Emergency()
