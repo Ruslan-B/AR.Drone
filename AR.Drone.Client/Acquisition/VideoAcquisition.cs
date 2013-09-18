@@ -36,11 +36,16 @@ namespace AR.Drone.Client.Acquisition
                 fixed (byte* pBuffer = &buffer[0])
                     while (token.IsCancellationRequested == false)
                     {
+                        if (tcpClient.Available == 0)
+                        {
+                            Thread.Sleep(1);
+                            continue;
+                        }
+
                         int read = stream.Read(buffer, offset, NetworkStreamReadSize);
 
                         if (read == 0)
                         {
-                            Thread.Sleep(1);
                             continue;
                         }
 

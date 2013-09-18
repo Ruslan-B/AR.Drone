@@ -13,7 +13,7 @@ namespace AR.Drone.Client
     public class CommandSender : WorkerBase
     {
         public const int CommandPort = 5556;
-        public const int KeepAliveTimeout = 40;
+        public const int KeepAliveTimeout = 20;
         private static readonly ComWdgCommand ComWdgCommand = new ComWdgCommand();
                 
         private readonly ConcurrentQueue<ATCommand> _commandQueue;
@@ -65,7 +65,7 @@ namespace AR.Drone.Client
                         }
                     }
 
-                    Thread.Sleep(10);
+                    Thread.Sleep(5);
                 }
             }
         }

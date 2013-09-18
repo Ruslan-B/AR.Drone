@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AR.Drone.Data;
 
 namespace AR.Drone.Client.Configuration
@@ -105,13 +106,12 @@ namespace AR.Drone.Client.Configuration
             if (_configuration.Items.ContainsKey(key) == false)
             {
                 _configuration.Items.Add(key, value);
-                _configuration.Changed.Enqueue(key);
             }
             else
             {
                 _configuration.Items[key] = value;
-                _configuration.Changed.Enqueue(key);
             }
+            _configuration.Changes.Enqueue(new KeyValuePair<string, string>(key, value));
         }
 
         protected void Set(string index, Int32 value)

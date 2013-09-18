@@ -11,7 +11,7 @@ namespace AR.Drone.Client.Configuration
         private static readonly Regex ReKeyValue = new Regex(@"(?<key>\w+:\w+) = (?<value>.*)");
 
         private readonly Dictionary<string, string> _items;
-        private readonly ConcurrentQueue<string> _changed;
+        private readonly ConcurrentQueue<KeyValuePair<string,string>> _changes;
         public readonly GeneralSection General;
         public readonly ControlSection Control;
         public readonly NetworkSection Network;
@@ -27,7 +27,7 @@ namespace AR.Drone.Client.Configuration
         public DroneConfiguration()
         {
             _items = new Dictionary<string, string>();
-            _changed = new ConcurrentQueue<string>();
+            _changes = new ConcurrentQueue<KeyValuePair<string,string>>();
 
             General = new GeneralSection(this);
             Control = new ControlSection(this);
@@ -47,25 +47,9 @@ namespace AR.Drone.Client.Configuration
             get { return _items; }
         }
 
-        protected internal ConcurrentQueue<string> Changed
+        public ConcurrentQueue<KeyValuePair<string,string>> Changes
         {
-            get { return _changed; }
-        }
-
-        public void SendChanges(DroneClient client)
-        {
-            client.Send(new ControlCommand(ControlMode.AckControlMode));
-
-            string key;
-            while (_changed.TryDequeue(out key))
-            {
-                if (Custom.SessionId != null && Custom.ProfileId != null && Custom.ApplicationId != null)
-                {
-                    client.Send(new ConfigIdsCommand(Custom.SessionId, Custom.ProfileId, Custom.ApplicationId));
-                }
-
-                client.Send(new ConfigCommand(key, _items[key]));
-            }
+            get { return _changes; }
         }
 
         public static DroneConfiguration Parse(string input)
