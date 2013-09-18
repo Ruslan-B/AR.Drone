@@ -17,6 +17,8 @@ namespace AR.Drone.Client
     public class DroneClient : WorkerBase
     {
         private const string DefaultHostname = "192.168.1.1";
+        private const int AckControlAndWaitForConfirmationTimeout = 1000;
+
         private readonly ConcurrentQueue<AtCommand> _commandQueue;
         private NavigationData _navigationData;
         private StateRequest _stateRequest;
@@ -111,7 +113,7 @@ namespace AR.Drone.Client
 
             if (state.HasFlag(NavigationState.Command))
             {
-                Send(ControlCommand.AckControlMode);
+                //Send(ControlCommand.AckControlMode);
             }
 
             if (state.HasFlag(NavigationState.Watchdog))
@@ -239,9 +241,37 @@ namespace AR.Drone.Client
             }
         }
 
-        public void WaitForCommandAck()
+        public bool AckControlAndWaitForConfirmation()
         {
-            while (_navigationData.State.HasFlag(NavigationState.Command)) Thread.Sleep(1);
+            Stopwatch swTimeout = Stopwatch.StartNew();
+
+            var state = NavigationState.Unknown;
+            Action<NavigationData> onNavigationData = nd => state = nd.State;
+            NavigationDataAcquired += onNavigationData;
+            try
+            {
+                bool ackControlSent = false;
+                while (swTimeout.ElapsedMilliseconds < AckControlAndWaitForConfirmationTimeout)
+                {
+                    if (state.HasFlag(NavigationState.Command))
+                    {
+                        Send(ControlCommand.AckControlMode);
+                        ackControlSent = true;
+                    }
+
+                    if (ackControlSent && state.HasFlag(NavigationState.Command) == false)
+                    {
+                        return true;
+                    }
+                    Thread.Sleep(5);
+                }
+                return false;
+            }
+            finally
+            {
+                NavigationDataAcquired -= onNavigationData;
+                Trace.Write(string.Format("AckCommand done in {0} ms.", swTimeout.ElapsedMilliseconds));
+            }
         }
 
         public void Emergency()

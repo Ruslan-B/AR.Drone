@@ -23,6 +23,14 @@ namespace AR.Drone.Client.Command
             _commandQueue = commandQueue;
         }
 
+        private void AddCommand(Stream stream, AtCommand command, ref int sequenceNumber)
+        {
+            byte[] payload = command.CreatePayload(sequenceNumber);
+            Trace.WriteIf((command is ComWdgCommand) == false, Encoding.ASCII.GetString(payload));
+            stream.Write(payload, 0, payload.Length);
+            sequenceNumber++;
+        }
+
         protected override void Loop(CancellationToken token)
         {
             int sequenceNumber = 1;
@@ -39,23 +47,21 @@ namespace AR.Drone.Client.Command
 
                 while (token.IsCancellationRequested == false)
                 {
-                    if (swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout)
-                    {
-                        _commandQueue.Enqueue(ComWdgCommand.Default);
-                        swKeepAlive.Restart();
-                    }
-
-                    if (_commandQueue.Count > 0)
+                    bool comWdgCommandNeeded = swKeepAlive.ElapsedMilliseconds > KeepAliveTimeout;
+                    if (_commandQueue.Count > 0 || comWdgCommandNeeded)
                     {
                         using (var ms = new MemoryStream())
                         {
+                            if (comWdgCommandNeeded) 
+                            {
+                                AddCommand(ms, ComWdgCommand.Default, ref sequenceNumber);
+                                swKeepAlive.Restart();
+                            }
+
                             AtCommand command;
                             while (_commandQueue.TryDequeue(out command))
                             {
-                                byte[] payload = command.CreatePayload(sequenceNumber);
-                                Trace.WriteIf((command is ComWdgCommand) == false, Encoding.ASCII.GetString(payload));
-                                ms.Write(payload, 0, payload.Length);
-                                sequenceNumber++;
+                                AddCommand(ms, command, ref sequenceNumber);
                             }
 
                             byte[] fullPayload = ms.ToArray();

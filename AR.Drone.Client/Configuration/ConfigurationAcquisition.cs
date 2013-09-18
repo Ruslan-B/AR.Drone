@@ -22,57 +22,43 @@ namespace AR.Drone.Client.Configuration
             _client = client;
         }
 
-        private void OnNavigationData(NavigationData data)
-        {
-            if (_initialized) return;
-
-            if (data.State.HasFlag(NavigationState.Command) == false)
-            {
-                _client.Send(ControlCommand.CfgGetControlMode);
-                _initialized = true;
-            }
-        }
-
         public Settings GetConfiguration(CancellationToken token)
         {
             using (var tcpClient = new TcpClient(_client.NetworkConfiguration.DroneHostname, ControlPort))
             using (NetworkStream stream = tcpClient.GetStream())
-                try
+            {
+                _client.AckControlAndWaitForConfirmation();
+
+                _client.Send(ControlCommand.CfgGetControlMode);
+
+                var buffer = new byte[NetworkBufferSize];
+                Stopwatch swConfigTimeout = Stopwatch.StartNew();
+                while (swConfigTimeout.ElapsedMilliseconds < ConfigTimeout)
                 {
-                    _client.NavigationDataAcquired += OnNavigationData;
+                    token.ThrowIfCancellationRequested();
 
-                    var buffer = new byte[NetworkBufferSize];
-                    Stopwatch swConfigTimeout = Stopwatch.StartNew();
-                    while (swConfigTimeout.ElapsedMilliseconds < ConfigTimeout)
+                    int offset = 0;
+                    if (tcpClient.Available == 0)
                     {
-                        token.ThrowIfCancellationRequested();
+                        Thread.Sleep(20);
+                    }
+                    else
+                    {
+                        offset += stream.Read(buffer, offset, buffer.Length);
+                        swConfigTimeout.Restart();
 
-                        int offset = 0;
-                        if (tcpClient.Available == 0)
+                        // config eof check
+                        if (offset > 0 && buffer[offset - 1] == 0x00)
                         {
-                            Thread.Sleep(20);
-                        }
-                        else
-                        {
-                            offset += stream.Read(buffer, offset, buffer.Length);
-                            swConfigTimeout.Restart();
+                            string s = System.Text.Encoding.UTF8.GetString(buffer, 0, offset);
 
-                            // config eof check
-                            if (offset > 0 && buffer[offset - 1] == 0x00)
-                            {
-                                string s = System.Text.Encoding.UTF8.GetString(buffer, 0, offset);
-
-                                return Settings.Parse(s);
-                            }
+                            return Settings.Parse(s);
                         }
                     }
+                }
 
-                    throw new TimeoutException();
-                }
-                finally
-                {
-                    _client.NavigationDataAcquired -= OnNavigationData;
-                }
+                throw new TimeoutException();
+            }
         }
 
         public Task<Settings> CreateTask()
