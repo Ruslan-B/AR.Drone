@@ -5,6 +5,7 @@ namespace AR.Drone.Client.Configuration
     [Flags]
     public enum NavdataOptions
     {
+        None = 0,
         Demo = 1 << 0,
         Time = 1 << 1,
         RawMeasures = 1 << 2,

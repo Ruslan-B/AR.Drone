@@ -2,7 +2,7 @@
 
 namespace AR.Drone.Client.Configuration
 {
-    public class FlightAnimation
+    public struct FlightAnimation
     {
         public FlightAnimationType Type { get; private set; }
         public int Duration { get; private set; }
