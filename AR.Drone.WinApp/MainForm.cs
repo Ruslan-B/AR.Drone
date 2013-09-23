@@ -15,6 +15,9 @@ using AR.Drone.Data.Navigation;
 using AR.Drone.Data.Navigation.Native;
 using AR.Drone.Media;
 using AR.Drone.Video;
+using AR.Drone.Avionics;
+using AR.Drone.Avionics.Objectives;
+using AR.Drone.Avionics.Objectives.IntentObtainers;
 
 namespace AR.Drone.WinApp
 {
@@ -34,6 +37,7 @@ namespace AR.Drone.WinApp
         private NavigationPacket _navigationPacket;
         private PacketRecorder _packetRecorderWorker;
         private FileStream _recorderStream;
+        private Autopilot _autopilot;
 
         public MainForm()
         {
@@ -42,7 +46,7 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.BGR24, true, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
 
-            _droneClient = new DroneClient();
+            _droneClient = new DroneClient("192.168.1.3");
             _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
             _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
             _droneClient.NavigationDataAcquired += data => _navigationData = data;
@@ -68,6 +72,9 @@ namespace AR.Drone.WinApp
 
         protected override void OnClosed(EventArgs e)
         {
+            _autopilot.UnbindFromClient();
+            _autopilot.Stop();
+
             StopRecording();
 
             _droneClient.Dispose();
@@ -150,6 +157,9 @@ namespace AR.Drone.WinApp
                 DumpBranch(vativeNode.Nodes, navdataBag);
             }
             tvInfo.EndUpdate();
+
+            if (_autopilot != null && !_autopilot.Active && btnAutopilot.ForeColor != Color.Black)
+                btnAutopilot.ForeColor = Color.Black;
         }
 
         private void DumpBranch(TreeNodeCollection nodes, object o)
@@ -381,6 +391,71 @@ namespace AR.Drone.WinApp
                     _playerForms.Add(playerForm);
                     playerForm.Show(this);
                 }
+            }
+        }
+
+        // Make sure '_autopilot' variable is initialized with an object
+        private void CreateAutopilot()
+        {
+            if (_autopilot != null) return;
+
+            _autopilot = new Autopilot(_droneClient);
+            _autopilot.OnOutOfObjectives += Autopilot_OnOutOfObjectives;
+            _autopilot.BindToClient();
+            _autopilot.Start();
+        }
+
+        // Event that occurs when no objectives are waiting in the autopilot queue
+        private void Autopilot_OnOutOfObjectives()
+        {
+            _autopilot.Active = false;
+        }
+
+        // Create a simple mission for autopilot
+        private void CreateAutopilotMission()
+        {
+            _autopilot.ClearObjectives();
+
+            // Do two 36 degrees turns left and right if the drone is already flying
+            if (_droneClient.NavigationData.State.HasFlag(NavigationState.Flying))
+            {
+                const float __turn = (float)(Math.PI / 5);
+                float __heading = _droneClient.NavigationData.Yaw;
+
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading + __turn, aCanBeObtained: true)));
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading - __turn, aCanBeObtained: true)));
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading, aCanBeObtained: true)));
+            }
+            else // Just take off if the drone is on the ground
+            {
+                _autopilot.EnqueueObjective(new FlatTrim(1000));
+                _autopilot.EnqueueObjective(new Takeoff(3500));
+            }
+
+            // One could use hover, but the method below, allows to gain/lose/maintain desired altitude
+            _autopilot.EnqueueObjective(
+                Objective.Create(3000,
+                    new VelocityX(0.0f),
+                    new VelocityY(0.0f),
+                    new Altitude(1.0f)
+                )
+            );
+
+            _autopilot.EnqueueObjective(new Land(5000));
+        }
+
+        // Activate/deactive autopilot
+        private void btnAutopilot_Click(object sender, EventArgs e)
+        {
+            if (!_droneClient.IsActive) return;
+
+            CreateAutopilot();
+            if (_autopilot.Active) _autopilot.Active = false;
+            else
+            {
+                CreateAutopilotMission();
+                _autopilot.Active = true;
+                btnAutopilot.ForeColor = Color.Red;
             }
         }
     }

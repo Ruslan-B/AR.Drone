@@ -37,6 +37,9 @@ Please note: for opening solution in VS2010 you should have *Microsoft Visual St
 The solution includes Winform application - AR.Drone.WinApp, it provides minimalistic interface 
 for controling and displaying video from the AR.Drone 2.0.
 
+##Contributions
+```Avionics.Autopilot``` module by Yury Rozhdestvensky from [robodem.com](http://robodem.com).  
+
 ##License
 
 Copyright 2013 Ruslan Balanukhin ruslan.balanukhin@gmail.com

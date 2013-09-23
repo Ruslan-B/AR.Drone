@@ -55,6 +55,7 @@
             this.btnStartRecording = new System.Windows.Forms.Button();
             this.btnStopRecording = new System.Windows.Forms.Button();
             this.btnReplay = new System.Windows.Forms.Button();
+            this.btnAutopilot = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbVideo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -307,11 +308,22 @@
             this.btnReplay.UseVisualStyleBackColor = true;
             this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
             // 
+            // btnAutopilot
+            // 
+            this.btnAutopilot.Location = new System.Drawing.Point(12, 471);
+            this.btnAutopilot.Name = "btnAutopilot";
+            this.btnAutopilot.Size = new System.Drawing.Size(75, 23);
+            this.btnAutopilot.TabIndex = 25;
+            this.btnAutopilot.Text = "Auto&pilot";
+            this.btnAutopilot.UseVisualStyleBackColor = true;
+            this.btnAutopilot.Click += new System.EventHandler(this.btnAutopilot_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(964, 533);
+            this.Controls.Add(this.btnAutopilot);
             this.Controls.Add(this.btnReplay);
             this.Controls.Add(this.btnStopRecording);
             this.Controls.Add(this.btnStartRecording);
@@ -371,6 +383,7 @@
         private System.Windows.Forms.Button btnStartRecording;
         private System.Windows.Forms.Button btnStopRecording;
         private System.Windows.Forms.Button btnReplay;
+        private System.Windows.Forms.Button btnAutopilot;
     }
 }
 

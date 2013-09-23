@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{19B1D7B1-C46F-4A87-A674-3350BF372A74}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AR.Drone.Avionics</RootNamespace>
+    <AssemblyName>AR.Drone.Avionics</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Apparatus\Input.cs" />
+    <Compile Include="Apparatus\Output.cs" />
+    <Compile Include="Autopilot.cs" />
+    <Compile Include="Objectives\Emergency.cs" />
+    <Compile Include="Objectives\EmergencyReset.cs" />
+    <Compile Include="Objectives\FlatTrim.cs" />
+    <Compile Include="Objectives\IntentObtainers\EmergencyResetting.cs" />
+    <Compile Include="Objectives\IntentObtainers\EmergencySetting.cs" />
+    <Compile Include="Objectives\IntentObtainers\EarlyObtainer.cs" />
+    <Compile Include="Objectives\IntentObtainers\SetGaz.cs" />
+    <Compile Include="Objectives\IntentObtainers\SetPitch.cs" />
+    <Compile Include="Objectives\IntentObtainers\SetRoll.cs" />
+    <Compile Include="Objectives\IntentObtainers\SetYaw.cs" />
+    <Compile Include="Objectives\IntentObtainers\FlatTrimming.cs" />
+    <Compile Include="Objectives\IntentObtainers\VelocityIntent.cs" />
+    <Compile Include="Objectives\IntentObtainers\VelocityY.cs" />
+    <Compile Include="Objectives\IntentObtainers\VelocityX.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Objectives\Takeoff.cs" />
+    <Compile Include="Objectives\Land.cs" />
+    <Compile Include="Objectives\Hover.cs" />
+    <Compile Include="Objectives\IntentObtainers\Landing.cs" />
+    <Compile Include="Objectives\IntentObtainers\Takingoff.cs" />
+    <Compile Include="Objectives\IntentObtainers\Hovering.cs" />
+    <Compile Include="Objectives\Objective.cs" />
+    <Compile Include="Objectives\IntentObtainers\Heading.cs" />
+    <Compile Include="Objectives\IntentObtainers\IntentObtainer.cs" />
+    <Compile Include="Objectives\IntentObtainers\Obtainer.cs" />
+    <Compile Include="Objectives\IntentObtainers\Altitude.cs" />
+    <Compile Include="Objectives\IntentObtainers\Intent.cs" />
+    <Compile Include="Tools\Arithmetics.cs" />
+    <Compile Include="Tools\Time.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AR.Drone.Client\AR.Drone.Client.csproj">
+      <Project>{56dbf8e3-28a6-4c27-ba0a-b32352608f44}</Project>
+      <Name>AR.Drone.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AR.Drone.Data\AR.Drone.Data.csproj">
+      <Project>{7d1b0b10-82f9-413f-bee9-0174753d93a1}</Project>
+      <Name>AR.Drone.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AR.Drone.Infrastructure\AR.Drone.Infrastructure.csproj">
+      <Project>{5be68b3d-1112-464d-8c17-844e834bb3ba}</Project>
+      <Name>AR.Drone.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

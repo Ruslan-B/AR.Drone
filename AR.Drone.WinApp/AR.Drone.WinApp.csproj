@@ -71,6 +71,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AR.Drone.Avionics\AR.Drone.Avionics.csproj">
+      <Project>{19b1d7b1-c46f-4a87-a674-3350bf372a74}</Project>
+      <Name>AR.Drone.Avionics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AR.Drone.Client\AR.Drone.Client.csproj">
       <Project>{56DBF8E3-28A6-4C27-BA0A-B32352608F44}</Project>
       <Name>AR.Drone.Client</Name>
