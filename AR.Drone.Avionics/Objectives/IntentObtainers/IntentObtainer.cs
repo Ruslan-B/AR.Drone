@@ -1,19 +1,19 @@
-﻿using System;
+﻿using AR.Drone.Avionics.Apparatus;
 
 namespace AR.Drone.Avionics.Objectives.IntentObtainers
 {
     // Unification of Intent and Obtainer. (See Intent as data, while obtainer is an action)
-    public abstract class IntentObtainer : Intent, EarlyObtainer
+    public abstract class IntentObtainer : Intent, IEarlyObtainer
     {
-        public bool CanBeObtained { get; private set; }
-        public bool Obtained { get; protected set; }
-
-        public IntentObtainer(float aValue, float aAgression = Intent.DefaultAgression, bool aCanBeObained = false) : base(aValue, aAgression)
+        protected IntentObtainer(float aValue, float aAgression = DefaultAgression, bool aCanBeObained = false) : base(aValue, aAgression)
         {
             CanBeObtained = aCanBeObained;
             Obtained = false;
         }
 
-        public abstract void Contribute(Apparatus.Output aApparatusOutput, ref Apparatus.Input aApparatusInput);
+        public bool CanBeObtained { get; private set; }
+        public bool Obtained { get; protected set; }
+
+        public abstract void Contribute(Output aApparatusOutput, ref Input aApparatusInput);
     }
 }

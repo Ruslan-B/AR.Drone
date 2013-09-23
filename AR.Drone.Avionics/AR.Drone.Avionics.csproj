@@ -43,7 +43,7 @@
     <Compile Include="Objectives\FlatTrim.cs" />
     <Compile Include="Objectives\IntentObtainers\EmergencyResetting.cs" />
     <Compile Include="Objectives\IntentObtainers\EmergencySetting.cs" />
-    <Compile Include="Objectives\IntentObtainers\EarlyObtainer.cs" />
+    <Compile Include="Objectives\IntentObtainers\IEarlyObtainer.cs" />
     <Compile Include="Objectives\IntentObtainers\SetGaz.cs" />
     <Compile Include="Objectives\IntentObtainers\SetPitch.cs" />
     <Compile Include="Objectives\IntentObtainers\SetRoll.cs" />
@@ -62,7 +62,7 @@
     <Compile Include="Objectives\Objective.cs" />
     <Compile Include="Objectives\IntentObtainers\Heading.cs" />
     <Compile Include="Objectives\IntentObtainers\IntentObtainer.cs" />
-    <Compile Include="Objectives\IntentObtainers\Obtainer.cs" />
+    <Compile Include="Objectives\IntentObtainers\IObtainer.cs" />
     <Compile Include="Objectives\IntentObtainers\Altitude.cs" />
     <Compile Include="Objectives\IntentObtainers\Intent.cs" />
     <Compile Include="Tools\Arithmetics.cs" />

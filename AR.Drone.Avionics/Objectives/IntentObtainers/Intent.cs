@@ -18,8 +18,15 @@ namespace AR.Drone.Avionics.Objectives.IntentObtainers
         public float Agression = DefaultAgression;
 
         // Create a new Intent, with no expiration, unless provided
-        public Intent(float aValue, float aAgression = DefaultAgression) { Value = aValue; Agression = aAgression; }
+        public Intent(float aValue, float aAgression = DefaultAgression)
+        {
+            Value = aValue;
+            Agression = aAgression;
+        }
 
-        public float Diff(float aValue) { return Value - aValue; }
+        public float Diff(float aValue)
+        {
+            return Value - aValue;
+        }
     }
 }

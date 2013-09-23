@@ -1,18 +1,17 @@
-﻿using System;
-
-using AR.Drone.Avionics.Tools;
-using AR.Drone.Avionics.Apparatus;
+﻿using AR.Drone.Avionics.Apparatus;
 
 namespace AR.Drone.Avionics.Objectives.IntentObtainers
 {
     public class Takingoff : IntentObtainer
     {
-        public Takingoff() : base(0.0f) { /* Do Nothing */ }
-
-        public override void Contribute(Apparatus.Output aApparatusOutput, ref Apparatus.Input aApparatusInput)
+        public Takingoff() : base(0.0f)
         {
+            /* Do Nothing */
+        }
 
-            aApparatusInput.Command = Apparatus.Input.Type.Takeoff;
+        public override void Contribute(Output aApparatusOutput, ref Input aApparatusInput)
+        {
+            aApparatusInput.Command = Input.Type.Takeoff;
         }
     }
 }

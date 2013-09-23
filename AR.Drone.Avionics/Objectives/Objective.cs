@@ -7,7 +7,7 @@ namespace AR.Drone.Avionics.Objectives
     /// <summary>
     /// A generic objective that has a list of intents and an set execution duration
     /// </summary>
-    public class Objective : EarlyObtainer
+    public class Objective : IEarlyObtainer
     {
         /// <summary>
         /// List of Intent Obtainers objects, that are to be considered at a givden period of time
