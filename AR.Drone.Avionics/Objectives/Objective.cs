@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-using AR.Drone.Avionics.Tools.Time;
+﻿using System.Collections.Generic;
 using AR.Drone.Avionics.Objectives.IntentObtainers;
+using AR.Drone.Avionics.Tools.Time;
 
 namespace AR.Drone.Avionics.Objectives
 {
@@ -20,10 +18,17 @@ namespace AR.Drone.Avionics.Objectives
         /// Determines whther the  objective hadstarted it life cycle
         /// </summary>
         internal bool Started { get; private set; }
+
         /// <summary>
         /// Start objective's life cycle
         /// </summary>
-        internal void Start() { if (!Started) { Expiration.Elapse(); Started = true; } }
+        internal void Start()
+        {
+            if (Started) return;
+            
+            Expiration.Elapse();
+            Started = true;
+        }
 
         /// <summary>
         /// Determines whether an objective can be obtained prior to its expiration by time (for example altitude reach)
@@ -43,7 +48,10 @@ namespace AR.Drone.Avionics.Objectives
         /// <summary>
         /// Create a new Objective providing its duration in milliseconds
         /// </summary>
-        public Objective(long aDuration, bool aCanBeObtained = true) : this(new Expiration(aDuration), aCanBeObtained) { /* Do Nothing */ }
+        public Objective(long aDuration, bool aCanBeObtained = true) : this(new Expiration(aDuration), aCanBeObtained)
+        {
+            /* Do Nothing */
+        }
 
         /// <summary>
         /// Create a new Objective providing its duration as an Expiration object
@@ -61,17 +69,26 @@ namespace AR.Drone.Avionics.Objectives
         /// Add an IntentObtainer to the Objective
         /// </summary>
         /// <param name="aIntentObtainer">IntentObtainer to be added</param>
-        public void Add(IntentObtainer aIntentObtainer) { List.Add(aIntentObtainer); }
+        public void Add(IntentObtainer aIntentObtainer)
+        {
+            List.Add(aIntentObtainer);
+        }
 
         /// <summary>
         /// Returns true if Objective contains no IntentObtainers
         /// </summary>
-        public bool Empty { get { return List.Count == 0; } }
+        public bool Empty
+        {
+            get { return List.Count == 0; }
+        }
 
         /// <summary>
         /// Returns number of IntentObtainers in the Objective
         /// </summary>
-        public int Count { get { return List.Count; } }
+        public int Count
+        {
+            get { return List.Count; }
+        }
 
         /// <summary>
         ///     Makes the Objective to run throug all of its IntentObtainers and
@@ -96,22 +113,29 @@ namespace AR.Drone.Avionics.Objectives
         /// </remarks>
         public void Contribute(Apparatus.Output aApparatusOutput, ref Apparatus.Input aApparatusInput)
         {
-            bool __can_be_obtained = false;
-            bool __obtained = true;
+            bool canBeObtained = false;
+            bool obtained = true;
 
-            foreach (IntentObtainer __item in List)
+            foreach (IntentObtainer item in List)
             {
-                __item.Contribute(aApparatusOutput, ref aApparatusInput);
-                if (CanBeObtained && __item.CanBeObtained) { __can_be_obtained = true; __obtained &= __item.Obtained; }
+                item.Contribute(aApparatusOutput, ref aApparatusInput);
+                if (CanBeObtained && item.CanBeObtained)
+                {
+                    canBeObtained = true;
+                    obtained &= item.Obtained;
+                }
             }
 
-            if (__can_be_obtained) Obtained = __obtained;
+            if (canBeObtained) Obtained = obtained;
         }
 
         /// <summary>
         /// Returns true if Objective has expired.
         /// </summary>
-        public bool IsExpired { get { return Expiration.IsOverdue; } }
+        public bool IsExpired
+        {
+            get { return Expiration.IsOverdue; }
+        }
 
         /// <summary>
         /// A convinient way to create Objectives and fill them with IntentObtainers
@@ -140,12 +164,14 @@ namespace AR.Drone.Avionics.Objectives
             return Create(new Expiration(aDuration), aIntentObtainerList);
         }
 
-        /// <see cref="Create(long aDuration, params IntentObtainer[] aIntentObtainerList)">
+        /// <see>
+        ///     <cref>Create(long aDuration, params IntentObtainer[] aIntentObtainerList)</cref>
+        /// </see>
         public static Objective Create(Expiration aExpiration, params IntentObtainer[] aIntentObtainerList)
         {
-            Objective __obj = new Objective(aExpiration);
-            foreach (IntentObtainer __io in aIntentObtainerList) __obj.Add(__io);
-            return __obj;
+            var obj = new Objective(aExpiration);
+            foreach (IntentObtainer io in aIntentObtainerList) obj.Add(io);
+            return obj;
         }
     }
 }

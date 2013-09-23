@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-
+using AR.Drone.Avionics.Tools.Time;
+using AR.Drone.Data.Navigation;
 using AR.Drone.Infrastructure;
 using AR.Drone.Client;
-using AR.Drone.Avionics.Tools.Time;
 using AR.Drone.Avionics.Objectives;
 
 namespace AR.Drone.Avionics
@@ -32,14 +32,14 @@ namespace AR.Drone.Avionics
     /// </example>
     public class Autopilot : WorkerBase
     {
-        private Apparatus.Input _last_input;
-        private bool _active = false;
-        private bool _commencing_objective = false;
+        private Apparatus.Input _lastInput;
+        private bool _active;
+        private bool _commencingObjective;
 
         // A queue of apparatus output (NavigationData) awaiting to be proccessed
-        protected ConcurrentQueue<Apparatus.Output> ApparatusOutputQueue;
+        protected readonly ConcurrentQueue<Apparatus.Output> ApparatusOutputQueue;
         // A queue of objectives waiting in line for their period of time to start contributing to drone control
-        protected ConcurrentQueue<Objective> ObjectiveQueue;
+        protected readonly ConcurrentQueue<Objective> ObjectiveQueue;
 
         /// <summary>
         /// A callback event, occuring everytime a new objective is being started
@@ -82,9 +82,23 @@ namespace AR.Drone.Avionics
         /// <summary>
         /// Returns the last input to the ArDrone done by the autopilot
         /// </summary>
-        public Apparatus.Input LastInput {
-            get { lock (this) { Apparatus.Input __value = _last_input; return __value; } }
-            private set { lock (this) { _last_input = value; } }
+        public Apparatus.Input LastInput
+        {
+            get
+            {
+                lock (this)
+                {
+                    Apparatus.Input value = _lastInput;
+                    return value;
+                }
+            }
+            private set
+            {
+                lock (this)
+                {
+                    _lastInput = value;
+                }
+            }
         }
 
         /// <summary>
@@ -95,26 +109,36 @@ namespace AR.Drone.Avionics
         /// <summary>
         /// Returns true if autopilot is enabled
         /// </summary>
-        public bool Active {
-            get { lock (this) { return _active; } }
-            set { lock (this) { _active = value; } }
+        public bool Active
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _active;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    _active = value;
+                }
+            }
         }
 
-        private void _clear_output_queue()
+        private void ClearOutputQueue()
         {
-            Apparatus.Output __output;
-            while (ApparatusOutputQueue.TryDequeue(out __output));
+            ApparatusOutputQueue.Flush();
         }
 
         // Event method for 'DroneClient.NavigationPacketAcquired' action
-        private void NavigationDataAcquired(AR.Drone.Data.Navigation.NavigationData aPacket)
+        private void NavigationDataAcquired(NavigationData aPacket)
         {
             if (Active)
             {
-                Apparatus.Output __data = new Apparatus.Output();
-                __data.Navigation = aPacket;
-                __data.LastInput = LastInput;
-                EnqueueOutput(__data);
+                var data = new Apparatus.Output {Navigation = aPacket, LastInput = LastInput};
+                EnqueueOutput(data);
             }
         }
 
@@ -129,44 +153,45 @@ namespace AR.Drone.Avionics
         /// </returns>
         protected Objective GetCurrentObjective()
         {
-            Objective __objective;
-            bool __has_objective;
-            while ((__has_objective = ObjectiveQueue.TryPeek(out __objective)) == true)
+            Objective objective;
+            bool hasObjective;
+            while (hasObjective = ObjectiveQueue.TryPeek(out objective))
             {
-                if (__objective.Empty || __objective.IsExpired || __objective.Obtained)
+                if (objective.Empty || objective.IsExpired || objective.Obtained)
                 {
-                    ObjectiveQueue.TryDequeue(out __objective);
-                    if (OnObjectiveCompleted != null) OnObjectiveCompleted.Invoke(__objective);
-                    __objective = null;
+                    ObjectiveQueue.TryDequeue(out objective);
+                    if (OnObjectiveCompleted != null) OnObjectiveCompleted.Invoke(objective);
+                    objective = null;
                 }
                 else break;
             }
 
-            if (!__has_objective) __objective = null;
-            else _commencing_objective = true;
+            if (!hasObjective) objective = null;
+            else _commencingObjective = true;
 
-            if (__objective == null)
+            if (objective == null)
             {
-                if (_commencing_objective)
+                if (_commencingObjective)
                 {
                     if (OnOutOfObjectives != null)
                     {
                         OnOutOfObjectives.Invoke();
-                        _commencing_objective = ObjectiveQueue.TryPeek(out __objective); // Check whether user just added a new task
+                        _commencingObjective = ObjectiveQueue.TryPeek(out objective); // Check whether user just added a new task
                     }
-                    else _commencing_objective = false;
+                    else _commencingObjective = false;
                 }
-                if (!_commencing_objective) return DefaultObjective;
+                if (!_commencingObjective) return DefaultObjective;
             }
-            //else _commencing_objective = true;
-
-            if (!__objective.Started)
+            else
             {
-                __objective.Start();
-                if (OnObjectiveStarted != null) OnObjectiveStarted.Invoke(__objective);
+                if (!objective.Started)
+                {
+                    objective.Start();
+                    if (OnObjectiveStarted != null) OnObjectiveStarted.Invoke(objective);
+                }
             }
 
-            return __objective;
+            return objective;
         }
 
         /// <summary>
@@ -176,23 +201,27 @@ namespace AR.Drone.Avionics
         {
             while (!token.IsCancellationRequested)
             {
-                if (!Active) { _clear_output_queue(); Thread.Sleep(10); }
+                if (!Active)
+                {
+                    ClearOutputQueue();
+                    Thread.Sleep(10);
+                }
                 else
                 {
-                    Apparatus.Output __output;
+                    Apparatus.Output output;
 
-                    if (ApparatusOutputQueue.TryDequeue(out __output))
+                    if (ApparatusOutputQueue.TryDequeue(out output))
                     {
-                        Objective __current_intent = GetCurrentObjective();
+                        Objective currentIntent = GetCurrentObjective();
 
-                        Apparatus.Input __input = new Apparatus.Input();
-                        __input.Reset();
+                        var input = new Apparatus.Input();
+                        input.Reset();
 
-                        __current_intent.Contribute(__output, ref __input);
-                        __input.Send(DroneClient);
+                        currentIntent.Contribute(output, ref input);
+                        input.Send(DroneClient);
 
-                        LastInput = __input;
-                        if (OnCommandSend != null) OnCommandSend.Invoke(__input);
+                        LastInput = input;
+                        if (OnCommandSend != null) OnCommandSend.Invoke(input);
                     }
                     else Thread.Sleep(3);
                 }
@@ -204,7 +233,10 @@ namespace AR.Drone.Avionics
         /// </summary>
         /// <param name="aDroneClient">DroneClient object which Autopilot will be controlling</param>
         /// <remarks>Using this constructor will force DeafultObjective to be 'Hover'</remarks>
-        public Autopilot(DroneClient aDroneClient) : this(aDroneClient, new Hover(Expiration.Never)) { /* Do Nothing */ }
+        public Autopilot(DroneClient aDroneClient) : this(aDroneClient, new Hover(Expiration.Never))
+        {
+            /* Do Nothing */
+        }
 
         /// <summary>
         /// Initializes the Autopilot object and associates it with provided DroneClient and sets DeafultObjective
@@ -240,7 +272,7 @@ namespace AR.Drone.Avionics
         {
             if (!BoundToClient)
             {
-                DroneClient.NavigationDataAcquired += this.NavigationDataAcquired;
+                DroneClient.NavigationDataAcquired += NavigationDataAcquired;
                 BoundToClient = true;
             }
         }
@@ -253,7 +285,7 @@ namespace AR.Drone.Avionics
         {
             if (BoundToClient)
             {
-                DroneClient.NavigationDataAcquired -= this.NavigationDataAcquired;
+                DroneClient.NavigationDataAcquired -= NavigationDataAcquired;
                 BoundToClient = false;
             }
         }
@@ -282,20 +314,30 @@ namespace AR.Drone.Avionics
         /// </summary>
         public void ClearObjectives()
         {
-            bool __active = Active;
+            bool active = Active;
             Active = false;
 
-            Objective __task;
-            while (ObjectiveQueue.TryDequeue(out __task)) ;
+            ObjectiveQueue.Flush();
 
-            if (__active) Active = true;
+            if (active) Active = true;
         }
 
         /// <summary>Returns true, if autopilot has any tasks in queue</summary>
-        public bool HasObjectives { get { return !ObjectiveQueue.IsEmpty; } }
+        public bool HasObjectives
+        {
+            get { return !ObjectiveQueue.IsEmpty; }
+        }
+
         /// <summary>Enable autopilot</summary>
-        public void Activate() { Active = true; }
+        public void Activate()
+        {
+            Active = true;
+        }
+
         /// <summary>Disable autopilot</summary>
-        public void Deactivate() { Active = false; }
+        public void Deactivate()
+        {
+            Active = false;
+        }
     }
 }

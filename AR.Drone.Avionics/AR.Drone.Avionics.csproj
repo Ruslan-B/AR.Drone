@@ -67,7 +67,8 @@
     <Compile Include="Objectives\IntentObtainers\Altitude.cs" />
     <Compile Include="Objectives\IntentObtainers\Intent.cs" />
     <Compile Include="Tools\Arithmetics.cs" />
-    <Compile Include="Tools\Time.cs" />
+    <Compile Include="Tools\Time\Duration.cs" />
+    <Compile Include="Tools\Time\Expiration.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

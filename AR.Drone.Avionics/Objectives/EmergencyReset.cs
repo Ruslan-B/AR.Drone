@@ -1,8 +1,4 @@
-﻿using System;
-
-using AR.Drone.Avionics.Tools;
-using AR.Drone.Avionics.Tools.Time;
-using AR.Drone.Avionics.Apparatus;
+﻿using AR.Drone.Avionics.Tools.Time;
 
 namespace AR.Drone.Avionics.Objectives
 {
@@ -11,9 +7,19 @@ namespace AR.Drone.Avionics.Objectives
     /// </summary>
     public class EmergencyReset : Objective
     {
-        private void _create_task() { Add(new IntentObtainers.EmergencyResetting(true)); }
+        private void CreateTask()
+        {
+            Add(new IntentObtainers.EmergencyResetting(true));
+        }
 
-        public EmergencyReset(long aDuration = 0) : base(aDuration) { _create_task(); }
-        public EmergencyReset(Expiration aExpiration) : base(aExpiration) { _create_task(); }
+        public EmergencyReset(long aDuration = 0) : base(aDuration)
+        {
+            CreateTask();
+        }
+
+        public EmergencyReset(Expiration aExpiration) : base(aExpiration)
+        {
+            CreateTask();
+        }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-using AR.Drone.Client;
+﻿using AR.Drone.Client;
 
 namespace AR.Drone.Avionics.Apparatus
 {

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AR.Drone.Avionics.Tools
+﻿namespace AR.Drone.Avionics.Tools
 {
-    public class Arithmetics
+    public static class Arithmetics
     {
         // Returns the giving aValue, making sure it is no lesser than aMin and isn't grater than aMax
         public static float KeepInRange(float aValue, float aMin, float aMax)
         {
             if (aValue < aMin) return aMin;
-            else if (aValue > aMax) return aMax;
-            else return aValue;
+            if (aValue > aMax) return aMax;
+            return aValue;
         }
 
         // Returns the giving aValue, making sure it is no lesser than aMin and isn't grater than aMax
@@ -22,9 +16,9 @@ namespace AR.Drone.Avionics.Tools
         {
             if (aMin > aMax)
             {
-                float __temp = aMin;
+                float temp = aMin;
                 aMin = aMax;
-                aMax = __temp;
+                aMax = temp;
             }
 
             return KeepInRange(aValue, aMin, aMax);

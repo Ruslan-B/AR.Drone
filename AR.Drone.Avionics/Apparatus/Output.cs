@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-using AR.Drone.Data.Navigation;
+﻿using AR.Drone.Data.Navigation;
 
 namespace AR.Drone.Avionics.Apparatus
 {

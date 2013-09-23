@@ -1,8 +1,4 @@
-﻿using System;
-
-using AR.Drone.Avionics.Tools;
-using AR.Drone.Avionics.Tools.Time;
-using AR.Drone.Avionics.Apparatus;
+﻿using AR.Drone.Avionics.Tools.Time;
 
 namespace AR.Drone.Avionics.Objectives
 {
@@ -11,9 +7,19 @@ namespace AR.Drone.Avionics.Objectives
     /// </summary>
     public class Hover : Objective
     {
-        private void _create_task() { Add(new IntentObtainers.Hovering()); }
+        private void CreateTask()
+        {
+            Add(new IntentObtainers.Hovering());
+        }
 
-        public Hover(long aDuration) : base(aDuration) { _create_task(); }
-        public Hover(Expiration aExpiration) : base(aExpiration) { _create_task(); }
+        public Hover(long aDuration) : base(aDuration)
+        {
+            CreateTask();
+        }
+
+        public Hover(Expiration aExpiration) : base(aExpiration)
+        {
+            CreateTask();
+        }
     }
 }
