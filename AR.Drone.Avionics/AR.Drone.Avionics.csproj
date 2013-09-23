@@ -33,7 +33,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Apparatus\Input.cs" />
@@ -69,9 +68,6 @@
     <Compile Include="Tools\Arithmetics.cs" />
     <Compile Include="Tools\Time\Duration.cs" />
     <Compile Include="Tools\Time\Expiration.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AR.Drone.Client\AR.Drone.Client.csproj">
