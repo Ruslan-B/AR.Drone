@@ -11,13 +11,13 @@ namespace AR.Drone.Avionics
 {
     /// <summary>
     /// Autopilot is a class that works in a separate thread, handling chains
-    /// of user commands queued up for droen control.
+    /// of user commands queued up for drone control.
     /// </summary>
     /// 
     /// <example>
     ///     Typical use:
     ///     <code>
-    ///         DroneClient droneClient = new DroneClient("192.168.1.3");
+    ///         DroneClient droneClient = new DroneClient("192.168.1.1");
     ///         droneClient.Start();
     ///
     ///         Autopilot autopilot = new Autopilot(droneClient);
