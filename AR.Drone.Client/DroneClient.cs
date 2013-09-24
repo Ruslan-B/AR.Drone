@@ -111,11 +111,6 @@ namespace AR.Drone.Client
                 Send(settings);
             }
 
-            if (state.HasFlag(NavigationState.Command))
-            {
-                //Send(ControlCommand.AckControlMode);
-            }
-
             if (state.HasFlag(NavigationState.Watchdog))
             {
                 Trace.TraceWarning("Communication Watchdog!");

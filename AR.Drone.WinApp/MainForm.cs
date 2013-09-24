@@ -46,7 +46,7 @@ namespace AR.Drone.WinApp
             _videoPacketDecoderWorker = new VideoPacketDecoderWorker(PixelFormat.BGR24, true, OnVideoPacketDecoded);
             _videoPacketDecoderWorker.Start();
 
-            _droneClient = new DroneClient("192.168.1.3");
+            _droneClient = new DroneClient("192.168.1.1");
             _droneClient.NavigationPacketAcquired += OnNavigationPacketAcquired;
             _droneClient.VideoPacketAcquired += OnVideoPacketAcquired;
             _droneClient.NavigationDataAcquired += data => _navigationData = data;
@@ -72,8 +72,11 @@ namespace AR.Drone.WinApp
 
         protected override void OnClosed(EventArgs e)
         {
-            _autopilot.UnbindFromClient();
-            _autopilot.Stop();
+            if (_autopilot != null)
+            {
+                _autopilot.UnbindFromClient();
+                _autopilot.Stop();
+            }
 
             StopRecording();
 
@@ -419,12 +422,12 @@ namespace AR.Drone.WinApp
             // Do two 36 degrees turns left and right if the drone is already flying
             if (_droneClient.NavigationData.State.HasFlag(NavigationState.Flying))
             {
-                const float __turn = (float)(Math.PI / 5);
-                float __heading = _droneClient.NavigationData.Yaw;
+                const float turn = (float)(Math.PI / 5);
+                float heading = _droneClient.NavigationData.Yaw;
 
-                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading + __turn, aCanBeObtained: true)));
-                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading - __turn, aCanBeObtained: true)));
-                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(__heading, aCanBeObtained: true)));
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(heading + turn, aCanBeObtained: true)));
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(heading - turn, aCanBeObtained: true)));
+                _autopilot.EnqueueObjective(Objective.Create(2000, new Heading(heading, aCanBeObtained: true)));
             }
             else // Just take off if the drone is on the ground
             {
