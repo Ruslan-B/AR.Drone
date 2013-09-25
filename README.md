@@ -3,6 +3,10 @@
 The AR.Drone 2.0 controlling library for C#/.NET and Mono, with video support.  
 Built over the original [AR.Drone SDK](https://projects.ardrone.org) 2.0.1 - using lastest drone firmware.
 
+Thanks to [Yury Rozhdestvensky](https://github.com/yur) from [robodem.com](http://robodem.com) we got ability to create command chains, 
+thus basic autopilot is avalible now, for details please check ```Avionics.Autopilot``` module, 
+simple example in demo application is avalible.
+
 If case you are looking for Windows RT/Windows Phone support please check this project [ARDrone2Windows](https://github.com/ARDrone2Windows/SDK).
 
 ## Dependencies
