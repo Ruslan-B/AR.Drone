@@ -41,7 +41,7 @@ The solution includes Winform application - AR.Drone.WinApp, it provides minimal
 for controling and displaying video from the AR.Drone 2.0.
 
 ##Contributions
-```Avionics.Autopilot``` module by Yury Rozhdestvensky from [robodem.com](http://robodem.com).  
+```Avionics.Autopilot``` module by [Yury Rozhdestvensky](https://github.com/yur) from [robodem.com](http://robodem.com).  
 
 ##License
 
