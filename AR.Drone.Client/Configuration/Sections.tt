@@ -103,7 +103,7 @@ namespace AR.Drone.Client.Configuration
 	ESC();
 
 	BSC("LedsSection", "leds");
-	RWV("Animation", "leds_anim", "String");
+	RWV("LedAnimation", "leds_anim", "LedAnimation");
 	ESC();
 
 	BSC("DetectSection", "detect");

@@ -80,6 +80,16 @@ namespace AR.Drone.Client.Configuration
             return default(FlightAnimation);
         }
 
+        protected LedAnimation GetLedAnimation(string index)
+        {
+            string value;
+            if (_settings.Items.TryGetValue(FullKey(index), out value))
+            {
+                return LedAnimation.Parse(value);
+            }
+            return default(LedAnimation);
+        }
+
         protected UserboxCommand GetUserboxCommand(string index)
         {
             string value;
@@ -130,6 +140,11 @@ namespace AR.Drone.Client.Configuration
         }
 
         protected void Set(string index, FlightAnimation value)
+        {
+            Set(index, value.ToString());
+        }
+
+        protected void Set(string index, LedAnimation value)
         {
             Set(index, value.ToString());
         }

@@ -504,9 +504,9 @@ namespace AR.Drone.Client.Configuration
         {
         }
 
-        public String Animation
+        public LedAnimation LedAnimation
         {
-            get { return GetString("leds_anim"); }
+            get { return GetLedAnimation("leds_anim"); }
             set { Set("leds_anim", value); }
         }
     }

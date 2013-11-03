@@ -15,7 +15,6 @@ namespace AR.Drone.Client.Configuration
         private const int ConfigTimeout = 1000;
 
         private readonly DroneClient _client;
-        private bool _initialized;
 
         public ConfigurationAcquisition(DroneClient client)
         {

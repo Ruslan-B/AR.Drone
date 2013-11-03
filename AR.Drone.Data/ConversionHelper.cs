@@ -15,5 +15,11 @@ namespace AR.Drone.Data
             float result = BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
             return result;
         }
+
+        public static float ToSingle(int value)
+        {
+            float result = BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
+            return result;
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace AR.Drone.WinApp
         private readonly DroneClient _droneClient;
         private readonly List<PlayerForm> _playerForms;
         private readonly VideoPacketDecoderWorker _videoPacketDecoderWorker;
-        private Settings _configuration;
+        private Settings _settings;
         private VideoFrame _frame;
         private Bitmap _frameBitmap;
         private uint _frameNumber;
@@ -142,7 +142,7 @@ namespace AR.Drone.WinApp
             if (_navigationData != null) DumpBranch(node.Nodes, _navigationData);
 
             node = tvInfo.Nodes.GetOrCreate("Configuration");
-            if (_configuration != null) DumpBranch(node.Nodes, _configuration);
+            if (_settings != null) DumpBranch(node.Nodes, _settings);
 
             TreeNode vativeNode = tvInfo.Nodes.GetOrCreate("Native");
 
@@ -287,7 +287,7 @@ namespace AR.Drone.WinApp
                         return;
                     }
 
-                    _configuration = task.Result;
+                    _settings = task.Result;
                 });
             configurationTask.Start();
         }
@@ -296,50 +296,53 @@ namespace AR.Drone.WinApp
         {
             var sendConfigTask = new Task(() =>
                 {
-                    if (_configuration == null) _configuration = new Settings();
-                    Settings configuration = _configuration;
+                    if (_settings == null) _settings = new Settings();
+                    Settings settings = _settings;
 
-                    if (string.IsNullOrEmpty(configuration.Custom.SessionId) ||
-                        configuration.Custom.SessionId == "00000000")
+                    if (string.IsNullOrEmpty(settings.Custom.SessionId) ||
+                        settings.Custom.SessionId == "00000000")
                     {
                         // set new session, application and profile
                         _droneClient.AckControlAndWaitForConfirmation(); // wait for the control confirmation
 
-                        configuration.Custom.SessionId = Settings.NewId();
-                        _droneClient.Send(configuration);
+                        settings.Custom.SessionId = Settings.NewId();
+                        _droneClient.Send(settings);
                         
                         _droneClient.AckControlAndWaitForConfirmation();
 
-                        configuration.Custom.ProfileId = Settings.NewId();
-                        _droneClient.Send(configuration);
+                        settings.Custom.ProfileId = Settings.NewId();
+                        _droneClient.Send(settings);
                         
                         _droneClient.AckControlAndWaitForConfirmation();
 
-                        configuration.Custom.ApplicationId = Settings.NewId();
-                        _droneClient.Send(configuration);
+                        settings.Custom.ApplicationId = Settings.NewId();
+                        _droneClient.Send(settings);
                         
                         _droneClient.AckControlAndWaitForConfirmation();
                     }
 
-                    configuration.General.NavdataDemo = false;
-                    configuration.General.NavdataOptions = NavdataOptions.All;
+                    settings.General.NavdataDemo = false;
+                    settings.General.NavdataOptions = NavdataOptions.All;
 
-                    configuration.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
-                    configuration.Video.Bitrate = 1000;
-                    configuration.Video.MaxBitrate = 2000;
+                    settings.Video.BitrateCtrlMode = VideoBitrateControlMode.Dynamic;
+                    settings.Video.Bitrate = 1000;
+                    settings.Video.MaxBitrate = 2000;
+
+                    //settings.Leds.LedAnimation = new LedAnimation(LedAnimationType.BlinkGreenRed, 2.0f, 2);
+                    //settings.Control.FlightAnimation = new FlightAnimation(FlightAnimationType.Wave);
 
                     // record video to usb
-                    //configuration.Video.OnUsb = true;
+                    //settings.Video.OnUsb = true;
                     // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
-                    //configuration.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
+                    //settings.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
                     // start
-                    //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
+                    //settings.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
                     // stop
-                    //configuration.Userbox.Command = new UserboxCommand(UserboxCommandType.Stop);
+                    //settings.Userbox.Command = new UserboxCommand(UserboxCommandType.Stop);
 
 
                     //send all changes in one pice
-                    _droneClient.Send(configuration);
+                    _droneClient.Send(settings);
                 });
             sendConfigTask.Start();
         }
