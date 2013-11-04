@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AR.Drone.Data;
 
 namespace AR.Drone.Client.Configuration
@@ -131,7 +132,7 @@ namespace AR.Drone.Client.Configuration
 
         protected void Set(string index, Single value)
         {
-            Set(index, ConversionHelper.ToInt(value).ToString());
+            Set(index, value.ToString(CultureInfo.InvariantCulture));
         }
 
         protected void Set(string index, Boolean value)
