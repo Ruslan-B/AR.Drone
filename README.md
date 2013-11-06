@@ -8,6 +8,10 @@ thus basic autopilot is avalible now, for details please check ```Avionics.Autop
 
 If case you are looking for Windows RT/Windows Phone support please check this project [ARDrone2Windows](https://github.com/ARDrone2Windows/SDK).
 
+## Documentation
+
+Place to start [Wiki](https://github.com/Ruslan-B/AR.Drone/wiki).
+
 ## Dependencies
 
 [FFmpeg.AutoGen](https://github.com/Ruslan-B/FFmpeg.AutoGen) - .NET wrapper for FFmpeg.  
