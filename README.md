@@ -10,7 +10,7 @@ If case you are looking for Windows RT/Windows Phone support please check this p
 
 ## Documentation
 
-Place to start [Wiki](https://github.com/Ruslan-B/AR.Drone/wiki).
+[Wiki](https://github.com/Ruslan-B/AR.Drone/wiki).
 
 ## Dependencies
 
