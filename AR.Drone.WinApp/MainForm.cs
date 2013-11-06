@@ -333,7 +333,7 @@ namespace AR.Drone.WinApp
 
                     // record video to usb
                     //settings.Video.OnUsb = true;
-                    // usage of MP4_360P_H264_720P codec is a requariment for video recording to usb
+                    // usage of MP4_360P_H264_720P codec is a requirement for video recording to usb
                     //settings.Video.Codec = VideoCodecType.MP4_360P_H264_720P;
                     // start
                     //settings.Userbox.Command = new UserboxCommand(UserboxCommandType.Start);
