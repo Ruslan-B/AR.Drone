@@ -46,7 +46,7 @@ namespace AR.Drone.Client.Configuration
             string value;
             if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
-                return Single.Parse(value);
+                return Single.Parse(value, CultureInfo.InvariantCulture);
             }
             return default(Single);
         }
@@ -56,7 +56,7 @@ namespace AR.Drone.Client.Configuration
             string value;
             if (_settings.Items.TryGetValue(FullKey(index), out value))
             {
-                return Double.Parse(value);
+                return Double.Parse(value, CultureInfo.InvariantCulture);
             }
             return default(Double);
         }
