@@ -1,5 +1,30 @@
-﻿using AR.Drone.Infrastructure;
+﻿// =============================================================================
+// =
+// =   FILE:			VideoPacketDecoder.cs
+// =
+// =============================================================================
+// =                                                                        
+// = COPYRIGHT: Title to, ownership of and copyright of this software is
+// = vested in Copyright 2003-2014  Baker Hughes Reservoir Software BV.
+// = is a wholly-owned subsidiary of Baker Hughes Incorporated.
+// = All rights reserved.
+// =
+// = Neither the whole nor any part of this software may be
+// = reproduced, copied, stored in any retrieval system or
+// = transmitted in any form or by any means without prior
+// = written consent of the copyright owner.
+// =
+// = This software and the information and data it contains is
+// = confidential. Neither the whole nor any part of the
+// = software and the data and information it contains may be
+// = disclosed to any third party without the prior written
+// = consent of Copyright 2003-2014 Baker Hughes Reservoir Software BV, a
+// = wholly-owned subsidiary of Baker Hughes Incorporated 
+// =                                                                          
+// =============================================================================
+
 using AR.Drone.Data;
+using AR.Drone.Infrastructure;
 using FFmpeg.AutoGen;
 
 namespace AR.Drone.Video
@@ -9,13 +34,11 @@ namespace AR.Drone.Video
         private readonly PixelFormat _pixelFormat;
         private VideoConverter _videoConverter;
         private VideoDecoder _videoDecoder;
-        private AVFrame _avFrame;
         private AVPacket _avPacket;
 
         public VideoPacketDecoder(PixelFormat pixelFormat)
         {
             _pixelFormat = pixelFormat;
-            _avFrame = new AVFrame();
             _avPacket = new AVPacket();
         }
 
@@ -28,11 +51,12 @@ namespace AR.Drone.Video
             {
                 _avPacket.data = pData;
                 _avPacket.size = packet.Data.Length;
-                if (_videoDecoder.TryDecode(ref _avPacket, ref _avFrame))
+                AVFrame* pFrame;
+                if (_videoDecoder.TryDecode(ref _avPacket, out pFrame))
                 {
                     if (_videoConverter == null) _videoConverter = new VideoConverter(_pixelFormat.ToAVPixelFormat());
 
-                    byte[] data = _videoConverter.ConvertFrame(ref _avFrame);
+                    byte[] data = _videoConverter.ConvertFrame(pFrame);
 
                     frame = new VideoFrame();
                     frame.Timestamp = packet.Timestamp;
@@ -48,7 +72,6 @@ namespace AR.Drone.Video
             frame = null;
             return false;
         }
-
 
         protected override void DisposeOverride()
         {
